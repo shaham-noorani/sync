@@ -1,4 +1,3 @@
-import 'react-native-url-polyfill/dist/polyfill';
 import { createClient } from '@supabase/supabase-js';
 import { Database } from './database.types';
 import * as SecureStore from 'expo-secure-store';

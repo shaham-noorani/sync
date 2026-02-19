@@ -11,6 +11,7 @@ export default function CreateGroupScreen() {
   const router = useRouter();
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
+  const [inviteCode, setInviteCode] = useState('');
   const createGroup = useCreateGroup();
   const { data: myGroups } = useMyGroups();
 
@@ -60,6 +61,31 @@ export default function CreateGroupScreen() {
         loading={createGroup.isPending}
         disabled={!name.trim()}
       />
+
+      {/* Join Section */}
+      <View className="mt-10 mb-2">
+        <Text className="text-lg font-semibold text-dark-50 mb-4">
+          Join a Group
+        </Text>
+
+        <Input
+          label="Invite Code"
+          value={inviteCode}
+          onChangeText={setInviteCode}
+          placeholder="Paste an invite code"
+        />
+
+        <Button
+          title="Join Group"
+          onPress={() => {
+            if (inviteCode.trim()) {
+              router.push(`/group/join/${inviteCode.trim()}`);
+            }
+          }}
+          variant="secondary"
+          disabled={!inviteCode.trim()}
+        />
+      </View>
 
       {/* My Groups */}
       {myGroups && myGroups.length > 0 && (

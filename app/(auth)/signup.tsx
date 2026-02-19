@@ -73,34 +73,19 @@ export default function SignupScreen() {
       return;
     }
 
-    // Create profile
-    const { error: profileError } = await supabase.from('profiles').insert({
-      id: authData.user.id,
-      username: username.trim().toLowerCase(),
-      display_name: displayName.trim(),
-      city: city.trim() || null,
+    // Create profile + interests via SECURITY DEFINER function (bypasses RLS)
+    const { error: profileError } = await supabase.rpc('create_profile', {
+      p_user_id: authData.user.id,
+      p_username: username.trim().toLowerCase(),
+      p_display_name: displayName.trim(),
+      p_city: city.trim() || null,
+      p_interests: selectedInterests,
     });
 
     if (profileError) {
       setError(profileError.message);
       setLoading(false);
       return;
-    }
-
-    // Create interests
-    if (selectedInterests.length > 0) {
-      const { error: interestsError } = await supabase
-        .from('user_interests')
-        .insert(
-          selectedInterests.map((interest) => ({
-            user_id: authData.user!.id,
-            interest,
-          }))
-        );
-
-      if (interestsError) {
-        console.warn('Failed to save interests:', interestsError.message);
-      }
     }
 
     setLoading(false);
