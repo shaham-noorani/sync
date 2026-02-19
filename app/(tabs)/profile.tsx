@@ -3,6 +3,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../../providers/AuthProvider';
 import { useProfile } from '../../hooks/useProfile';
+import { useMyHangoutStats } from '../../hooks/useHangouts';
 import { useTheme } from '../../providers/ThemeProvider';
 import { Avatar } from '../../components/Avatar';
 import { InterestChip } from '../../components/ui/InterestChip';
@@ -10,9 +11,16 @@ import { Button } from '../../components/ui/Button';
 import { SkeletonLoader } from '../../components/SkeletonLoader';
 import { Ionicons } from '@expo/vector-icons';
 
+const ACTIVITY_EMOJIS: Record<string, string> = {
+  tennis: '🎾', 'board games': '🎲', dinner: '🍽️', climbing: '🧗',
+  movie: '🎬', drinks: '🍻', run: '🏃', games: '🎮', hiking: '🥾',
+  coffee: '☕', other: '📅',
+};
+
 export default function ProfileScreen() {
   const { user, signOut } = useAuth();
   const { data: profile, isLoading } = useProfile();
+  const { data: stats } = useMyHangoutStats();
   const { isDark, toggleTheme } = useTheme();
   const router = useRouter();
 
@@ -53,6 +61,40 @@ export default function ProfileScreen() {
             </View>
           )}
         </View>
+
+        {/* Hangout Stats */}
+        {stats && stats.total > 0 && (
+          <View className="mb-6 bg-white dark:bg-dark-700 rounded-2xl px-4 py-4">
+            <View className="flex-row items-center mb-3">
+              <Text className="text-gray-500 dark:text-dark-300 text-xs font-semibold uppercase tracking-widest flex-1">
+                Hangout Stats
+              </Text>
+              <View className="bg-lavender/20 rounded-full px-3 py-1">
+                <Text className="text-lavender-500 dark:text-lavender text-sm font-bold">
+                  {stats.total} total
+                </Text>
+              </View>
+            </View>
+            <View className="flex-row flex-wrap">
+              {stats.topActivities.map(({ tag, count }) => (
+                <View
+                  key={tag}
+                  className="flex-row items-center bg-gray-50 dark:bg-dark-600 rounded-xl px-3 py-2 mr-2 mb-2"
+                >
+                  <Text className="text-base mr-1.5">
+                    {ACTIVITY_EMOJIS[tag.toLowerCase()] ?? '📅'}
+                  </Text>
+                  <View>
+                    <Text className="text-gray-900 dark:text-dark-50 text-xs font-semibold capitalize">
+                      {tag}
+                    </Text>
+                    <Text className="text-gray-400 dark:text-dark-400 text-xs">{count}×</Text>
+                  </View>
+                </View>
+              ))}
+            </View>
+          </View>
+        )}
 
         {/* Edit Button */}
         <TouchableOpacity

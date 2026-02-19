@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Image, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -34,6 +34,7 @@ export default function FeedScreen() {
   const toggleReaction = useToggleReaction();
   const [expandedReactions, setExpandedReactions] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [activeFilter, setActiveFilter] = useState<string | null>(null);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -41,15 +42,74 @@ export default function FeedScreen() {
     setRefreshing(false);
   }, [refetch]);
 
+  // Derive unique activity tags from feed data
+  const activityTags = useMemo(() => {
+    if (!hangouts) return [];
+    const tags = new Set(hangouts.map((h) => h.activity_tag).filter(Boolean) as string[]);
+    return Array.from(tags).sort();
+  }, [hangouts]);
+
+  const filteredHangouts = useMemo(() => {
+    if (!activeFilter) return hangouts ?? [];
+    return (hangouts ?? []).filter((h) => h.activity_tag === activeFilter);
+  }, [hangouts, activeFilter]);
+
   return (
     <SafeAreaView className="flex-1 bg-gray-50 dark:bg-dark-900" edges={['top']}>
       {/* Header */}
-      <View className="flex-row items-center justify-between px-6 pt-2 pb-4">
+      <View className="flex-row items-center justify-between px-6 pt-2 pb-3">
         <Text className="text-xl font-bold text-gray-900 dark:text-dark-50">Feed</Text>
         <TouchableOpacity onPress={() => router.push('/hangout/log')}>
           <Ionicons name="add-circle" size={28} color="#a4a8d1" />
         </TouchableOpacity>
       </View>
+
+      {/* Activity filter chips */}
+      {activityTags.length > 1 && (
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 12 }}
+        >
+          <TouchableOpacity
+            onPress={() => setActiveFilter(null)}
+            className={`mr-2 rounded-full px-3 py-1.5 ${
+              !activeFilter ? 'bg-lavender' : 'bg-white dark:bg-dark-700'
+            }`}
+          >
+            <Text
+              className={`text-xs font-semibold ${
+                !activeFilter ? 'text-dark-900' : 'text-gray-500 dark:text-dark-300'
+              }`}
+            >
+              All
+            </Text>
+          </TouchableOpacity>
+          {activityTags.map((tag) => {
+            const isActive = activeFilter === tag;
+            return (
+              <TouchableOpacity
+                key={tag}
+                onPress={() => setActiveFilter(isActive ? null : tag)}
+                className={`mr-2 flex-row items-center rounded-full px-3 py-1.5 ${
+                  isActive ? 'bg-lavender' : 'bg-white dark:bg-dark-700'
+                }`}
+              >
+                <Text className="text-xs mr-1">
+                  {ACTIVITY_EMOJIS[tag.toLowerCase()] ?? '📅'}
+                </Text>
+                <Text
+                  className={`text-xs font-semibold capitalize ${
+                    isActive ? 'text-dark-900' : 'text-gray-500 dark:text-dark-300'
+                  }`}
+                >
+                  {tag}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </ScrollView>
+      )}
 
       <ScrollView
         className="flex-1"
@@ -64,7 +124,7 @@ export default function FeedScreen() {
               </View>
             ))}
           </View>
-        ) : hangouts?.length === 0 ? (
+        ) : filteredHangouts.length === 0 ? (
           <View className="items-center justify-center px-8 mt-20">
             <Text style={{ fontSize: 56 }}>📸</Text>
             <Text className="text-gray-900 dark:text-dark-50 font-bold text-xl text-center mt-4">
@@ -82,7 +142,7 @@ export default function FeedScreen() {
             </TouchableOpacity>
           </View>
         ) : (
-          hangouts?.map((hangout) => {
+          filteredHangouts.map((hangout) => {
             const isReactionOpen = expandedReactions === hangout.id;
             const reactionCounts: Record<string, number> = {};
             hangout.reactions?.forEach((r) => {

@@ -228,6 +228,41 @@ export function useToggleReaction() {
   });
 }
 
+export function useMyHangoutStats() {
+  const { user } = useAuth();
+
+  return useQuery({
+    queryKey: ['my-hangout-stats', user?.id],
+    queryFn: async () => {
+      if (!user) throw new Error('Not authenticated');
+
+      const { data, error } = await supabase
+        .from('hangout_attendees')
+        .select('hangout:hangouts(activity_tag, date)')
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
+      const hangouts = (data as any[]).map((d) => d.hangout).filter(Boolean);
+      const total = hangouts.length;
+
+      const byTag: Record<string, number> = {};
+      hangouts.forEach((h) => {
+        const tag = h.activity_tag ?? 'other';
+        byTag[tag] = (byTag[tag] ?? 0) + 1;
+      });
+
+      const topActivities = Object.entries(byTag)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5)
+        .map(([tag, count]) => ({ tag, count }));
+
+      return { total, topActivities };
+    },
+    enabled: !!user,
+  });
+}
+
 export function getPhotoUrl(storagePath: string) {
   const { data } = supabase.storage.from('hangout-photos').getPublicUrl(storagePath);
   return data.publicUrl;

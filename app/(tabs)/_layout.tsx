@@ -1,9 +1,17 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import { useTheme } from '../../providers/ThemeProvider';
+import { useProposals } from '../../hooks/useProposals';
+import { useAuth } from '../../providers/AuthProvider';
 
 export default function TabLayout() {
   const { isDark } = useTheme();
+  const { user } = useAuth();
+  const { data: proposals } = useProposals();
+
+  const pendingCount = proposals?.filter(
+    (p) => p.created_by !== user?.id && (p.my_response === null || p.my_response === 'pending')
+  ).length ?? 0;
 
   return (
     <Tabs
@@ -29,7 +37,9 @@ export default function TabLayout() {
       <Tabs.Screen
         name="propose"
         options={{
-          title: 'Propose',
+          title: 'Proposals',
+          tabBarBadge: pendingCount > 0 ? pendingCount : undefined,
+          tabBarBadgeStyle: { backgroundColor: '#a4a8d1', color: '#0f1420', fontSize: 10 },
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="sparkles" size={size} color={color} />
           ),
