@@ -1,0 +1,37 @@
+appId: host.exp.Exponent
+---
+# Test: navigate to Proposals tab, open create form, fill it out, send
+
+- launchApp
+
+# Navigate to Proposals tab
+- tapOn: "Proposals"
+
+- assertVisible: "Proposals"
+
+# Open create form
+- tapOn:
+    id: "add-circle"
+  optional: true
+
+# Fallback: look for the + icon by accessibility label
+- tapOn:
+    text: "Propose a Hangout"
+  optional: true
+
+- assertVisible: "What's the plan?"
+
+# Fill in the title
+- tapOn:
+    placeholder: "e.g. Saturday tennis match"
+- inputText: "Maestro test hangout"
+
+# Pick an activity
+- tapOn: "Tennis"
+
+# Attempt to send without selecting anyone → should show alert
+- tapOn: "Send Proposal"
+
+- assertVisible: "Who's invited?"
+
+- tapOn: "OK"

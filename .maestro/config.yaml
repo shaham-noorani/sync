@@ -1,0 +1,9 @@
+
+# Maestro test suite configuration
+# appId is for Expo Go on iOS simulator.
+# For a dev build, replace with your bundle identifier (e.g. com.yourname.sync).
+flows:
+  - .maestro/01_login.yaml
+  - .maestro/02_availability.yaml
+  - .maestro/03_propose.yaml
+  - .maestro/04_feed.yaml

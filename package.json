@@ -8,7 +8,9 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "e2e": "JAVA_HOME=/opt/homebrew/opt/openjdk PATH=$JAVA_HOME/bin:$HOME/.maestro/bin:$PATH maestro test --env-file .env.maestro .maestro/config.yaml",
+    "e2e:flow": "JAVA_HOME=/opt/homebrew/opt/openjdk PATH=$JAVA_HOME/bin:$HOME/.maestro/bin:$PATH maestro test --env-file .env.maestro"
   },
   "dependencies": {
     "@expo-google-fonts/space-grotesk": "^0.4.1",

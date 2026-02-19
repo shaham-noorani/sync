@@ -11,6 +11,7 @@ type InputProps = {
   autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
   keyboardType?: 'default' | 'email-address';
   error?: string;
+  testID?: string;
 };
 
 export function Input({
@@ -22,6 +23,7 @@ export function Input({
   autoCapitalize = 'none',
   keyboardType = 'default',
   error,
+  testID,
 }: InputProps) {
   const [focused, setFocused] = useState(false);
   const { isDark } = useTheme();
@@ -42,6 +44,7 @@ export function Input({
         keyboardType={keyboardType}
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
+        testID={testID}
       />
       {error && <Text className="text-red-400 text-sm mt-1 ml-1">{error}</Text>}
     </View>

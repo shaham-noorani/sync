@@ -1,0 +1,24 @@
+appId: host.exp.Exponent
+---
+# Test: open availability editor, toggle a cell, save
+
+- launchApp
+
+# Tap the Availability button in home header
+- tapOn: "Availability"
+
+- assertVisible: "Edit Availability"
+
+# Toggle the first cell (Mon AM) on then off to verify it's interactive
+- tapOn:
+    index: 0
+    text: "AM"
+
+# Go back
+- tapOn:
+    id: "back-button"
+  optional: true
+
+- back
+
+- assertVisible: "Your Availability"

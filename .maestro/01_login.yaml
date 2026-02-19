@@ -1,0 +1,27 @@
+appId: host.exp.Exponent
+---
+# Test: sign out (if already logged in) then sign back in
+- launchApp:
+    clearState: true
+
+# ── Sign In screen ────────────────────────────────────────────────────────────
+- assertVisible: "Sign In"
+
+- tapOn:
+    id: "email-input"
+- clearText
+- inputText: ${TEST_EMAIL}
+
+- tapOn:
+    id: "password-input"
+- clearText
+- inputText: ${TEST_PASSWORD}
+
+- tapOn: "Sign In"
+
+# ── Home screen ───────────────────────────────────────────────────────────────
+- assertVisible:
+    text: "sync"
+    timeout: 8000
+
+- assertVisible: "Your Availability"

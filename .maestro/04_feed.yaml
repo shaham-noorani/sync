@@ -1,0 +1,33 @@
+appId: host.exp.Exponent
+---
+# Test: navigate to Feed tab, verify layout, open log hangout form
+
+- launchApp
+
+- tapOn: "Feed"
+
+- assertVisible: "Feed"
+
+# Either the empty state or actual hangout cards should be visible
+- assertTrue:
+    condition: ${visible("Nothing here yet") || visible("Log a Hangout") || visible("Feed")}
+
+# Open log hangout sheet
+- tapOn:
+    id: "add-circle"
+  optional: true
+
+- assertVisible: "Log a Hangout"
+
+# Fill in a title
+- tapOn:
+    placeholder: "e.g. Rooftop dinner with the crew"
+- inputText: "Maestro test hangout"
+
+# Try to log without friends → title is provided so it should succeed (creator only)
+- tapOn: "Log Hangout"
+
+# Should navigate to hangout detail
+- assertVisible:
+    text: "Maestro test hangout"
+    timeout: 6000

@@ -68,6 +68,7 @@ export default function LoginScreen() {
             placeholder="you@example.com"
             keyboardType="email-address"
             autoCapitalize="none"
+            testID="email-input"
           />
 
           <Input
@@ -76,6 +77,7 @@ export default function LoginScreen() {
             onChangeText={setPassword}
             placeholder="Your password"
             secureTextEntry
+            testID="password-input"
           />
 
           {error ? (
