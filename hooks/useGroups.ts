@@ -16,13 +16,17 @@ export function useMyGroups() {
           `
           group_id,
           role,
-          group:groups!group_members_group_id_fkey(id, name, description, invite_code, created_by)
+          group:groups!group_members_group_id_fkey(id, name, description, invite_code, created_by, members:group_members(count))
         `
         )
         .eq('user_id', user.id);
 
       if (error) throw error;
-      return data.map((gm) => ({ ...gm.group, role: gm.role }));
+      return data.map((gm: any) => ({
+        ...gm.group,
+        role: gm.role,
+        member_count: gm.group?.members?.[0]?.count ?? 0,
+      }));
     },
     enabled: !!user,
   });
