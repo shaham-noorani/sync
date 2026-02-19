@@ -1,5 +1,5 @@
-import { useState, useMemo } from 'react';
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import { useState, useMemo, useCallback } from 'react';
+import { View, Text, ScrollView, TouchableOpacity, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -94,10 +94,17 @@ export default function HomeScreen() {
   const startDate = dates[0];
   const endDate = dates[6];
 
-  const { data: availability, isLoading: availLoading } = useEffectiveAvailability(startDate, endDate);
-  const { data: friendOverlapCounts } = useFriendsAvailability(startDate, endDate);
-  const { data: overlaps } = useFriendOverlaps(startDate, endDate);
-  const { data: proposals } = useProposals();
+  const { data: availability, isLoading: availLoading, refetch: refetchAvail } = useEffectiveAvailability(startDate, endDate);
+  const { data: friendOverlapCounts, refetch: refetchOverlapCounts } = useFriendsAvailability(startDate, endDate);
+  const { data: overlaps, refetch: refetchOverlaps } = useFriendOverlaps(startDate, endDate);
+  const { data: proposals, refetch: refetchProposals } = useProposals();
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await Promise.all([refetchAvail(), refetchOverlapCounts(), refetchOverlaps(), refetchProposals()]);
+    setRefreshing(false);
+  }, [refetchAvail, refetchOverlapCounts, refetchOverlaps, refetchProposals]);
 
   const topOverlaps = useMemo(() => {
     if (!overlaps) return [];
@@ -108,7 +115,11 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50 dark:bg-dark-900" edges={['top']}>
-      <ScrollView className="flex-1" contentContainerClassName="pb-12">
+      <ScrollView
+        className="flex-1"
+        contentContainerClassName="pb-12"
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+      >
         {/* Header */}
         <View className="flex-row items-center justify-between px-6 pt-4 pb-2">
           <Text
@@ -206,7 +217,7 @@ export default function HomeScreen() {
                   key={`${overlap.date}-${overlap.time_block}`}
                   className="bg-white dark:bg-dark-700 rounded-2xl px-4 py-3.5 mb-2.5 flex-row items-center"
                   style={{ borderLeftWidth: 3, borderLeftColor: '#a4a8d1' }}
-                  onPress={() => router.push('/(tabs)/propose')}
+                  onPress={() => router.push('/proposal/create')}
                   activeOpacity={0.8}
                 >
                   <View className="flex-1">

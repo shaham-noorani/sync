@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../providers/AuthProvider';
@@ -207,6 +208,38 @@ export function useRespondToProposal() {
       qc.invalidateQueries({ queryKey: ['proposal', proposalId] });
     },
   });
+}
+
+export function useProposalsRealtime() {
+  const { user } = useAuth();
+  const qc = useQueryClient();
+
+  useEffect(() => {
+    if (!user) return;
+
+    const channel = supabase
+      .channel('proposals-changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'hangout_proposals' },
+        () => {
+          qc.invalidateQueries({ queryKey: ['proposals'] });
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'proposal_responses' },
+        () => {
+          qc.invalidateQueries({ queryKey: ['proposals'] });
+          qc.invalidateQueries({ queryKey: ['proposal'] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user?.id]);
 }
 
 export function useCompleteProposal() {

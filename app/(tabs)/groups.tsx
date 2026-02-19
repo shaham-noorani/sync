@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import { useState, useCallback } from 'react';
+import { View, Text, TouchableOpacity, ScrollView, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -17,7 +17,14 @@ export default function GroupsTabScreen() {
   const [inviteCode, setInviteCode] = useState('');
   const [showCreate, setShowCreate] = useState(false);
   const createGroup = useCreateGroup();
-  const { data: myGroups } = useMyGroups();
+  const { data: myGroups, refetch } = useMyGroups();
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await refetch();
+    setRefreshing(false);
+  }, [refetch]);
 
   const handleCreate = async () => {
     if (!name.trim()) return;
@@ -33,7 +40,11 @@ export default function GroupsTabScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50 dark:bg-dark-900" edges={['top']}>
-      <ScrollView className="flex-1" contentContainerClassName="px-6 pt-2 pb-12">
+      <ScrollView
+        className="flex-1"
+        contentContainerClassName="px-6 pt-2 pb-12"
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+      >
         {/* Header */}
         <View className="flex-row items-center justify-between mb-6">
           <Text className="text-xl font-bold text-gray-900 dark:text-dark-50">Groups</Text>

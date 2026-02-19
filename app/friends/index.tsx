@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import { useState, useCallback } from 'react';
+import { View, Text, ScrollView, TouchableOpacity, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -20,10 +20,17 @@ export default function FriendsScreen() {
   const router = useRouter();
   const { isDark } = useTheme();
   const [activeTab, setActiveTab] = useState<Tab>('friends');
-  const { data: friends, isLoading: friendsLoading } = useFriendsList();
-  const { data: requests, isLoading: requestsLoading } = usePendingRequests();
+  const { data: friends, isLoading: friendsLoading, refetch: refetchFriends } = useFriendsList();
+  const { data: requests, isLoading: requestsLoading, refetch: refetchRequests } = usePendingRequests();
   const respondToRequest = useRespondToRequest();
   const removeFriend = useRemoveFriend();
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await Promise.all([refetchFriends(), refetchRequests()]);
+    setRefreshing(false);
+  }, [refetchFriends, refetchRequests]);
 
   useFriendshipsRealtime();
 
@@ -72,7 +79,10 @@ export default function FriendsScreen() {
         ))}
       </View>
 
-      <ScrollView className="flex-1 px-6">
+      <ScrollView
+        className="flex-1 px-6"
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+      >
         {activeTab === 'friends' && (
           <>
             {friendsLoading ? (

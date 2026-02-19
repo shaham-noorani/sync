@@ -1,356 +1,171 @@
-import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
-import { useState } from "react";
-import {
-  Alert,
-  ScrollView,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { Avatar } from "../../components/Avatar";
-import { useFriendsList } from "../../hooks/useFriends";
-import { useMyGroups } from "../../hooks/useGroups";
-import { useCreateProposal } from "../../hooks/useProposals";
-import { useTheme } from "../../providers/ThemeProvider";
+import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import { useState, useCallback } from 'react';
+import { RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Avatar } from '../../components/Avatar';
+import { SkeletonLoader } from '../../components/SkeletonLoader';
+import { useAuth } from '../../providers/AuthProvider';
+import { useTheme } from '../../providers/ThemeProvider';
+import { useProposals, useProposalsRealtime, type Proposal } from '../../hooks/useProposals';
 
-const ACTIVITIES: { tag: string; emoji: string; label: string }[] = [
-  { tag: "dinner", emoji: "🍽️", label: "Dinner" },
-  { tag: "drinks", emoji: "🍻", label: "Drinks" },
-  { tag: "coffee", emoji: "☕", label: "Coffee" },
-  { tag: "hiking", emoji: "🥾", label: "Hiking" },
-  { tag: "climbing", emoji: "🧗", label: "Climbing" },
-  { tag: "tennis", emoji: "🎾", label: "Tennis" },
-  { tag: "run", emoji: "🏃", label: "Run" },
-  { tag: "movie", emoji: "🎬", label: "Movie" },
-  { tag: "games", emoji: "🎮", label: "Games" },
-  { tag: "board games", emoji: "🎲", label: "Board Games" },
-];
+const ACTIVITY_EMOJIS: Record<string, string> = {
+  tennis: '🎾', 'board games': '🎲', dinner: '🍽️', climbing: '🧗',
+  movie: '🎬', drinks: '🍻', run: '🏃', games: '🎮', hiking: '🥾',
+  coffee: '☕',
+};
 
-const TIME_BLOCKS = [
-  { key: "morning", label: "Morning" },
-  { key: "afternoon", label: "Afternoon" },
-  { key: "evening", label: "Evening" },
-];
+const RESPONSE_COLORS: Record<string, string> = {
+  accepted: 'text-green-500',
+  declined: 'text-red-400',
+  maybe: 'text-yellow-500',
+};
 
-function getUpcomingDates(count = 14): { value: string; label: string }[] {
-  const dates: { value: string; label: string }[] = [];
-  const now = new Date();
-  for (let i = 0; i < count; i++) {
-    const d = new Date(now);
-    d.setDate(now.getDate() + i);
-    const value = d.toISOString().split("T")[0];
-    const label = d.toLocaleDateString("en-US", {
-      weekday: "short",
-      month: "short",
-      day: "numeric",
-    });
-    dates.push({ value, label });
-  }
-  return dates;
-}
-
-export default function ProposeScreen() {
+function ProposalCard({ proposal, isMe }: { proposal: Proposal; isMe: boolean }) {
   const router = useRouter();
   const { isDark } = useTheme();
-  const createProposal = useCreateProposal();
-  const { data: friends } = useFriendsList();
-  const { data: groups } = useMyGroups();
+  const acceptedCount = proposal.responses.filter((r) => r.response === 'accepted').length;
+  const pendingResponse = !isMe && (proposal.my_response === 'pending' || proposal.my_response === null);
+  const myResponseColor = proposal.my_response ? RESPONSE_COLORS[proposal.my_response] : null;
 
-  const [title, setTitle] = useState("");
-  const [activityTag, setActivityTag] = useState("");
-  const [selectedDate, setSelectedDate] = useState("");
-  const [selectedTimeBlock, setSelectedTimeBlock] = useState("");
-  const [location, setLocation] = useState("");
-  const [selectedFriendIds, setSelectedFriendIds] = useState<string[]>([]);
-  const [selectedGroupId, setSelectedGroupId] = useState("");
-
-  const upcomingDates = getUpcomingDates();
-  const placeholderColor = isDark ? "#64748b" : "#9ca3af";
-
-  function toggleFriend(id: string) {
-    setSelectedFriendIds((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
-    );
-  }
-
-  async function handleSend() {
-    if (!title.trim()) {
-      Alert.alert(
-        "What are you doing?",
-        "Please add a title for your hangout.",
-      );
-      return;
-    }
-    if (selectedFriendIds.length === 0 && !selectedGroupId) {
-      Alert.alert("Who's invited?", "Select at least one friend or a group.");
-      return;
-    }
-
-    try {
-      await createProposal.mutateAsync({
-        title: title.trim(),
-        activity_tag: activityTag || undefined,
-        proposed_date: selectedDate || undefined,
-        proposed_time_block: selectedTimeBlock || undefined,
-        location_name: location.trim() || undefined,
-        group_id: selectedGroupId || undefined,
-        invitee_ids: selectedFriendIds,
-      });
-      router.back();
-    } catch {
-      Alert.alert("Error", "Failed to send proposal. Please try again.");
-    }
-  }
+  const dateStr = proposal.proposed_date
+    ? new Date(proposal.proposed_date + 'T12:00:00').toLocaleDateString('en-US', {
+        weekday: 'short', month: 'short', day: 'numeric',
+      })
+    : 'Date TBD';
 
   return (
-    <SafeAreaView
-      className="flex-1 bg-gray-50 dark:bg-dark-900"
-      edges={["top"]}
+    <TouchableOpacity
+      onPress={() => router.push(`/proposal/${proposal.id}`)}
+      className="bg-white dark:bg-dark-700 rounded-2xl px-4 py-4 mb-3"
+      activeOpacity={0.8}
     >
+      <View className="flex-row items-start">
+        <View className="w-10 h-10 rounded-xl bg-lavender/20 items-center justify-center mr-3">
+          <Text className="text-lg">
+            {ACTIVITY_EMOJIS[proposal.activity_tag?.toLowerCase() ?? ''] ?? '📅'}
+          </Text>
+        </View>
+        <View className="flex-1">
+          <Text className="text-gray-900 dark:text-dark-50 font-bold text-sm" numberOfLines={1}>
+            {proposal.title}
+          </Text>
+          <Text className="text-gray-400 dark:text-dark-400 text-xs mt-0.5">{dateStr}</Text>
+        </View>
+        {pendingResponse ? (
+          <View className="bg-lavender rounded-full px-2.5 py-1 ml-2">
+            <Text className="text-dark-900 text-xs font-bold">Respond</Text>
+          </View>
+        ) : myResponseColor ? (
+          <Text className={`text-xs font-semibold ml-2 ${myResponseColor}`}>
+            {proposal.my_response === 'accepted' ? '✓ Going'
+              : proposal.my_response === 'declined' ? '✗ Declined'
+              : '? Maybe'}
+          </Text>
+        ) : null}
+      </View>
+
+      {/* Footer row */}
+      <View className="flex-row items-center mt-3 pt-3 border-t border-gray-100 dark:border-dark-600">
+        {/* Avatar stack */}
+        <View className="flex-row flex-1 items-center">
+          {proposal.responses.slice(0, 4).map((r, i) => (
+            <View key={r.user_id} style={{ marginLeft: i > 0 ? -8 : 0, zIndex: 4 - i }}>
+              <Avatar url={r.profile.avatar_url} name={r.profile.display_name} size={22} />
+            </View>
+          ))}
+          <Text className="text-gray-400 dark:text-dark-400 text-xs ml-2">
+            {acceptedCount} going
+          </Text>
+        </View>
+        <Text className="text-gray-400 dark:text-dark-400 text-xs">
+          {isMe ? 'by you' : `by ${proposal.creator.display_name.split(' ')[0]}`}
+        </Text>
+      </View>
+    </TouchableOpacity>
+  );
+}
+
+export default function ProposalsScreen() {
+  const router = useRouter();
+  const { user } = useAuth();
+  const { data: proposals, isLoading, refetch } = useProposals();
+  const [refreshing, setRefreshing] = useState(false);
+
+  useProposalsRealtime();
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await refetch();
+    setRefreshing(false);
+  }, [refetch]);
+
+  const mine = proposals?.filter((p) => p.created_by === user?.id) ?? [];
+  const incoming = proposals?.filter((p) => p.created_by !== user?.id) ?? [];
+
+  return (
+    <SafeAreaView className="flex-1 bg-gray-50 dark:bg-dark-900" edges={['top']}>
+      {/* Header */}
+      <View className="flex-row items-center justify-between px-6 pt-2 pb-4">
+        <Text className="text-xl font-bold text-gray-900 dark:text-dark-50">Proposals</Text>
+        <TouchableOpacity onPress={() => router.push('/proposal/create')}>
+          <Ionicons name="add-circle" size={28} color="#a4a8d1" />
+        </TouchableOpacity>
+      </View>
+
       <ScrollView
         className="flex-1"
-        contentContainerClassName="px-6 pt-2 pb-12"
+        contentContainerClassName="px-6 pb-12"
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
       >
-        {/* Header */}
-        <View className="flex-row items-center justify-between mb-6">
-          <Text className="text-xl font-bold text-gray-900 dark:text-dark-50">
-            Propose a Hangout
-          </Text>
-        </View>
-
-        {/* Title */}
-        <View className="mb-6">
-          <Text className="text-gray-500 dark:text-dark-200 text-sm font-medium mb-2">
-            What's the plan?
-          </Text>
-          <TextInput
-            value={title}
-            onChangeText={setTitle}
-            placeholder="e.g. Saturday tennis match"
-            placeholderTextColor={placeholderColor}
-            className="bg-white dark:bg-dark-700 rounded-xl px-4 py-3 text-gray-900 dark:text-dark-50 text-base"
-            maxLength={80}
-          />
-        </View>
-
-        {/* Activity */}
-        <View className="mb-6">
-          <Text className="text-gray-500 dark:text-dark-200 text-sm font-medium mb-2">
-            Activity
-          </Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            {ACTIVITIES.map((a) => {
-              const selected = activityTag === a.tag;
-              return (
-                <TouchableOpacity
-                  key={a.tag}
-                  onPress={() => setActivityTag(selected ? "" : a.tag)}
-                  className={`mr-2 items-center justify-center rounded-xl px-3 py-2 ${
-                    selected ? "bg-lavender" : "bg-white dark:bg-dark-700"
-                  }`}
-                  style={{ minWidth: 68 }}
-                >
-                  <Text className="text-2xl">{a.emoji}</Text>
-                  <Text
-                    className={`text-xs mt-0.5 ${
-                      selected
-                        ? "text-dark-900 font-semibold"
-                        : "text-gray-500 dark:text-dark-300"
-                    }`}
-                  >
-                    {a.label}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
-          </ScrollView>
-        </View>
-
-        {/* When */}
-        <View className="mb-6">
-          <Text className="text-gray-500 dark:text-dark-200 text-sm font-medium mb-2">
-            When <Text className="font-normal">(optional)</Text>
-          </Text>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            className="mb-2"
-          >
+        {isLoading ? (
+          Array.from({ length: 3 }).map((_, i) => (
+            <SkeletonLoader key={i} height={96} borderRadius={16} className="mb-3" />
+          ))
+        ) : proposals?.length === 0 ? (
+          <View className="items-center justify-center mt-20">
+            <Text style={{ fontSize: 48 }}>🤙</Text>
+            <Text className="text-gray-900 dark:text-dark-50 font-bold text-lg text-center mt-4">
+              No proposals yet
+            </Text>
+            <Text className="text-gray-500 dark:text-dark-300 text-sm text-center mt-2 leading-5">
+              Tap + to propose a hangout to your friends or a group.
+            </Text>
             <TouchableOpacity
-              onPress={() => setSelectedDate("")}
-              className={`mr-2 rounded-xl px-3 py-2 ${
-                !selectedDate ? "bg-lavender" : "bg-white dark:bg-dark-700"
-              }`}
+              onPress={() => router.push('/proposal/create')}
+              className="bg-lavender rounded-2xl px-8 py-3.5 mt-8"
+              activeOpacity={0.8}
             >
-              <Text
-                className={`text-sm ${
-                  !selectedDate
-                    ? "text-dark-900 font-semibold"
-                    : "text-gray-500 dark:text-dark-300"
-                }`}
-              >
-                TBD
-              </Text>
+              <Text className="text-dark-900 font-bold text-base">Propose a Hangout</Text>
             </TouchableOpacity>
-            {upcomingDates.map((d) => {
-              const selected = selectedDate === d.value;
-              return (
-                <TouchableOpacity
-                  key={d.value}
-                  onPress={() => setSelectedDate(selected ? "" : d.value)}
-                  className={`mr-2 rounded-xl px-3 py-2 ${
-                    selected ? "bg-lavender" : "bg-white dark:bg-dark-700"
-                  }`}
-                >
-                  <Text
-                    className={`text-sm ${
-                      selected
-                        ? "text-dark-900 font-semibold"
-                        : "text-gray-500 dark:text-dark-300"
-                    }`}
-                  >
-                    {d.label}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
-          </ScrollView>
-
-          {selectedDate && (
-            <View className="flex-row">
-              {TIME_BLOCKS.map((t) => {
-                const selected = selectedTimeBlock === t.key;
-                return (
-                  <TouchableOpacity
-                    key={t.key}
-                    onPress={() => setSelectedTimeBlock(selected ? "" : t.key)}
-                    className={`mr-2 rounded-xl px-4 py-2 ${
-                      selected ? "bg-lavender" : "bg-white dark:bg-dark-700"
-                    }`}
-                  >
-                    <Text
-                      className={`text-sm ${
-                        selected
-                          ? "text-dark-900 font-semibold"
-                          : "text-gray-500 dark:text-dark-300"
-                      }`}
-                    >
-                      {t.label}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </View>
-          )}
-        </View>
-
-        {/* Location */}
-        <View className="mb-6">
-          <Text className="text-gray-500 dark:text-dark-200 text-sm font-medium mb-2">
-            Location <Text className="font-normal">(optional)</Text>
-          </Text>
-          <TextInput
-            value={location}
-            onChangeText={setLocation}
-            placeholder="e.g. Dolores Park"
-            placeholderTextColor={placeholderColor}
-            className="bg-white dark:bg-dark-700 rounded-xl px-4 py-3 text-gray-900 dark:text-dark-50 text-base"
-          />
-        </View>
-
-        {/* Invite Friends */}
-        {friends && friends.length > 0 && (
-          <View className="mb-6">
-            <Text className="text-gray-500 dark:text-dark-200 text-sm font-medium mb-2">
-              Invite Friends
-            </Text>
-            {(friends as any[]).map((friend) => {
-              const isSelected = selectedFriendIds.includes(friend.id);
-              return (
-                <TouchableOpacity
-                  key={friend.id}
-                  onPress={() => toggleFriend(friend.id)}
-                  className={`flex-row items-center bg-white dark:bg-dark-700 rounded-xl px-4 py-3 mb-2 ${
-                    isSelected ? "border border-lavender" : ""
-                  }`}
-                  activeOpacity={0.7}
-                >
-                  <Avatar
-                    url={friend.avatar_url}
-                    name={friend.display_name}
-                    size={36}
-                  />
-                  <View className="flex-1 ml-3">
-                    <Text className="text-gray-900 dark:text-dark-50 font-medium text-sm">
-                      {friend.display_name}
-                    </Text>
-                    <Text className="text-gray-400 dark:text-dark-400 text-xs">
-                      @{friend.username}
-                    </Text>
-                  </View>
-                  {isSelected && (
-                    <Ionicons
-                      name="checkmark-circle"
-                      size={20}
-                      color="#a4a8d1"
-                    />
-                  )}
-                </TouchableOpacity>
-              );
-            })}
           </View>
-        )}
+        ) : (
+          <>
+            {incoming.length > 0 && (
+              <View className="mb-6">
+                <Text className="text-gray-500 dark:text-dark-300 text-xs font-semibold uppercase tracking-widest mb-3">
+                  Invited · {incoming.length}
+                </Text>
+                {incoming.map((p) => (
+                  <ProposalCard key={p.id} proposal={p} isMe={false} />
+                ))}
+              </View>
+            )}
 
-        {/* Or invite a Group */}
-        {groups && groups.length > 0 && (
-          <View className="mb-6">
-            <Text className="text-gray-500 dark:text-dark-200 text-sm font-medium mb-2">
-              Or invite a Group
-            </Text>
-            {(groups as any[]).map((group) => {
-              const isSelected = selectedGroupId === group.id;
-              return (
-                <TouchableOpacity
-                  key={group.id}
-                  onPress={() => setSelectedGroupId(isSelected ? "" : group.id)}
-                  className={`flex-row items-center bg-white dark:bg-dark-700 rounded-xl px-4 py-3 mb-2 ${
-                    isSelected ? "border border-lavender" : ""
-                  }`}
-                  activeOpacity={0.7}
-                >
-                  <View className="w-9 h-9 rounded-full bg-lavender/20 items-center justify-center mr-3">
-                    <Text className="text-base">👥</Text>
-                  </View>
-                  <Text className="flex-1 text-gray-900 dark:text-dark-50 font-medium text-sm">
-                    {group.name}
-                  </Text>
-                  {isSelected && (
-                    <Ionicons
-                      name="checkmark-circle"
-                      size={20}
-                      color="#a4a8d1"
-                    />
-                  )}
-                </TouchableOpacity>
-              );
-            })}
-          </View>
+            {mine.length > 0 && (
+              <View>
+                <Text className="text-gray-500 dark:text-dark-300 text-xs font-semibold uppercase tracking-widest mb-3">
+                  Sent by You · {mine.length}
+                </Text>
+                {mine.map((p) => (
+                  <ProposalCard key={p.id} proposal={p} isMe={true} />
+                ))}
+              </View>
+            )}
+          </>
         )}
-
-        {/* Send */}
-        <TouchableOpacity
-          onPress={handleSend}
-          disabled={createProposal.isPending}
-          className="bg-lavender rounded-2xl py-4 items-center mt-2"
-          activeOpacity={0.8}
-        >
-          <Text className="text-dark-900 font-bold text-base">
-            {createProposal.isPending ? "Sending…" : "Send Proposal"}
-          </Text>
-        </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );

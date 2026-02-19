@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Image } from 'react-native';
+import { useState, useCallback } from 'react';
+import { View, Text, ScrollView, TouchableOpacity, Image, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -30,9 +30,16 @@ function formatRelativeDate(dateStr: string): string {
 export default function FeedScreen() {
   const router = useRouter();
   const { isDark } = useTheme();
-  const { data: hangouts, isLoading } = useFeed();
+  const { data: hangouts, isLoading, refetch } = useFeed();
   const toggleReaction = useToggleReaction();
   const [expandedReactions, setExpandedReactions] = useState<string | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await refetch();
+    setRefreshing(false);
+  }, [refetch]);
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50 dark:bg-dark-900" edges={['top']}>
@@ -44,7 +51,11 @@ export default function FeedScreen() {
         </TouchableOpacity>
       </View>
 
-      <ScrollView className="flex-1" contentContainerClassName="pb-12">
+      <ScrollView
+        className="flex-1"
+        contentContainerClassName="pb-12"
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+      >
         {isLoading ? (
           <View className="px-6">
             {Array.from({ length: 3 }).map((_, i) => (
