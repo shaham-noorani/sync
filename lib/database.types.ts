@@ -202,6 +202,147 @@ export interface Database {
           updated_at?: string;
         };
       };
+      hangout_proposals: {
+        Row: {
+          id: string;
+          created_by: string;
+          group_id: string | null;
+          title: string;
+          description: string | null;
+          activity_tag: string | null;
+          proposed_date: string | null;
+          proposed_time_block: 'morning' | 'afternoon' | 'evening' | 'night' | null;
+          location_name: string | null;
+          location_city: string | null;
+          status: 'open' | 'confirmed' | 'cancelled' | 'completed';
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          created_by: string;
+          group_id?: string | null;
+          title: string;
+          description?: string | null;
+          activity_tag?: string | null;
+          proposed_date?: string | null;
+          proposed_time_block?: 'morning' | 'afternoon' | 'evening' | 'night' | null;
+          location_name?: string | null;
+          location_city?: string | null;
+          status?: 'open' | 'confirmed' | 'cancelled' | 'completed';
+          created_at?: string;
+        };
+        Update: {
+          title?: string;
+          description?: string | null;
+          status?: 'open' | 'confirmed' | 'cancelled' | 'completed';
+          location_name?: string | null;
+        };
+      };
+      proposal_responses: {
+        Row: {
+          id: string;
+          proposal_id: string;
+          user_id: string;
+          response: 'pending' | 'accepted' | 'declined' | 'maybe';
+          responded_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          proposal_id: string;
+          user_id: string;
+          response?: 'pending' | 'accepted' | 'declined' | 'maybe';
+          responded_at?: string | null;
+        };
+        Update: {
+          response?: 'pending' | 'accepted' | 'declined' | 'maybe';
+          responded_at?: string | null;
+        };
+      };
+      hangouts: {
+        Row: {
+          id: string;
+          proposal_id: string | null;
+          group_id: string | null;
+          title: string;
+          activity_tag: string | null;
+          location_name: string | null;
+          location_city: string | null;
+          date: string;
+          created_by: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          proposal_id?: string | null;
+          group_id?: string | null;
+          title: string;
+          activity_tag?: string | null;
+          location_name?: string | null;
+          location_city?: string | null;
+          date?: string;
+          created_by: string;
+          created_at?: string;
+        };
+        Update: {
+          title?: string;
+          activity_tag?: string | null;
+          location_name?: string | null;
+          date?: string;
+        };
+      };
+      hangout_attendees: {
+        Row: {
+          id: string;
+          hangout_id: string;
+          user_id: string;
+        };
+        Insert: {
+          id?: string;
+          hangout_id: string;
+          user_id: string;
+        };
+        Update: {};
+      };
+      hangout_photos: {
+        Row: {
+          id: string;
+          hangout_id: string;
+          uploaded_by: string;
+          storage_path: string;
+          caption: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          hangout_id: string;
+          uploaded_by: string;
+          storage_path: string;
+          caption?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          caption?: string | null;
+        };
+      };
+      hangout_reactions: {
+        Row: {
+          id: string;
+          hangout_id: string;
+          user_id: string;
+          emoji: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          hangout_id: string;
+          user_id: string;
+          emoji?: string;
+          created_at?: string;
+        };
+        Update: {
+          emoji?: string;
+        };
+      };
     };
     Functions: {
       get_effective_availability: {
