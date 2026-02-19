@@ -2,16 +2,15 @@
 
 ## Progress Tracker
 
-- [x] **Chunk 0**: Project Scaffolding — Expo app created with tabs template
-- [ ] **Chunk 0**: Install deps, NativeWind, Supabase client, providers, auth gate
-- [ ] **Chunk 1**: Supabase Database Schema
-- [ ] **Chunk 2**: Auth Flow (Login + Signup)
-- [ ] **Chunk 3**: Profile Screen
-- [ ] **Chunk 4**: Friends System
-- [ ] **Chunk 5**: Groups System
-- [ ] **Chunk 6**: Availability Heatmap (View)
-- [ ] **Chunk 7**: Availability Editing
-- [ ] **Chunk 8**: Polish & Integration
+- [x] **Chunk 0**: Project Scaffolding
+- [x] **Chunk 1**: Supabase Database Schema
+- [x] **Chunk 2**: Auth Flow (Login + Signup)
+- [x] **Chunk 3**: Profile Screen
+- [x] **Chunk 4**: Friends System
+- [x] **Chunk 5**: Groups System
+- [x] **Chunk 6**: Availability Heatmap (View)
+- [x] **Chunk 7**: Availability Editing
+- [x] **Chunk 8**: Polish & Integration
 
 ---
 
