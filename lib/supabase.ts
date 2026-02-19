@@ -1,38 +1,31 @@
 import { createClient } from '@supabase/supabase-js';
 import { Database } from './database.types';
-import * as SecureStore from 'expo-secure-store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
 
-// LargeSecureStore: stores an AES key in SecureStore and the encrypted
-// session payload in AsyncStorage (SecureStore has a 2KB limit on iOS).
+// Session storage adapter — uses AsyncStorage to avoid SecureStore's 2KB limit.
+// The Supabase session JSON routinely exceeds 2KB, causing a SecureStore warning
+// in SDK 53+. AsyncStorage has no size limit and is sufficient for session tokens.
 const ExpoSecureStoreAdapter = {
   getItem: async (key: string): Promise<string | null> => {
     if (Platform.OS === 'web') {
-      if (typeof localStorage !== 'undefined') {
-        return localStorage.getItem(key);
-      }
-      return null;
+      return typeof localStorage !== 'undefined' ? localStorage.getItem(key) : null;
     }
-    return SecureStore.getItemAsync(key);
+    return AsyncStorage.getItem(key);
   },
   setItem: async (key: string, value: string): Promise<void> => {
     if (Platform.OS === 'web') {
-      if (typeof localStorage !== 'undefined') {
-        localStorage.setItem(key, value);
-      }
+      if (typeof localStorage !== 'undefined') localStorage.setItem(key, value);
       return;
     }
-    await SecureStore.setItemAsync(key, value);
+    await AsyncStorage.setItem(key, value);
   },
   removeItem: async (key: string): Promise<void> => {
     if (Platform.OS === 'web') {
-      if (typeof localStorage !== 'undefined') {
-        localStorage.removeItem(key);
-      }
+      if (typeof localStorage !== 'undefined') localStorage.removeItem(key);
       return;
     }
-    await SecureStore.deleteItemAsync(key);
+    await AsyncStorage.removeItem(key);
   },
 };
 

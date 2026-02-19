@@ -76,8 +76,16 @@ async function registerAndSaveToken(userId: string) {
     });
   }
 
-  const tokenData = await Notifications.getExpoPushTokenAsync();
-  const token = tokenData.data;
+  // getExpoPushTokenAsync requires an EAS projectId in SDK 53+.
+  // In Expo Go this will throw — fail silently since push notifications
+  // require a dev/production build regardless.
+  let token: string;
+  try {
+    const tokenData = await Notifications.getExpoPushTokenAsync();
+    token = tokenData.data;
+  } catch {
+    return;
+  }
 
   // Persist to Supabase so server can notify this device
   await supabase
