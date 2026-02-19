@@ -19,7 +19,7 @@ export function Avatar({ url, name, size = 48 }: AvatarProps) {
       <Image
         source={{ uri: url }}
         style={{ width: size, height: size, borderRadius: size / 2 }}
-        className="bg-dark-600"
+        className="bg-gray-200 dark:bg-dark-600"
       />
     );
   }

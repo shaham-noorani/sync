@@ -47,14 +47,20 @@ export default function LoginScreen() {
         contentContainerClassName="flex-1 justify-center px-6"
         keyboardShouldPersistTaps="handled"
       >
-        <View className="items-center mb-12">
-          <Text className="text-5xl font-bold text-lavender">sync</Text>
+        {/* Logo */}
+        <View className="items-center mb-14">
+          <Text
+            style={{ fontFamily: 'SpaceGrotesk_700Bold', fontSize: 56, letterSpacing: -2, color: '#a4a8d1' }}
+          >
+            sync
+          </Text>
           <Text className="text-dark-300 mt-2 text-base">
             coordinate hangouts with friends
           </Text>
         </View>
 
-        <View>
+        {/* Form */}
+        <View className="gap-2">
           <Input
             label="Email"
             value={email}
@@ -73,12 +79,14 @@ export default function LoginScreen() {
           />
 
           {error ? (
-            <Text className="text-red-400 text-sm mb-4 text-center">
-              {error}
-            </Text>
+            <View className="bg-red-500/10 rounded-xl px-4 py-3">
+              <Text className="text-red-400 text-sm text-center">{error}</Text>
+            </View>
           ) : null}
 
-          <Button title="Sign In" onPress={handleLogin} loading={loading} />
+          <View className="mt-2">
+            <Button title="Sign In" onPress={handleLogin} loading={loading} />
+          </View>
 
           <View className="flex-row justify-center mt-6">
             <Text className="text-dark-300">Don't have an account? </Text>

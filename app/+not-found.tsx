@@ -6,10 +6,10 @@ export default function NotFoundScreen() {
   const router = useRouter();
 
   return (
-    <View className="flex-1 items-center justify-center bg-dark-900 px-6">
+    <View className="flex-1 items-center justify-center bg-gray-50 dark:bg-dark-900 px-6">
       <Ionicons name="compass-outline" size={48} color="#64748b" />
-      <Text className="text-xl font-bold text-dark-50 mt-4">Page Not Found</Text>
-      <Text className="text-dark-300 mt-2 text-center">
+      <Text className="text-xl font-bold text-gray-900 dark:text-dark-50 mt-4">Page Not Found</Text>
+      <Text className="text-gray-500 dark:text-dark-300 mt-2 text-center">
         This screen doesn't exist.
       </Text>
       <TouchableOpacity

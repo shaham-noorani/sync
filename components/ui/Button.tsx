@@ -20,13 +20,13 @@ export function Button({
   const baseClasses = 'w-full rounded-xl py-4 items-center justify-center';
   const variantClasses = {
     primary: 'bg-lavender',
-    secondary: 'bg-dark-600',
-    outline: 'border border-dark-400',
+    secondary: 'bg-gray-100 dark:bg-dark-600',
+    outline: 'border border-gray-300 dark:border-dark-400',
   };
   const textClasses = {
     primary: 'text-dark-900 font-semibold text-base',
-    secondary: 'text-dark-50 font-semibold text-base',
-    outline: 'text-dark-50 font-semibold text-base',
+    secondary: 'text-gray-900 dark:text-dark-50 font-semibold text-base',
+    outline: 'text-gray-900 dark:text-dark-50 font-semibold text-base',
   };
 
   return (

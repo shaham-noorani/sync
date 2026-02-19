@@ -41,3 +41,26 @@ jest.mock('@expo/vector-icons', () => ({
   Ionicons: 'Ionicons',
 }));
 jest.mock('@expo/vector-icons/FontAwesome', () => 'FontAwesome');
+
+// Mock @react-native-async-storage/async-storage
+jest.mock('@react-native-async-storage/async-storage', () => ({
+  getItem: jest.fn(() => Promise.resolve(null)),
+  setItem: jest.fn(() => Promise.resolve()),
+  removeItem: jest.fn(() => Promise.resolve()),
+}));
+
+// Mock nativewind useColorScheme
+jest.mock('nativewind', () => ({
+  useColorScheme: () => ({
+    colorScheme: 'dark',
+    setColorScheme: jest.fn(),
+    toggleColorScheme: jest.fn(),
+  }),
+}));
+
+// Mock react-native-safe-area-context
+jest.mock('react-native-safe-area-context', () => ({
+  SafeAreaView: ({ children }) => children,
+  SafeAreaProvider: ({ children }) => children,
+  useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
+}));

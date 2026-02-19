@@ -1,11 +1,13 @@
 import '../global.css';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useFonts } from 'expo-font';
+import { SpaceGrotesk_700Bold } from '@expo-google-fonts/space-grotesk';
 import { Slot, useRouter, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { AuthProvider, useAuth } from '../providers/AuthProvider';
 import { QueryProvider } from '../providers/QueryProvider';
+import { ThemeProvider } from '../providers/ThemeProvider';
 
 export { ErrorBoundary } from 'expo-router';
 
@@ -36,6 +38,7 @@ function AuthGate({ children }: { children: React.ReactNode }) {
 export default function RootLayout() {
   const [loaded, error] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+    SpaceGrotesk_700Bold,
     ...FontAwesome.font,
   });
 
@@ -54,9 +57,11 @@ export default function RootLayout() {
   return (
     <QueryProvider>
       <AuthProvider>
-        <AuthGate>
-          <Slot />
-        </AuthGate>
+        <ThemeProvider>
+          <AuthGate>
+            <Slot />
+          </AuthGate>
+        </ThemeProvider>
       </AuthProvider>
     </QueryProvider>
   );

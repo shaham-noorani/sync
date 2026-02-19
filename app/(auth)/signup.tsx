@@ -55,7 +55,6 @@ export default function SignupScreen() {
     setLoading(true);
     setError('');
 
-    // Create auth user
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email: email.trim(),
       password,
@@ -73,7 +72,6 @@ export default function SignupScreen() {
       return;
     }
 
-    // Create profile + interests via SECURITY DEFINER function (bypasses RLS)
     const { error: profileError } = await supabase.rpc('create_profile', {
       p_user_id: authData.user.id,
       p_username: username.trim().toLowerCase(),
@@ -89,13 +87,12 @@ export default function SignupScreen() {
     }
 
     setLoading(false);
-    // Auth state change will redirect to tabs
   };
 
   if (step === 'interests') {
     return (
       <KeyboardAvoidingView
-        className="flex-1 bg-dark-900"
+        className="flex-1 bg-gray-50 dark:bg-dark-900"
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
         <ScrollView
@@ -103,13 +100,13 @@ export default function SignupScreen() {
           keyboardShouldPersistTaps="handled"
         >
           <TouchableOpacity onPress={() => setStep('info')}>
-            <Text className="text-lavender text-base mb-6">← Back</Text>
+            <Text className="text-lavender-500 dark:text-lavender text-base mb-6">← Back</Text>
           </TouchableOpacity>
 
-          <Text className="text-2xl font-bold text-dark-50 mb-2">
+          <Text className="text-2xl font-bold text-gray-900 dark:text-dark-50 mb-2">
             Pick your interests
           </Text>
-          <Text className="text-dark-300 mb-6">
+          <Text className="text-gray-500 dark:text-dark-300 mb-6">
             Choose at least a few so friends know what you're into
           </Text>
 
@@ -142,7 +139,7 @@ export default function SignupScreen() {
 
   return (
     <KeyboardAvoidingView
-      className="flex-1 bg-dark-900"
+      className="flex-1 bg-gray-50 dark:bg-dark-900"
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <ScrollView
@@ -150,8 +147,13 @@ export default function SignupScreen() {
         keyboardShouldPersistTaps="handled"
       >
         <View className="items-center mb-10">
-          <Text className="text-4xl font-bold text-lavender">sync</Text>
-          <Text className="text-dark-300 mt-2 text-base">Create your account</Text>
+          <Text
+            style={{ fontFamily: 'SpaceGrotesk_700Bold', fontSize: 36 }}
+            className="text-lavender-500 dark:text-lavender"
+          >
+            sync
+          </Text>
+          <Text className="text-gray-500 dark:text-dark-300 mt-2 text-base">Create your account</Text>
         </View>
 
         <View>
@@ -203,10 +205,10 @@ export default function SignupScreen() {
           <Button title="Next — Pick Interests" onPress={handleNext} />
 
           <View className="flex-row justify-center mt-6">
-            <Text className="text-dark-300">Already have an account? </Text>
+            <Text className="text-gray-500 dark:text-dark-300">Already have an account? </Text>
             <Link href="/(auth)/login" asChild>
               <TouchableOpacity>
-                <Text className="text-lavender font-semibold">Sign In</Text>
+                <Text className="text-lavender-500 dark:text-lavender font-semibold">Sign In</Text>
               </TouchableOpacity>
             </Link>
           </View>

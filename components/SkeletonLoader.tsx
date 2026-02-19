@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { Animated, View } from 'react-native';
+import { useTheme } from '../providers/ThemeProvider';
 
 type SkeletonLoaderProps = {
   width?: number | string;
@@ -15,6 +16,7 @@ export function SkeletonLoader({
   className,
 }: SkeletonLoaderProps) {
   const opacity = useRef(new Animated.Value(0.3)).current;
+  const { isDark } = useTheme();
 
   useEffect(() => {
     const animation = Animated.loop(
@@ -42,7 +44,7 @@ export function SkeletonLoader({
         height,
         borderRadius,
         opacity,
-        backgroundColor: '#334155',
+        backgroundColor: isDark ? '#334155' : '#d1d5db',
       }}
       className={className}
     />

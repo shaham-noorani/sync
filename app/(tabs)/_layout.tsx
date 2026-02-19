@@ -1,20 +1,20 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
+import { useTheme } from '../../providers/ThemeProvider';
 
 export default function TabLayout() {
+  const { isDark } = useTheme();
+
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: '#a4a8d1',
-        tabBarInactiveTintColor: '#64748b',
+        headerShown: false,
+        tabBarActiveTintColor: isDark ? '#a4a8d1' : '#7278b3',
+        tabBarInactiveTintColor: isDark ? '#64748b' : '#9ca3af',
         tabBarStyle: {
-          backgroundColor: '#141b2b',
-          borderTopColor: '#1e293b',
+          backgroundColor: isDark ? '#141b2b' : '#ffffff',
+          borderTopColor: isDark ? '#1e293b' : '#e5e7eb',
         },
-        headerStyle: {
-          backgroundColor: '#141b2b',
-        },
-        headerTintColor: '#f8fafc',
       }}
     >
       <Tabs.Screen
@@ -23,6 +23,42 @@ export default function TabLayout() {
           title: 'Home',
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="home" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="propose"
+        options={{
+          title: 'Propose',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="sparkles" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="feed"
+        options={{
+          title: 'Feed',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="images" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="friends"
+        options={{
+          title: 'Friends',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="people" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="groups"
+        options={{
+          title: 'Groups',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="grid" size={size} color={color} />
           ),
         }}
       />

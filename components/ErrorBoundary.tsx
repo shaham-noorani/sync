@@ -24,11 +24,11 @@ export class ErrorBoundary extends React.Component<Props, State> {
   render() {
     if (this.state.hasError) {
       return (
-        <View className="flex-1 items-center justify-center bg-dark-900 px-6">
-          <Text className="text-2xl font-bold text-dark-50 mb-2">
+        <View className="flex-1 items-center justify-center bg-gray-50 dark:bg-dark-900 px-6">
+          <Text className="text-2xl font-bold text-gray-900 dark:text-dark-50 mb-2">
             Something went wrong
           </Text>
-          <Text className="text-dark-300 text-center mb-6">
+          <Text className="text-gray-500 dark:text-dark-300 text-center mb-6">
             {this.state.error?.message || 'An unexpected error occurred'}
           </Text>
           <TouchableOpacity

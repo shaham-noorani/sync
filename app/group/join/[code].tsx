@@ -1,4 +1,5 @@
 import { View, Text, TouchableOpacity } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useGroupByCode, useJoinGroup } from '../../../hooks/useGroups';
@@ -19,39 +20,39 @@ export default function JoinGroupScreen() {
 
   if (isLoading) {
     return (
-      <View className="flex-1 bg-dark-900 items-center justify-center px-6">
+      <SafeAreaView className="flex-1 bg-gray-50 dark:bg-dark-900 items-center justify-center px-6" edges={['top']}>
         <SkeletonLoader width={200} height={32} borderRadius={8} />
         <SkeletonLoader width={250} height={20} borderRadius={8} className="mt-4" />
-      </View>
+      </SafeAreaView>
     );
   }
 
   if (error || !group) {
     return (
-      <View className="flex-1 bg-dark-900 items-center justify-center px-6">
+      <SafeAreaView className="flex-1 bg-gray-50 dark:bg-dark-900 items-center justify-center px-6" edges={['top']}>
         <Ionicons name="alert-circle" size={48} color="#64748b" />
-        <Text className="text-dark-200 text-lg mt-4">Group not found</Text>
-        <Text className="text-dark-400 mt-2 text-center">
+        <Text className="text-gray-600 dark:text-dark-200 text-lg mt-4">Group not found</Text>
+        <Text className="text-gray-400 dark:text-dark-400 mt-2 text-center">
           The invite code "{code}" doesn't match any group.
         </Text>
         <TouchableOpacity className="mt-6" onPress={() => router.back()}>
-          <Text className="text-lavender font-semibold text-base">
+          <Text className="text-lavender-500 dark:text-lavender font-semibold text-base">
             Go Back
           </Text>
         </TouchableOpacity>
-      </View>
+      </SafeAreaView>
     );
   }
 
   return (
-    <View className="flex-1 bg-dark-900 items-center justify-center px-6">
+    <SafeAreaView className="flex-1 bg-gray-50 dark:bg-dark-900 items-center justify-center px-6" edges={['top']}>
       <View className="w-20 h-20 rounded-full bg-lavender items-center justify-center mb-6">
         <Ionicons name="people" size={36} color="#0f1420" />
       </View>
 
-      <Text className="text-2xl font-bold text-dark-50">{group.name}</Text>
+      <Text className="text-2xl font-bold text-gray-900 dark:text-dark-50">{group.name}</Text>
       {group.description && (
-        <Text className="text-dark-300 text-base mt-2 text-center">
+        <Text className="text-gray-500 dark:text-dark-300 text-base mt-2 text-center">
           {group.description}
         </Text>
       )}
@@ -65,8 +66,8 @@ export default function JoinGroupScreen() {
       </View>
 
       <TouchableOpacity className="mt-4" onPress={() => router.back()}>
-        <Text className="text-dark-300 text-base">Cancel</Text>
+        <Text className="text-gray-500 dark:text-dark-300 text-base">Cancel</Text>
       </TouchableOpacity>
-    </View>
+    </SafeAreaView>
   );
 }
