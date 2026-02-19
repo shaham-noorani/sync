@@ -27,16 +27,16 @@ describe('HeatmapGrid', () => {
     const { getByText } = render(
       <HeatmapGrid dates={dates} availability={[]} />
     );
-    expect(getByText('mor')).toBeTruthy();
-    expect(getByText('aft')).toBeTruthy();
-    expect(getByText('eve')).toBeTruthy();
+    expect(getByText('AM')).toBeTruthy();
+    expect(getByText('PM')).toBeTruthy();
+    expect(getByText('Eve')).toBeTruthy();
   });
 
   it('renders legend', () => {
     const { getByText } = render(
       <HeatmapGrid dates={dates} availability={[]} />
     );
-    expect(getByText('Free')).toBeTruthy();
+    expect(getByText('You free')).toBeTruthy();
     expect(getByText('Busy')).toBeTruthy();
   });
 
