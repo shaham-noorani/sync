@@ -12,7 +12,7 @@ type HeatmapGridProps = {
 };
 
 function getCellColor(isAvailable: boolean) {
-  return isAvailable ? 'bg-amber-500' : 'bg-dark-700';
+  return isAvailable ? 'bg-lavender' : 'bg-dark-700';
 }
 
 function getDayNumber(dateStr: string) {
@@ -89,7 +89,7 @@ export function HeatmapGrid({
       {/* Legend */}
       <View className="flex-row items-center justify-center mt-3 gap-4">
         <View className="flex-row items-center">
-          <View className="w-3 h-3 rounded bg-amber-500 mr-1.5" />
+          <View className="w-3 h-3 rounded bg-lavender mr-1.5" />
           <Text className="text-dark-300 text-xs">Free</Text>
         </View>
         <View className="flex-row items-center">

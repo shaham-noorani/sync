@@ -103,7 +103,7 @@ export default function SignupScreen() {
           keyboardShouldPersistTaps="handled"
         >
           <TouchableOpacity onPress={() => setStep('info')}>
-            <Text className="text-amber-500 text-base mb-6">← Back</Text>
+            <Text className="text-lavender text-base mb-6">← Back</Text>
           </TouchableOpacity>
 
           <Text className="text-2xl font-bold text-dark-50 mb-2">
@@ -150,7 +150,7 @@ export default function SignupScreen() {
         keyboardShouldPersistTaps="handled"
       >
         <View className="items-center mb-10">
-          <Text className="text-4xl font-bold text-amber-500">sync</Text>
+          <Text className="text-4xl font-bold text-lavender">sync</Text>
           <Text className="text-dark-300 mt-2 text-base">Create your account</Text>
         </View>
 
@@ -206,7 +206,7 @@ export default function SignupScreen() {
             <Text className="text-dark-300">Already have an account? </Text>
             <Link href="/(auth)/login" asChild>
               <TouchableOpacity>
-                <Text className="text-amber-500 font-semibold">Sign In</Text>
+                <Text className="text-lavender font-semibold">Sign In</Text>
               </TouchableOpacity>
             </Link>
           </View>

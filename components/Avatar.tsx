@@ -27,7 +27,7 @@ export function Avatar({ url, name, size = 48 }: AvatarProps) {
   return (
     <View
       style={{ width: size, height: size, borderRadius: size / 2 }}
-      className="bg-amber-500 items-center justify-center"
+      className="bg-lavender items-center justify-center"
     >
       <Text
         style={{ fontSize: size * 0.36 }}

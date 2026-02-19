@@ -71,11 +71,11 @@ export default function GroupDetailScreen() {
       >
         <View>
           <Text className="text-dark-300 text-sm">Invite Code</Text>
-          <Text className="text-amber-500 text-xl font-bold mt-1">
+          <Text className="text-lavender text-xl font-bold mt-1">
             {group.invite_code}
           </Text>
         </View>
-        <Ionicons name="copy-outline" size={24} color="#f59e0b" />
+        <Ionicons name="copy-outline" size={24} color="#a4a8d1" />
       </TouchableOpacity>
 
       {/* Members */}
@@ -102,7 +102,7 @@ export default function GroupDetailScreen() {
             </Text>
           </View>
           {member.role !== 'member' && (
-            <Text className="text-amber-500 text-xs uppercase font-medium">
+            <Text className="text-lavender text-xs uppercase font-medium">
               {member.role}
             </Text>
           )}

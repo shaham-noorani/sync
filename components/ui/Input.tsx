@@ -29,7 +29,7 @@ export function Input({
       <Text className="text-dark-200 text-sm mb-1.5 ml-1">{label}</Text>
       <TextInput
         className={`w-full bg-dark-700 rounded-xl px-4 py-3.5 text-dark-50 text-base ${
-          focused ? 'border border-amber-500' : 'border border-dark-500'
+          focused ? 'border border-lavender' : 'border border-dark-500'
         } ${error ? 'border-red-500' : ''}`}
         value={value}
         onChangeText={onChangeText}

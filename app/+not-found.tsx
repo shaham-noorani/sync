@@ -13,7 +13,7 @@ export default function NotFoundScreen() {
         This screen doesn't exist.
       </Text>
       <TouchableOpacity
-        className="mt-6 bg-amber-500 rounded-xl px-6 py-3"
+        className="mt-6 bg-lavender rounded-xl px-6 py-3"
         onPress={() => router.replace('/')}
       >
         <Text className="text-dark-900 font-semibold">Go Home</Text>

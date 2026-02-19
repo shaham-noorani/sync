@@ -75,7 +75,7 @@ export default function ProfileScreen() {
           onPress={() => router.push('/friends')}
         >
           <View className="flex-row items-center">
-            <Ionicons name="people" size={20} color="#f59e0b" />
+            <Ionicons name="people" size={20} color="#a4a8d1" />
             <Text className="text-dark-50 ml-3 text-base">Friends</Text>
           </View>
           <Ionicons name="chevron-forward" size={20} color="#64748b" />
@@ -86,7 +86,7 @@ export default function ProfileScreen() {
           onPress={() => router.push('/group/create')}
         >
           <View className="flex-row items-center">
-            <Ionicons name="grid" size={20} color="#f59e0b" />
+            <Ionicons name="grid" size={20} color="#a4a8d1" />
             <Text className="text-dark-50 ml-3 text-base">Groups</Text>
           </View>
           <Ionicons name="chevron-forward" size={20} color="#64748b" />

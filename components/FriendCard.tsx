@@ -45,7 +45,7 @@ export function FriendCard({
         )}
         {actionLabel && onAction && (
           <TouchableOpacity
-            className="bg-amber-500 rounded-lg px-3 py-2"
+            className="bg-lavender rounded-lg px-3 py-2"
             onPress={onAction}
             disabled={loading}
           >

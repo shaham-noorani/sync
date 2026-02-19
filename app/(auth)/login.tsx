@@ -48,7 +48,7 @@ export default function LoginScreen() {
         keyboardShouldPersistTaps="handled"
       >
         <View className="items-center mb-12">
-          <Text className="text-5xl font-bold text-amber-500">sync</Text>
+          <Text className="text-5xl font-bold text-lavender">sync</Text>
           <Text className="text-dark-300 mt-2 text-base">
             coordinate hangouts with friends
           </Text>
@@ -84,7 +84,7 @@ export default function LoginScreen() {
             <Text className="text-dark-300">Don't have an account? </Text>
             <Link href="/(auth)/signup" asChild>
               <TouchableOpacity>
-                <Text className="text-amber-500 font-semibold">Sign Up</Text>
+                <Text className="text-lavender font-semibold">Sign Up</Text>
               </TouchableOpacity>
             </Link>
           </View>

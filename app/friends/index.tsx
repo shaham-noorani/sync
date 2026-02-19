@@ -41,7 +41,7 @@ export default function FriendsScreen() {
           <Text className="text-xl font-bold text-dark-50 ml-4">Friends</Text>
         </View>
         <TouchableOpacity onPress={() => router.push('/friends/add')}>
-          <Ionicons name="person-add" size={24} color="#f59e0b" />
+          <Ionicons name="person-add" size={24} color="#a4a8d1" />
         </TouchableOpacity>
       </View>
 
@@ -51,13 +51,13 @@ export default function FriendsScreen() {
           <TouchableOpacity
             key={tab.key}
             className={`mr-4 pb-2 ${
-              activeTab === tab.key ? 'border-b-2 border-amber-500' : ''
+              activeTab === tab.key ? 'border-b-2 border-lavender' : ''
             }`}
             onPress={() => setActiveTab(tab.key)}
           >
             <Text
               className={`text-base font-medium ${
-                activeTab === tab.key ? 'text-amber-500' : 'text-dark-300'
+                activeTab === tab.key ? 'text-lavender' : 'text-dark-300'
               }`}
             >
               {tab.label}

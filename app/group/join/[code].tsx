@@ -35,7 +35,7 @@ export default function JoinGroupScreen() {
           The invite code "{code}" doesn't match any group.
         </Text>
         <TouchableOpacity className="mt-6" onPress={() => router.back()}>
-          <Text className="text-amber-500 font-semibold text-base">
+          <Text className="text-lavender font-semibold text-base">
             Go Back
           </Text>
         </TouchableOpacity>
@@ -45,7 +45,7 @@ export default function JoinGroupScreen() {
 
   return (
     <View className="flex-1 bg-dark-900 items-center justify-center px-6">
-      <View className="w-20 h-20 rounded-full bg-amber-500 items-center justify-center mb-6">
+      <View className="w-20 h-20 rounded-full bg-lavender items-center justify-center mb-6">
         <Ionicons name="people" size={36} color="#0f1420" />
       </View>
 

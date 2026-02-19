@@ -107,7 +107,7 @@ export default function EditProfileScreen() {
         disabled={uploading}
       >
         <Avatar url={avatarUrl} name={displayName || 'U'} size={96} />
-        <Text className="text-amber-500 mt-2 text-sm">
+        <Text className="text-lavender mt-2 text-sm">
           {uploading ? 'Uploading...' : 'Change photo'}
         </Text>
       </TouchableOpacity>

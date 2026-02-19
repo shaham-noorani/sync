@@ -32,7 +32,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
             {this.state.error?.message || 'An unexpected error occurred'}
           </Text>
           <TouchableOpacity
-            className="bg-amber-500 rounded-xl px-6 py-3"
+            className="bg-lavender rounded-xl px-6 py-3"
             onPress={this.handleReset}
           >
             <Text className="text-dark-900 font-semibold">Try Again</Text>

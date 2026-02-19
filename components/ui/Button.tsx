@@ -19,7 +19,7 @@ export function Button({
 
   const baseClasses = 'w-full rounded-xl py-4 items-center justify-center';
   const variantClasses = {
-    primary: 'bg-amber-500',
+    primary: 'bg-lavender',
     secondary: 'bg-dark-600',
     outline: 'border border-dark-400',
   };

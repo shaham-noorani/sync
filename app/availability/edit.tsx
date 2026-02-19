@@ -153,7 +153,7 @@ export default function EditAvailabilityScreen() {
       <View className="flex-row bg-dark-700 rounded-xl p-1 mb-6">
         <TouchableOpacity
           className={`flex-1 py-2.5 rounded-lg items-center ${
-            mode === 'pattern' ? 'bg-amber-500' : ''
+            mode === 'pattern' ? 'bg-lavender' : ''
           }`}
           onPress={() => setMode('pattern')}
         >
@@ -167,7 +167,7 @@ export default function EditAvailabilityScreen() {
         </TouchableOpacity>
         <TouchableOpacity
           className={`flex-1 py-2.5 rounded-lg items-center ${
-            mode === 'specific' ? 'bg-amber-500' : ''
+            mode === 'specific' ? 'bg-lavender' : ''
           }`}
           onPress={() => setMode('specific')}
         >
@@ -259,7 +259,7 @@ export default function EditAvailabilityScreen() {
                 key={tp.id}
                 className="flex-row items-center bg-dark-700 rounded-xl px-4 py-3 mb-3"
               >
-                <Ionicons name="airplane" size={18} color="#f59e0b" />
+                <Ionicons name="airplane" size={18} color="#a4a8d1" />
                 <View className="flex-1 ml-3">
                   <Text className="text-dark-50 font-medium">
                     {tp.label || 'Travel'}

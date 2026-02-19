@@ -51,9 +51,9 @@ export default function HomeScreen() {
     <ScrollView className="flex-1 bg-dark-900" contentContainerClassName="px-6 pt-6 pb-12">
       {/* Header */}
       <View className="flex-row items-center justify-between mb-6">
-        <Text className="text-2xl font-bold text-amber-500">sync</Text>
+        <Text className="text-2xl font-bold text-lavender">sync</Text>
         <TouchableOpacity onPress={() => router.push('/availability/edit')}>
-          <Ionicons name="create-outline" size={24} color="#f59e0b" />
+          <Ionicons name="create-outline" size={24} color="#a4a8d1" />
         </TouchableOpacity>
       </View>
 
@@ -86,7 +86,7 @@ export default function HomeScreen() {
           className="flex-row items-center bg-dark-700 rounded-xl px-4 py-4 mb-3"
           onPress={() => router.push('/availability/edit')}
         >
-          <Ionicons name="calendar" size={20} color="#f59e0b" />
+          <Ionicons name="calendar" size={20} color="#a4a8d1" />
           <Text className="text-dark-50 ml-3 text-base">
             Edit Availability
           </Text>
@@ -95,14 +95,14 @@ export default function HomeScreen() {
           className="flex-row items-center bg-dark-700 rounded-xl px-4 py-4 mb-3"
           onPress={() => router.push('/friends')}
         >
-          <Ionicons name="people" size={20} color="#f59e0b" />
+          <Ionicons name="people" size={20} color="#a4a8d1" />
           <Text className="text-dark-50 ml-3 text-base">Friends</Text>
         </TouchableOpacity>
         <TouchableOpacity
           className="flex-row items-center bg-dark-700 rounded-xl px-4 py-4"
           onPress={() => router.push('/group/create')}
         >
-          <Ionicons name="grid" size={20} color="#f59e0b" />
+          <Ionicons name="grid" size={20} color="#a4a8d1" />
           <Text className="text-dark-50 ml-3 text-base">Groups</Text>
         </TouchableOpacity>
       </View>

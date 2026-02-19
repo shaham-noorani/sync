@@ -15,7 +15,7 @@ export function GroupCard({ name, description, role, onPress }: GroupCardProps) 
       onPress={onPress}
       activeOpacity={0.7}
     >
-      <View className="w-11 h-11 rounded-full bg-amber-500 items-center justify-center">
+      <View className="w-11 h-11 rounded-full bg-lavender items-center justify-center">
         <Ionicons name="people" size={20} color="#0f1420" />
       </View>
       <View className="flex-1 ml-3">
