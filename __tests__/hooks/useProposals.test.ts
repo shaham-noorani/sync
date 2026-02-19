@@ -3,6 +3,11 @@ import { useProposals, useRespondToProposal } from '../../hooks/useProposals';
 import { supabase } from '../../lib/supabase';
 import { createWrapper, mockUser } from '../test-utils';
 
+jest.mock('../../lib/notifications', () => ({
+  notifyProposalInvitees: jest.fn(),
+  notifyProposalResponse: jest.fn(),
+}));
+
 jest.mock('../../providers/AuthProvider', () => ({
   useAuth: () => ({ user: mockUser }),
 }));
@@ -83,9 +88,13 @@ describe('useRespondToProposal', () => {
 
   it('calls supabase upsert with correct data', async () => {
     const mockUpsert = jest.fn().mockResolvedValue({ error: null });
-    (supabase.from as jest.Mock).mockReturnValue({
+    const defaultChain = {
+      select: jest.fn().mockReturnThis(),
+      eq: jest.fn().mockReturnThis(),
+      single: jest.fn().mockResolvedValue({ data: { display_name: 'Shaham', created_by: 'other-user', title: 'Tennis' }, error: null }),
       upsert: mockUpsert,
-    });
+    };
+    (supabase.from as jest.Mock).mockReturnValue(defaultChain);
 
     const { result } = renderHook(() => useRespondToProposal(), { wrapper: createWrapper() });
 

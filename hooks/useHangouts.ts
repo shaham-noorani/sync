@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../providers/AuthProvider';
+import { notifyHangoutLogged } from '../lib/notifications';
 
 export type HangoutPhoto = {
   id: string;
@@ -163,6 +164,21 @@ export function useLogHangout() {
           .update({ status: 'completed' })
           .eq('id', input.proposal_id);
       }
+
+      // Notify other attendees (fire-and-forget)
+      const loggerRes = await supabase
+        .from('profiles')
+        .select('display_name')
+        .eq('id', user.id)
+        .single();
+      const loggerName = loggerRes.data?.display_name ?? 'Someone';
+      const otherAttendees = allAttendees.filter((id) => id !== user.id);
+      notifyHangoutLogged({
+        attendeeIds: otherAttendees,
+        loggerName,
+        hangoutTitle: input.title,
+        hangoutId: (hangout as any).id,
+      });
 
       return hangout;
     },

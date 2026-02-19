@@ -8,6 +8,7 @@ import { useEffect } from 'react';
 import { AuthProvider, useAuth } from '../providers/AuthProvider';
 import { QueryProvider } from '../providers/QueryProvider';
 import { ThemeProvider } from '../providers/ThemeProvider';
+import { usePushNotifications } from '../hooks/usePushNotifications';
 
 export { ErrorBoundary } from 'expo-router';
 
@@ -17,6 +18,7 @@ function AuthGate({ children }: { children: React.ReactNode }) {
   const { session, isLoading } = useAuth();
   const segments = useSegments();
   const router = useRouter();
+  usePushNotifications();
 
   useEffect(() => {
     if (isLoading) return;

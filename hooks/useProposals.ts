@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../providers/AuthProvider';
+import { notifyProposalInvitees, notifyProposalResponse } from '../lib/notifications';
 
 export type ProposalResponse = 'pending' | 'accepted' | 'declined' | 'maybe';
 
@@ -143,6 +144,20 @@ export function useCreateProposal() {
         if (respError) throw respError;
       }
 
+      // Notify invitees (fire-and-forget)
+      const creatorProfile = await supabase
+        .from('profiles')
+        .select('display_name')
+        .eq('id', user.id)
+        .single();
+      const creatorName = creatorProfile.data?.display_name ?? 'Someone';
+      notifyProposalInvitees({
+        inviteeIds: invitees.filter((id) => id !== user.id),
+        creatorName,
+        proposalTitle: input.title,
+        proposalId: proposal.id,
+      });
+
       return proposal;
     },
     onSuccess: () => {
@@ -169,6 +184,23 @@ export function useRespondToProposal() {
         }, { onConflict: 'proposal_id,user_id' });
 
       if (error) throw error;
+
+      // Notify proposal creator (fire-and-forget)
+      const [responderRes, proposalRes] = await Promise.all([
+        supabase.from('profiles').select('display_name').eq('id', user.id).single(),
+        supabase.from('hangout_proposals').select('created_by, title').eq('id', proposalId).single(),
+      ]);
+      const responderName = responderRes.data?.display_name ?? 'Someone';
+      const proposal = proposalRes.data;
+      if (proposal && proposal.created_by !== user.id) {
+        notifyProposalResponse({
+          creatorId: proposal.created_by,
+          responderName,
+          proposalTitle: proposal.title,
+          response,
+          proposalId,
+        });
+      }
     },
     onSuccess: (_, { proposalId }) => {
       qc.invalidateQueries({ queryKey: ['proposals'] });

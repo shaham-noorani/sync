@@ -3,6 +3,10 @@ import { useFeed, useToggleReaction } from '../../hooks/useHangouts';
 import { supabase } from '../../lib/supabase';
 import { createWrapper, mockUser } from '../test-utils';
 
+jest.mock('../../lib/notifications', () => ({
+  notifyHangoutLogged: jest.fn(),
+}));
+
 jest.mock('../../providers/AuthProvider', () => ({
   useAuth: () => ({ user: mockUser }),
 }));
