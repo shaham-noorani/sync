@@ -17,11 +17,18 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: isDark ? '#a4a8d1' : '#7278b3',
-        tabBarInactiveTintColor: isDark ? '#64748b' : '#9ca3af',
+        tabBarActiveTintColor: '#8875ff',
+        tabBarInactiveTintColor: '#5a5f7a',
         tabBarStyle: {
-          backgroundColor: isDark ? '#141b2b' : '#ffffff',
-          borderTopColor: isDark ? '#1e293b' : '#e5e7eb',
+          backgroundColor: '#0e0e1a',
+          borderTopColor: 'rgba(255,255,255,0.07)',
+          borderTopWidth: 1,
+          height: 60,
+          paddingBottom: 8,
+        },
+        tabBarLabelStyle: {
+          fontSize: 10,
+          fontWeight: '600',
         },
       }}
     >
@@ -39,7 +46,7 @@ export default function TabLayout() {
         options={{
           title: 'Proposals',
           tabBarBadge: pendingCount > 0 ? pendingCount : undefined,
-          tabBarBadgeStyle: { backgroundColor: '#a4a8d1', color: '#0f1420', fontSize: 10 },
+          tabBarBadgeStyle: { backgroundColor: '#8875ff', color: '#ffffff', fontSize: 10 },
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="sparkles" size={size} color={color} />
           ),

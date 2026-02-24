@@ -25,15 +25,15 @@ function getDayNumber(dateStr: string) {
   return d.getDate();
 }
 
-function getCellStyle(isAvailable: boolean, overlapCount: number, isToday: boolean) {
+function getCellInlineStyle(isAvailable: boolean, overlapCount: number, isToday: boolean) {
   if (isAvailable && overlapCount > 0) {
-    return isToday ? 'bg-lavender-400' : 'bg-lavender';
+    return { backgroundColor: isToday ? '#8875ff' : '#8875ff' };
   } else if (isAvailable) {
-    return isToday ? 'bg-lavender opacity-80' : 'bg-lavender opacity-60';
+    return { backgroundColor: '#8875ff', opacity: isToday ? 0.8 : 0.6 };
   } else if (overlapCount > 0) {
-    return 'bg-lilac opacity-40';
+    return { backgroundColor: '#c084fc', opacity: 0.4 };
   }
-  return 'bg-gray-200 dark:bg-dark-600';
+  return { backgroundColor: 'rgba(255,255,255,0.06)' };
 }
 
 export function HeatmapGrid({
@@ -62,15 +62,17 @@ export function HeatmapGrid({
               <Text
                 className={`text-xs ${
                   isToday
-                    ? 'text-lavender-500 dark:text-lavender font-bold'
+                    ? 'font-bold'
                     : 'text-gray-400 dark:text-dark-400'
                 }`}
+                style={isToday ? { color: '#8875ff' } : undefined}
               >
                 {DAY_LABELS[dayOfWeek]}
               </Text>
-              <View className={`w-7 h-7 rounded-full items-center justify-center ${
-                isToday ? 'bg-lavender' : ''
-              }`}>
+              <View
+                className="w-7 h-7 rounded-full items-center justify-center"
+                style={isToday ? { backgroundColor: '#8875ff' } : undefined}
+              >
                 <Text
                   className={`text-sm font-bold ${
                     isToday
@@ -99,17 +101,19 @@ export function HeatmapGrid({
             const isAvailable = cell?.is_available ?? false;
             const overlapCount = friendOverlapCounts[`${date}|${block}`] ?? 0;
             const isToday = date === TODAY;
-            const cellStyle = getCellStyle(isAvailable, overlapCount, isToday);
+            const cellInlineStyle = getCellInlineStyle(isAvailable, overlapCount, isToday);
 
             return (
               <TouchableOpacity
                 key={`${date}-${block}`}
-                className={`flex-1 mx-0.5 rounded-lg ${cellStyle} ${
+                className="flex-1 mx-0.5 rounded-lg"
+                style={[
+                  { minHeight: 40 },
+                  cellInlineStyle,
                   isToday && !isAvailable && overlapCount === 0
-                    ? 'border border-lavender/30'
-                    : ''
-                }`}
-                style={{ minHeight: 40 }}
+                    ? { borderWidth: 1, borderColor: 'rgba(136,117,255,0.3)' }
+                    : undefined,
+                ]}
                 onPress={() => onCellPress?.(date, block)}
                 activeOpacity={editable || overlapCount > 0 ? 0.6 : 0.9}
               >
@@ -127,15 +131,15 @@ export function HeatmapGrid({
       {/* Legend */}
       <View className="flex-row items-center justify-center mt-4 gap-5">
         <View className="flex-row items-center">
-          <View className="w-2.5 h-2.5 rounded-sm bg-lavender mr-1.5" />
+          <View className="w-2.5 h-2.5 rounded-sm mr-1.5" style={{ backgroundColor: '#8875ff' }} />
           <Text className="text-gray-400 dark:text-dark-400 text-xs">You free</Text>
         </View>
         <View className="flex-row items-center">
-          <View className="w-2.5 h-2.5 rounded-sm bg-lilac opacity-40 mr-1.5" />
+          <View className="w-2.5 h-2.5 rounded-sm mr-1.5" style={{ backgroundColor: '#c084fc', opacity: 0.4 }} />
           <Text className="text-gray-400 dark:text-dark-400 text-xs">Friends free</Text>
         </View>
         <View className="flex-row items-center">
-          <View className="w-2.5 h-2.5 rounded-sm bg-gray-200 dark:bg-dark-600 mr-1.5" />
+          <View className="w-2.5 h-2.5 rounded-sm mr-1.5" style={{ backgroundColor: 'rgba(255,255,255,0.06)' }} />
           <Text className="text-gray-400 dark:text-dark-400 text-xs">Busy</Text>
         </View>
       </View>
