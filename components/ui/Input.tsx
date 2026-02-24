@@ -1,6 +1,5 @@
 import { TextInput, View, Text } from 'react-native';
 import { useState } from 'react';
-import { useTheme } from '../../providers/ThemeProvider';
 
 type InputProps = {
   label: string;
@@ -14,31 +13,28 @@ type InputProps = {
   testID?: string;
 };
 
-export function Input({
-  label,
-  value,
-  onChangeText,
-  placeholder,
-  secureTextEntry = false,
-  autoCapitalize = 'none',
-  keyboardType = 'default',
-  error,
-  testID,
-}: InputProps) {
+export function Input({ label, value, onChangeText, placeholder, secureTextEntry = false, autoCapitalize = 'none', keyboardType = 'default', error, testID }: InputProps) {
   const [focused, setFocused] = useState(false);
-  const { isDark } = useTheme();
 
   return (
-    <View className="w-full mb-4">
-      <Text className="text-gray-500 dark:text-dark-200 text-sm mb-1.5 ml-1">{label}</Text>
+    <View style={{ width: '100%', marginBottom: 16 }}>
+      <Text style={{ color: '#8b8fa8', fontSize: 13, fontWeight: '600', marginBottom: 6, marginLeft: 2, letterSpacing: 0.3 }}>{label}</Text>
       <TextInput
-        className={`w-full bg-white dark:bg-dark-700 rounded-xl px-4 py-3.5 text-gray-900 dark:text-dark-50 text-base ${
-          focused ? 'border border-lavender' : 'border border-gray-200 dark:border-dark-500'
-        } ${error ? 'border-red-500' : ''}`}
+        style={{
+          width: '100%',
+          backgroundColor: focused ? 'rgba(136,117,255,0.08)' : 'rgba(255,255,255,0.06)',
+          borderRadius: 14,
+          paddingHorizontal: 16,
+          paddingVertical: 14,
+          color: '#f0f0ff',
+          fontSize: 15,
+          borderWidth: 1,
+          borderColor: error ? '#ef4444' : focused ? '#8875ff' : 'rgba(255,255,255,0.1)',
+        }}
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
-        placeholderTextColor={isDark ? '#475569' : '#9ca3af'}
+        placeholderTextColor="#5a5f7a"
         secureTextEntry={secureTextEntry}
         autoCapitalize={autoCapitalize}
         keyboardType={keyboardType}
@@ -46,7 +42,7 @@ export function Input({
         onBlur={() => setFocused(false)}
         testID={testID}
       />
-      {error && <Text className="text-red-400 text-sm mt-1 ml-1">{error}</Text>}
+      {error && <Text style={{ color: '#f87171', fontSize: 12, marginTop: 4, marginLeft: 2 }}>{error}</Text>}
     </View>
   );
 }
