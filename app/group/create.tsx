@@ -7,11 +7,9 @@ import { useCreateGroup, useMyGroups } from '../../hooks/useGroups';
 import { Input } from '../../components/ui/Input';
 import { Button } from '../../components/ui/Button';
 import { GroupCard } from '../../components/GroupCard';
-import { useTheme } from '../../providers/ThemeProvider';
 
 export default function CreateGroupScreen() {
   const router = useRouter();
-  const { isDark } = useTheme();
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [inviteCode, setInviteCode] = useState('');
@@ -28,18 +26,20 @@ export default function CreateGroupScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50 dark:bg-dark-900" edges={['top']}>
-      <ScrollView className="flex-1" contentContainerClassName="px-6 pt-2 pb-12">
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#09090f' }} edges={['top']}>
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 8, paddingBottom: 48 }}>
         {/* Header */}
-        <View className="flex-row items-center mb-8">
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 32 }}>
           <TouchableOpacity onPress={() => router.back()}>
-            <Ionicons name="arrow-back" size={24} color={isDark ? '#f8fafc' : '#111827'} />
+            <Ionicons name="arrow-back" size={24} color="#8875ff" />
           </TouchableOpacity>
-          <Text className="text-xl font-bold text-gray-900 dark:text-dark-50 ml-4">Groups</Text>
+          <Text style={{ fontFamily: 'SpaceGrotesk_700Bold', color: '#f0f0ff', fontSize: 22, marginLeft: 16 }}>
+            Groups
+          </Text>
         </View>
 
         {/* Create Section */}
-        <Text className="text-lg font-semibold text-gray-900 dark:text-dark-50 mb-4">
+        <Text style={{ color: '#f0f0ff', fontWeight: '700', fontSize: 18, marginBottom: 16 }}>
           Create a Group
         </Text>
 
@@ -67,8 +67,8 @@ export default function CreateGroupScreen() {
         />
 
         {/* Join Section */}
-        <View className="mt-10 mb-2">
-          <Text className="text-lg font-semibold text-gray-900 dark:text-dark-50 mb-4">
+        <View style={{ marginTop: 40, marginBottom: 8 }}>
+          <Text style={{ color: '#f0f0ff', fontWeight: '700', fontSize: 18, marginBottom: 16 }}>
             Join a Group
           </Text>
 
@@ -93,8 +93,8 @@ export default function CreateGroupScreen() {
 
         {/* My Groups */}
         {myGroups && myGroups.length > 0 && (
-          <View className="mt-10">
-            <Text className="text-lg font-semibold text-gray-900 dark:text-dark-50 mb-4">
+          <View style={{ marginTop: 40 }}>
+            <Text style={{ color: '#f0f0ff', fontWeight: '700', fontSize: 18, marginBottom: 16 }}>
               My Groups
             </Text>
             {myGroups.map((group: any) => (

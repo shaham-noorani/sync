@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
@@ -14,7 +15,6 @@ import { Avatar } from '../../components/Avatar';
 import { useFriendsList } from '../../hooks/useFriends';
 import { useMyGroups } from '../../hooks/useGroups';
 import { useCreateProposal } from '../../hooks/useProposals';
-import { useTheme } from '../../providers/ThemeProvider';
 
 const ACTIVITIES: { tag: string; emoji: string; label: string }[] = [
   { tag: 'dinner', emoji: '🍽️', label: 'Dinner' },
@@ -52,9 +52,38 @@ function getUpcomingDates(count = 14): { value: string; label: string }[] {
   return dates;
 }
 
+const glassCard = {
+  backgroundColor: 'rgba(255,255,255,0.05)',
+  borderWidth: 1,
+  borderColor: 'rgba(255,255,255,0.08)',
+  borderRadius: 16,
+} as const;
+
+const pillUnselected = {
+  backgroundColor: 'rgba(255,255,255,0.07)',
+  borderWidth: 1,
+  borderColor: 'rgba(255,255,255,0.1)',
+  borderRadius: 12,
+} as const;
+
+const pillSelected = {
+  backgroundColor: '#8875ff',
+  borderRadius: 12,
+} as const;
+
+const textInput = {
+  backgroundColor: 'rgba(255,255,255,0.06)',
+  borderRadius: 14,
+  borderWidth: 1,
+  borderColor: 'rgba(255,255,255,0.1)',
+  paddingHorizontal: 16,
+  paddingVertical: 14,
+  color: '#f0f0ff',
+  fontSize: 15,
+} as const;
+
 export default function CreateProposalScreen() {
   const router = useRouter();
-  const { isDark } = useTheme();
   const createProposal = useCreateProposal();
   const { data: friends } = useFriendsList();
   const { data: groups } = useMyGroups();
@@ -68,7 +97,6 @@ export default function CreateProposalScreen() {
   const [selectedGroupId, setSelectedGroupId] = useState('');
 
   const upcomingDates = getUpcomingDates();
-  const placeholderColor = isDark ? '#64748b' : '#9ca3af';
 
   function toggleFriend(id: string) {
     setSelectedFriendIds((prev) =>
@@ -102,37 +130,39 @@ export default function CreateProposalScreen() {
     }
   }
 
+  const isPending = createProposal.isPending;
+
   return (
-    <SafeAreaView className="flex-1 bg-gray-50 dark:bg-dark-900" edges={['top']}>
-      <ScrollView className="flex-1" contentContainerClassName="px-6 pt-2 pb-12">
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#09090f' }} edges={['top']}>
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 8, paddingBottom: 48 }}>
         {/* Header */}
-        <View className="flex-row items-center mb-6">
-          <TouchableOpacity onPress={() => router.back()} className="mr-3">
-            <Ionicons name="chevron-back" size={24} color={isDark ? '#94a3b8' : '#6b7280'} />
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 24 }}>
+          <TouchableOpacity onPress={() => router.back()} style={{ marginRight: 12 }}>
+            <Ionicons name="chevron-back" size={24} color="#8875ff" />
           </TouchableOpacity>
-          <Text className="text-xl font-bold text-gray-900 dark:text-dark-50">
+          <Text style={{ fontFamily: 'SpaceGrotesk_700Bold', color: '#f0f0ff', fontSize: 22 }}>
             Propose a Hangout
           </Text>
         </View>
 
         {/* Title */}
-        <View className="mb-6">
-          <Text className="text-gray-500 dark:text-dark-200 text-sm font-medium mb-2">
+        <View style={{ marginBottom: 24 }}>
+          <Text style={{ color: '#8b8fa8', fontSize: 13, fontWeight: '600', marginBottom: 8 }}>
             What's the plan?
           </Text>
           <TextInput
             value={title}
             onChangeText={setTitle}
             placeholder="e.g. Saturday tennis match"
-            placeholderTextColor={placeholderColor}
-            className="bg-white dark:bg-dark-700 rounded-xl px-4 py-3 text-gray-900 dark:text-dark-50 text-base"
+            placeholderTextColor="#5a5f7a"
+            style={textInput}
             maxLength={80}
           />
         </View>
 
         {/* Activity */}
-        <View className="mb-6">
-          <Text className="text-gray-500 dark:text-dark-200 text-sm font-medium mb-2">
+        <View style={{ marginBottom: 24 }}>
+          <Text style={{ color: '#8b8fa8', fontSize: 13, fontWeight: '600', marginBottom: 8 }}>
             Activity
           </Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
@@ -142,18 +172,19 @@ export default function CreateProposalScreen() {
                 <TouchableOpacity
                   key={a.tag}
                   onPress={() => setActivityTag(selected ? '' : a.tag)}
-                  className={`mr-2 items-center justify-center rounded-xl px-3 py-2 ${
-                    selected ? 'bg-lavender' : 'bg-white dark:bg-dark-700'
-                  }`}
-                  style={{ minWidth: 68 }}
+                  style={[
+                    selected ? pillSelected : pillUnselected,
+                    { marginRight: 8, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 12, paddingVertical: 8, minWidth: 68 },
+                  ]}
                 >
-                  <Text className="text-2xl">{a.emoji}</Text>
+                  <Text style={{ fontSize: 24 }}>{a.emoji}</Text>
                   <Text
-                    className={`text-xs mt-0.5 ${
-                      selected
-                        ? 'text-dark-900 font-semibold'
-                        : 'text-gray-500 dark:text-dark-300'
-                    }`}
+                    style={{
+                      fontSize: 12,
+                      marginTop: 2,
+                      color: selected ? '#ffffff' : '#8b8fa8',
+                      fontWeight: selected ? '700' : '400',
+                    }}
                   >
                     {a.label}
                   </Text>
@@ -164,23 +195,24 @@ export default function CreateProposalScreen() {
         </View>
 
         {/* When */}
-        <View className="mb-6">
-          <Text className="text-gray-500 dark:text-dark-200 text-sm font-medium mb-2">
-            When <Text className="font-normal">(optional)</Text>
+        <View style={{ marginBottom: 24 }}>
+          <Text style={{ color: '#8b8fa8', fontSize: 13, fontWeight: '600', marginBottom: 8 }}>
+            When <Text style={{ fontWeight: '400' }}>(optional)</Text>
           </Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-2">
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 8 }}>
             <TouchableOpacity
               onPress={() => setSelectedDate('')}
-              className={`mr-2 rounded-xl px-3 py-2 ${
-                !selectedDate ? 'bg-lavender' : 'bg-white dark:bg-dark-700'
-              }`}
+              style={[
+                !selectedDate ? pillSelected : pillUnselected,
+                { marginRight: 8, paddingHorizontal: 12, paddingVertical: 8 },
+              ]}
             >
               <Text
-                className={`text-sm ${
-                  !selectedDate
-                    ? 'text-dark-900 font-semibold'
-                    : 'text-gray-500 dark:text-dark-300'
-                }`}
+                style={{
+                  fontSize: 14,
+                  color: !selectedDate ? '#ffffff' : '#8b8fa8',
+                  fontWeight: !selectedDate ? '700' : '400',
+                }}
               >
                 TBD
               </Text>
@@ -191,16 +223,17 @@ export default function CreateProposalScreen() {
                 <TouchableOpacity
                   key={d.value}
                   onPress={() => setSelectedDate(selected ? '' : d.value)}
-                  className={`mr-2 rounded-xl px-3 py-2 ${
-                    selected ? 'bg-lavender' : 'bg-white dark:bg-dark-700'
-                  }`}
+                  style={[
+                    selected ? pillSelected : pillUnselected,
+                    { marginRight: 8, paddingHorizontal: 12, paddingVertical: 8 },
+                  ]}
                 >
                   <Text
-                    className={`text-sm ${
-                      selected
-                        ? 'text-dark-900 font-semibold'
-                        : 'text-gray-500 dark:text-dark-300'
-                    }`}
+                    style={{
+                      fontSize: 14,
+                      color: selected ? '#ffffff' : '#8b8fa8',
+                      fontWeight: selected ? '700' : '400',
+                    }}
                   >
                     {d.label}
                   </Text>
@@ -210,23 +243,24 @@ export default function CreateProposalScreen() {
           </ScrollView>
 
           {selectedDate && (
-            <View className="flex-row">
+            <View style={{ flexDirection: 'row' }}>
               {TIME_BLOCKS.map((t) => {
                 const selected = selectedTimeBlock === t.key;
                 return (
                   <TouchableOpacity
                     key={t.key}
                     onPress={() => setSelectedTimeBlock(selected ? '' : t.key)}
-                    className={`mr-2 rounded-xl px-4 py-2 ${
-                      selected ? 'bg-lavender' : 'bg-white dark:bg-dark-700'
-                    }`}
+                    style={[
+                      selected ? pillSelected : pillUnselected,
+                      { marginRight: 8, paddingHorizontal: 16, paddingVertical: 8 },
+                    ]}
                   >
                     <Text
-                      className={`text-sm ${
-                        selected
-                          ? 'text-dark-900 font-semibold'
-                          : 'text-gray-500 dark:text-dark-300'
-                      }`}
+                      style={{
+                        fontSize: 14,
+                        color: selected ? '#ffffff' : '#8b8fa8',
+                        fontWeight: selected ? '700' : '400',
+                      }}
                     >
                       {t.label}
                     </Text>
@@ -238,23 +272,23 @@ export default function CreateProposalScreen() {
         </View>
 
         {/* Location */}
-        <View className="mb-6">
-          <Text className="text-gray-500 dark:text-dark-200 text-sm font-medium mb-2">
-            Location <Text className="font-normal">(optional)</Text>
+        <View style={{ marginBottom: 24 }}>
+          <Text style={{ color: '#8b8fa8', fontSize: 13, fontWeight: '600', marginBottom: 8 }}>
+            Location <Text style={{ fontWeight: '400' }}>(optional)</Text>
           </Text>
           <TextInput
             value={location}
             onChangeText={setLocation}
             placeholder="e.g. Dolores Park"
-            placeholderTextColor={placeholderColor}
-            className="bg-white dark:bg-dark-700 rounded-xl px-4 py-3 text-gray-900 dark:text-dark-50 text-base"
+            placeholderTextColor="#5a5f7a"
+            style={textInput}
           />
         </View>
 
         {/* Invite Friends */}
         {friends && friends.length > 0 && (
-          <View className="mb-6">
-            <Text className="text-gray-500 dark:text-dark-200 text-sm font-medium mb-2">
+          <View style={{ marginBottom: 24 }}>
+            <Text style={{ color: '#8b8fa8', fontSize: 13, fontWeight: '600', marginBottom: 8 }}>
               Invite Friends
             </Text>
             {(friends as any[]).map((friend) => {
@@ -263,22 +297,24 @@ export default function CreateProposalScreen() {
                 <TouchableOpacity
                   key={friend.id}
                   onPress={() => toggleFriend(friend.id)}
-                  className={`flex-row items-center bg-white dark:bg-dark-700 rounded-xl px-4 py-3 mb-2 ${
-                    isSelected ? 'border border-lavender' : ''
-                  }`}
+                  style={[
+                    glassCard,
+                    { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, marginBottom: 8 },
+                    isSelected ? { borderColor: '#8875ff', borderWidth: 1 } : {},
+                  ]}
                   activeOpacity={0.7}
                 >
                   <Avatar url={friend.avatar_url} name={friend.display_name} size={36} />
-                  <View className="flex-1 ml-3">
-                    <Text className="text-gray-900 dark:text-dark-50 font-medium text-sm">
+                  <View style={{ flex: 1, marginLeft: 12 }}>
+                    <Text style={{ color: '#f0f0ff', fontWeight: '600', fontSize: 14 }}>
                       {friend.display_name}
                     </Text>
-                    <Text className="text-gray-400 dark:text-dark-400 text-xs">
+                    <Text style={{ color: '#5a5f7a', fontSize: 12 }}>
                       @{friend.username}
                     </Text>
                   </View>
                   {isSelected && (
-                    <Ionicons name="checkmark-circle" size={20} color="#a4a8d1" />
+                    <Ionicons name="checkmark-circle" size={20} color="#8875ff" />
                   )}
                 </TouchableOpacity>
               );
@@ -288,8 +324,8 @@ export default function CreateProposalScreen() {
 
         {/* Or invite a Group */}
         {groups && groups.length > 0 && (
-          <View className="mb-6">
-            <Text className="text-gray-500 dark:text-dark-200 text-sm font-medium mb-2">
+          <View style={{ marginBottom: 24 }}>
+            <Text style={{ color: '#8b8fa8', fontSize: 13, fontWeight: '600', marginBottom: 8 }}>
               Or invite a Group
             </Text>
             {(groups as any[]).map((group) => {
@@ -298,19 +334,21 @@ export default function CreateProposalScreen() {
                 <TouchableOpacity
                   key={group.id}
                   onPress={() => setSelectedGroupId(isSelected ? '' : group.id)}
-                  className={`flex-row items-center bg-white dark:bg-dark-700 rounded-xl px-4 py-3 mb-2 ${
-                    isSelected ? 'border border-lavender' : ''
-                  }`}
+                  style={[
+                    glassCard,
+                    { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, marginBottom: 8 },
+                    isSelected ? { borderColor: '#8875ff', borderWidth: 1 } : {},
+                  ]}
                   activeOpacity={0.7}
                 >
-                  <View className="w-9 h-9 rounded-full bg-lavender/20 items-center justify-center mr-3">
-                    <Text className="text-base">👥</Text>
+                  <View style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(136,117,255,0.2)', alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
+                    <Text style={{ fontSize: 16 }}>👥</Text>
                   </View>
-                  <Text className="flex-1 text-gray-900 dark:text-dark-50 font-medium text-sm">
+                  <Text style={{ flex: 1, color: '#f0f0ff', fontWeight: '600', fontSize: 14 }}>
                     {group.name}
                   </Text>
                   {isSelected && (
-                    <Ionicons name="checkmark-circle" size={20} color="#a4a8d1" />
+                    <Ionicons name="checkmark-circle" size={20} color="#8875ff" />
                   )}
                 </TouchableOpacity>
               );
@@ -321,13 +359,20 @@ export default function CreateProposalScreen() {
         {/* Send */}
         <TouchableOpacity
           onPress={handleSend}
-          disabled={createProposal.isPending}
-          className="bg-lavender rounded-2xl py-4 items-center mt-2"
+          disabled={isPending}
           activeOpacity={0.8}
+          style={{ borderRadius: 16, overflow: 'hidden', opacity: isPending ? 0.7 : 1, marginTop: 8 }}
         >
-          <Text className="text-dark-900 font-bold text-base">
-            {createProposal.isPending ? 'Sending…' : 'Send Proposal'}
-          </Text>
+          <LinearGradient
+            colors={['#8875ff', '#c084fc']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={{ paddingVertical: 16, alignItems: 'center' }}
+          >
+            <Text style={{ color: '#fff', fontWeight: '700', fontSize: 16 }}>
+              {isPending ? 'Sending…' : 'Send Proposal'}
+            </Text>
+          </LinearGradient>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
