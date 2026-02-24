@@ -3,6 +3,7 @@ import { View, Text, ScrollView, TouchableOpacity, RefreshControl } from 'react-
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useEffectiveAvailability } from '../../hooks/useAvailability';
 import { useFriendsAvailability, useFriendOverlaps } from '../../hooks/useOverlaps';
 import { useProposals } from '../../hooks/useProposals';
@@ -61,8 +62,8 @@ function HeatmapSkeleton() {
         <View className="w-10" />
         {Array.from({ length: 7 }).map((_, i) => (
           <View key={i} className="flex-1 items-center">
-            <View className="w-6 h-3 rounded bg-dark-600 mb-1 opacity-60" />
-            <View className="w-7 h-7 rounded-full bg-dark-600 opacity-60" />
+            <View className="w-6 h-3 rounded mb-1 opacity-60" style={{ backgroundColor: 'rgba(255,255,255,0.06)' }} />
+            <View className="w-7 h-7 rounded-full opacity-60" style={{ backgroundColor: 'rgba(255,255,255,0.06)' }} />
           </View>
         ))}
       </View>
@@ -75,8 +76,8 @@ function HeatmapSkeleton() {
           {Array.from({ length: 7 }).map((_, i) => (
             <View
               key={i}
-              className="flex-1 mx-0.5 rounded-lg bg-dark-600 opacity-60"
-              style={{ minHeight: 40 }}
+              className="flex-1 mx-0.5 rounded-lg opacity-60"
+              style={{ minHeight: 40, backgroundColor: 'rgba(255,255,255,0.06)' }}
             />
           ))}
         </View>
@@ -114,27 +115,36 @@ export default function HomeScreen() {
   const openProposals = proposals?.slice(0, 6) ?? [];
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50 dark:bg-dark-900" edges={['top']}>
+    <SafeAreaView className="flex-1" style={{ backgroundColor: '#09090f' }} edges={['top']}>
       <ScrollView
         className="flex-1"
+        style={{ backgroundColor: '#09090f' }}
         contentContainerClassName="pb-12"
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       >
         {/* Header */}
         <View className="flex-row items-center justify-between px-6 pt-4 pb-2">
           <Text
-            style={{ fontFamily: 'SpaceGrotesk_700Bold', fontSize: 28, letterSpacing: -0.5 }}
-            className="text-lavender-500 dark:text-lavender"
+            style={{ fontFamily: 'SpaceGrotesk_700Bold', fontSize: 28, letterSpacing: -0.5, color: '#8875ff' }}
           >
             sync
           </Text>
           <TouchableOpacity
             onPress={() => router.push('/availability/edit')}
-            className="bg-white dark:bg-dark-700 rounded-full px-3 py-1.5 flex-row items-center"
+            style={{
+              backgroundColor: 'rgba(255,255,255,0.07)',
+              borderWidth: 1,
+              borderColor: 'rgba(136,117,255,0.4)',
+              borderRadius: 999,
+              paddingHorizontal: 12,
+              paddingVertical: 6,
+              flexDirection: 'row',
+              alignItems: 'center',
+            }}
             activeOpacity={0.7}
           >
-            <Ionicons name="calendar-outline" size={15} color={isDark ? '#a4a8d1' : '#7278b3'} />
-            <Text className="text-lavender-500 dark:text-lavender text-xs font-semibold ml-1">
+            <Ionicons name="calendar-outline" size={15} color="#8875ff" />
+            <Text style={{ color: '#8875ff', fontSize: 12, fontWeight: '600', marginLeft: 4 }}>
               Availability
             </Text>
           </TouchableOpacity>
@@ -143,7 +153,7 @@ export default function HomeScreen() {
         {/* Active Proposals */}
         {openProposals.length > 0 && (
           <View className="mb-6">
-            <Text className="text-gray-500 dark:text-dark-300 text-xs font-semibold uppercase tracking-widest px-6 mb-3">
+            <Text style={{ color: '#5a5f7a', fontSize: 10, fontWeight: '700', letterSpacing: 1.5 }} className="px-6 mb-3 uppercase">
               Who's Down?
             </Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 24 }}>
@@ -157,7 +167,7 @@ export default function HomeScreen() {
                   <TouchableOpacity
                     key={p.id}
                     className="mr-3 rounded-2xl overflow-hidden"
-                    style={{ width: 180 }}
+                    style={{ width: 180, borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)' }}
                     onPress={() => router.push(`/proposal/${p.id}`)}
                     activeOpacity={0.85}
                   >
@@ -168,15 +178,15 @@ export default function HomeScreen() {
                       <Text style={{ fontSize: 36 }}>{emoji}</Text>
                     </View>
                     {/* Card body */}
-                    <View className="bg-white dark:bg-dark-700 px-3 py-3">
+                    <View style={{ backgroundColor: 'rgba(255,255,255,0.06)', paddingHorizontal: 12, paddingVertical: 12 }}>
                       <Text
-                        className="text-gray-900 dark:text-dark-50 font-bold text-sm leading-tight"
+                        style={{ color: '#f0f0ff', fontWeight: '700', fontSize: 13 }}
                         numberOfLines={2}
                       >
                         {p.title}
                       </Text>
                       {p.proposed_date && (
-                        <Text className="text-gray-400 dark:text-dark-400 text-xs mt-1">
+                        <Text style={{ color: '#5a5f7a', fontSize: 11, marginTop: 4 }}>
                           {new Date(p.proposed_date + 'T12:00:00').toLocaleDateString('en-US', {
                             weekday: 'short', month: 'short', day: 'numeric',
                           })}
@@ -184,13 +194,18 @@ export default function HomeScreen() {
                         </Text>
                       )}
                       <View className="flex-row items-center mt-2">
-                        <Text className="text-gray-400 dark:text-dark-400 text-xs flex-1">
+                        <Text style={{ color: '#5a5f7a', fontSize: 11 }} className="flex-1">
                           {acceptedCount} going
                         </Text>
                         {pendingResponse && (
-                          <View className="bg-lavender rounded-full px-2 py-0.5">
-                            <Text className="text-dark-900 text-xs font-bold">Respond</Text>
-                          </View>
+                          <LinearGradient
+                            colors={['#8875ff', '#c084fc']}
+                            start={{ x: 0, y: 0 }}
+                            end={{ x: 1, y: 0 }}
+                            style={{ borderRadius: 999, paddingHorizontal: 10, paddingVertical: 4 }}
+                          >
+                            <Text style={{ color: '#fff', fontSize: 11, fontWeight: '700' }}>Respond</Text>
+                          </LinearGradient>
                         )}
                       </View>
                     </View>
@@ -204,7 +219,7 @@ export default function HomeScreen() {
         {/* Overlap Alerts */}
         {topOverlaps.length > 0 && (
           <View className="px-6 mb-6">
-            <Text className="text-gray-500 dark:text-dark-300 text-xs font-semibold uppercase tracking-widest mb-3">
+            <Text style={{ color: '#5a5f7a', fontSize: 10, fontWeight: '700', letterSpacing: 1.5 }} className="mb-3 uppercase">
               Make a Plan
             </Text>
             {topOverlaps.map((overlap) => {
@@ -215,21 +230,32 @@ export default function HomeScreen() {
               return (
                 <TouchableOpacity
                   key={`${overlap.date}-${overlap.time_block}`}
-                  className="bg-white dark:bg-dark-700 rounded-2xl px-4 py-3.5 mb-2.5 flex-row items-center"
-                  style={{ borderLeftWidth: 3, borderLeftColor: '#a4a8d1' }}
+                  style={{
+                    backgroundColor: 'rgba(255,255,255,0.05)',
+                    borderWidth: 1,
+                    borderColor: 'rgba(255,255,255,0.08)',
+                    borderLeftWidth: 3,
+                    borderLeftColor: '#8875ff',
+                    borderRadius: 16,
+                    paddingHorizontal: 16,
+                    paddingVertical: 14,
+                    marginBottom: 10,
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                  }}
                   onPress={() => router.push('/proposal/create')}
                   activeOpacity={0.8}
                 >
                   <View className="flex-1">
-                    <Text className="text-gray-900 dark:text-dark-50 font-semibold text-sm">
+                    <Text style={{ color: '#f0f0ff', fontWeight: '600', fontSize: 13 }}>
                       {names}{extra} free · {overlap.time_block}
                     </Text>
-                    <Text className="text-gray-400 dark:text-dark-400 text-xs mt-0.5">
+                    <Text style={{ color: '#5a5f7a', fontSize: 12, marginTop: 2 }}>
                       {dateStr}
                     </Text>
                   </View>
-                  <View className="bg-lavender/20 rounded-full px-3 py-1">
-                    <Text className="text-lavender-500 dark:text-lavender text-xs font-bold">
+                  <View style={{ backgroundColor: 'rgba(136,117,255,0.15)', borderRadius: 999, paddingHorizontal: 12, paddingVertical: 4 }}>
+                    <Text style={{ color: '#8875ff', fontSize: 12, fontWeight: '700' }}>
                       Plan →
                     </Text>
                   </View>
@@ -241,7 +267,7 @@ export default function HomeScreen() {
 
         {/* Availability Heatmap */}
         <View className="px-6">
-          <Text className="text-gray-500 dark:text-dark-300 text-xs font-semibold uppercase tracking-widest mb-1">
+          <Text style={{ color: '#5a5f7a', fontSize: 10, fontWeight: '700', letterSpacing: 1.5 }} className="mb-1 uppercase">
             Your Availability
           </Text>
           <WeekNavigator

@@ -26,7 +26,7 @@ export default function ProfileScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView className="flex-1 bg-gray-50 dark:bg-dark-900" edges={['top']}>
+      <SafeAreaView className="flex-1" style={{ backgroundColor: '#09090f' }} edges={['top']}>
         <View className="px-6 pt-6">
           <View className="items-center mb-8">
             <SkeletonLoader width={80} height={80} borderRadius={40} />
@@ -41,36 +41,37 @@ export default function ProfileScreen() {
   if (!profile) return null;
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50 dark:bg-dark-900" edges={['top']}>
-      <ScrollView className="flex-1" contentContainerClassName="px-6 pt-6 pb-12">
+    <SafeAreaView className="flex-1" style={{ backgroundColor: '#09090f' }} edges={['top']}>
+      <ScrollView className="flex-1" style={{ backgroundColor: '#09090f' }} contentContainerClassName="px-6 pt-6 pb-12">
         {/* Header */}
         <View className="items-center mb-6">
           <Avatar
             url={profile.avatar_url}
             name={profile.display_name}
             size={88}
+            ring
           />
-          <Text className="text-2xl font-bold text-gray-900 dark:text-dark-50 mt-4">
+          <Text style={{ fontFamily: 'SpaceGrotesk_700Bold', fontSize: 24, color: '#f0f0ff', marginTop: 16 }}>
             {profile.display_name}
           </Text>
-          <Text className="text-gray-400 dark:text-dark-400 mt-1 text-sm">@{profile.username}</Text>
+          <Text style={{ color: '#8b8fa8', marginTop: 4, fontSize: 14 }}>@{profile.username}</Text>
           {profile.city && (
             <View className="flex-row items-center mt-1">
-              <Ionicons name="location-outline" size={12} color={isDark ? '#64748b' : '#9ca3af'} />
-              <Text className="text-gray-400 dark:text-dark-400 text-sm ml-0.5">{profile.city}</Text>
+              <Ionicons name="location-outline" size={12} color="#5a5f7a" />
+              <Text style={{ color: '#8b8fa8', fontSize: 14, marginLeft: 2 }}>{profile.city}</Text>
             </View>
           )}
         </View>
 
         {/* Hangout Stats */}
         {stats && stats.total > 0 && (
-          <View className="mb-6 bg-white dark:bg-dark-700 rounded-2xl px-4 py-4">
+          <View style={{ marginBottom: 24, backgroundColor: 'rgba(255,255,255,0.05)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)', borderRadius: 20, paddingHorizontal: 16, paddingVertical: 16 }}>
             <View className="flex-row items-center mb-3">
-              <Text className="text-gray-500 dark:text-dark-300 text-xs font-semibold uppercase tracking-widest flex-1">
+              <Text style={{ color: '#5a5f7a', fontSize: 10, fontWeight: '700', letterSpacing: 1.5 }} className="flex-1 uppercase">
                 Hangout Stats
               </Text>
-              <View className="bg-lavender/20 rounded-full px-3 py-1">
-                <Text className="text-lavender-500 dark:text-lavender text-sm font-bold">
+              <View style={{ backgroundColor: 'rgba(136,117,255,0.15)', borderRadius: 999, paddingHorizontal: 12, paddingVertical: 4 }}>
+                <Text style={{ color: '#8875ff', fontSize: 14, fontWeight: '700' }}>
                   {stats.total} total
                 </Text>
               </View>
@@ -79,16 +80,16 @@ export default function ProfileScreen() {
               {stats.topActivities.map(({ tag, count }) => (
                 <View
                   key={tag}
-                  className="flex-row items-center bg-gray-50 dark:bg-dark-600 rounded-xl px-3 py-2 mr-2 mb-2"
+                  style={{ backgroundColor: 'rgba(255,255,255,0.06)', borderRadius: 12, paddingHorizontal: 12, paddingVertical: 8, marginRight: 8, marginBottom: 8, flexDirection: 'row', alignItems: 'center' }}
                 >
                   <Text className="text-base mr-1.5">
                     {ACTIVITY_EMOJIS[tag.toLowerCase()] ?? '📅'}
                   </Text>
                   <View>
-                    <Text className="text-gray-900 dark:text-dark-50 text-xs font-semibold capitalize">
+                    <Text style={{ color: '#f0f0ff', fontSize: 12, fontWeight: '600' }} className="capitalize">
                       {tag}
                     </Text>
-                    <Text className="text-gray-400 dark:text-dark-400 text-xs">{count}×</Text>
+                    <Text style={{ color: '#5a5f7a', fontSize: 12 }}>{count}×</Text>
                   </View>
                 </View>
               ))}
@@ -98,18 +99,18 @@ export default function ProfileScreen() {
 
         {/* Edit Button */}
         <TouchableOpacity
-          className="flex-row items-center justify-center bg-white dark:bg-dark-700 rounded-2xl py-3 mb-6 border border-gray-100 dark:border-dark-600"
+          style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.05)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)', borderRadius: 20, paddingVertical: 12, marginBottom: 24 }}
           onPress={() => router.push('/profile/edit')}
           activeOpacity={0.7}
         >
-          <Ionicons name="pencil-outline" size={15} color={isDark ? '#94a3b8' : '#6b7280'} />
-          <Text className="text-gray-500 dark:text-dark-300 ml-2 text-sm font-medium">Edit Profile</Text>
+          <Ionicons name="pencil-outline" size={15} color="#5a5f7a" />
+          <Text style={{ color: '#8b8fa8', marginLeft: 8, fontSize: 14, fontWeight: '500' }}>Edit Profile</Text>
         </TouchableOpacity>
 
         {/* Interests */}
         {profile.interests.length > 0 && (
           <View className="mb-8">
-            <Text className="text-gray-500 dark:text-dark-200 text-sm font-medium mb-3 ml-1">
+            <Text style={{ color: '#8b8fa8', fontSize: 14, fontWeight: '600', marginBottom: 12, marginLeft: 2 }}>
               Interests
             </Text>
             <View className="flex-row flex-wrap">
@@ -121,29 +122,31 @@ export default function ProfileScreen() {
         )}
 
         {/* Quick Links + Theme Toggle */}
-        <View className="mb-8 bg-white dark:bg-dark-700 rounded-2xl overflow-hidden">
+        <View style={{ marginBottom: 32, backgroundColor: 'rgba(255,255,255,0.05)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)', borderRadius: 20, overflow: 'hidden' }}>
           <TouchableOpacity
-            className="flex-row items-center justify-between px-4 py-4 border-b border-gray-100 dark:border-dark-600"
+            className="flex-row items-center justify-between px-4 py-4"
+            style={{ borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.07)' }}
             onPress={() => router.push('/friends')}
             activeOpacity={0.7}
           >
             <View className="flex-row items-center">
-              <Ionicons name="people-outline" size={20} color="#a4a8d1" />
-              <Text className="text-gray-900 dark:text-dark-50 ml-3 text-sm font-medium">Friends</Text>
+              <Ionicons name="people-outline" size={20} color="#8875ff" />
+              <Text style={{ color: '#f0f0ff', marginLeft: 12, fontSize: 14, fontWeight: '500' }}>Friends</Text>
             </View>
-            <Ionicons name="chevron-forward" size={16} color={isDark ? '#475569' : '#9ca3af'} />
+            <Ionicons name="chevron-forward" size={16} color="#5a5f7a" />
           </TouchableOpacity>
 
           <TouchableOpacity
-            className="flex-row items-center justify-between px-4 py-4 border-b border-gray-100 dark:border-dark-600"
+            className="flex-row items-center justify-between px-4 py-4"
+            style={{ borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.07)' }}
             onPress={() => router.push('/groups')}
             activeOpacity={0.7}
           >
             <View className="flex-row items-center">
-              <Ionicons name="grid-outline" size={20} color="#a4a8d1" />
-              <Text className="text-gray-900 dark:text-dark-50 ml-3 text-sm font-medium">Groups</Text>
+              <Ionicons name="grid-outline" size={20} color="#8875ff" />
+              <Text style={{ color: '#f0f0ff', marginLeft: 12, fontSize: 14, fontWeight: '500' }}>Groups</Text>
             </View>
-            <Ionicons name="chevron-forward" size={16} color={isDark ? '#475569' : '#9ca3af'} />
+            <Ionicons name="chevron-forward" size={16} color="#5a5f7a" />
           </TouchableOpacity>
 
           <View className="flex-row items-center justify-between px-4 py-4">
@@ -151,14 +154,14 @@ export default function ProfileScreen() {
               <Ionicons
                 name={isDark ? 'moon-outline' : 'sunny-outline'}
                 size={20}
-                color="#a4a8d1"
+                color="#8875ff"
               />
-              <Text className="text-gray-900 dark:text-dark-50 ml-3 text-sm font-medium">Dark Mode</Text>
+              <Text style={{ color: '#f0f0ff', marginLeft: 12, fontSize: 14, fontWeight: '500' }}>Dark Mode</Text>
             </View>
             <Switch
               value={isDark}
               onValueChange={toggleTheme}
-              trackColor={{ false: '#d1d5db', true: '#a4a8d1' }}
+              trackColor={{ false: 'rgba(255,255,255,0.1)', true: '#8875ff' }}
               thumbColor="#ffffff"
             />
           </View>
