@@ -14,7 +14,9 @@
       "backgroundColor": "#0f1420"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.shahamnoorani.sync",
+      "buildNumber": "1"
     },
     "android": {
       "adaptiveIcon": {
@@ -43,6 +45,13 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "af2d971c-3928-4c31-82c9-cf4f39e196cc"
+      }
+    },
+    "owner": "shahamnoorani"
   }
 }
