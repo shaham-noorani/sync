@@ -39,25 +39,25 @@ export default function GroupsTabScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50 dark:bg-dark-900" edges={['top']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#09090f' }} edges={['top']}>
       <ScrollView
-        className="flex-1"
-        contentContainerClassName="px-6 pt-2 pb-12"
+        style={{ flex: 1 }}
+        contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 8, paddingBottom: 48 }}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       >
         {/* Header */}
-        <View className="flex-row items-center justify-between mb-6">
-          <Text className="text-xl font-bold text-gray-900 dark:text-dark-50">Groups</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
+          <Text style={{ fontFamily: 'SpaceGrotesk_700Bold', color: '#f0f0ff', fontSize: 22 }}>Groups</Text>
           <TouchableOpacity onPress={() => setShowCreate(!showCreate)}>
-            <Ionicons name={showCreate ? 'close' : 'add-circle-outline'} size={26} color="#a4a8d1" />
+            <Ionicons name={showCreate ? 'close' : 'add-circle-outline'} size={26} color="#8875ff" />
           </TouchableOpacity>
         </View>
 
         {showCreate && (
-          <View className="mb-8">
+          <View style={{ marginBottom: 32 }}>
             {/* Create Section */}
-            <Text className="text-lg font-semibold text-gray-900 dark:text-dark-50 mb-4">
-              Create a Group
+            <Text style={{ color: '#5a5f7a', fontSize: 10, fontWeight: '700', letterSpacing: 1.5, marginBottom: 16 }}>
+              CREATE A GROUP
             </Text>
 
             <Input
@@ -84,9 +84,9 @@ export default function GroupsTabScreen() {
             />
 
             {/* Join Section */}
-            <View className="mt-6">
-              <Text className="text-lg font-semibold text-gray-900 dark:text-dark-50 mb-4">
-                Join a Group
+            <View style={{ marginTop: 24 }}>
+              <Text style={{ color: '#5a5f7a', fontSize: 10, fontWeight: '700', letterSpacing: 1.5, marginBottom: 16 }}>
+                JOIN A GROUP
               </Text>
 
               <Input
@@ -123,7 +123,7 @@ export default function GroupsTabScreen() {
             />
           ))
         ) : (
-          <Text className="text-gray-500 dark:text-dark-300 text-center mt-8">
+          <Text style={{ color: '#5a5f7a', textAlign: 'center', marginTop: 32 }}>
             No groups yet. Tap + to create or join one!
           </Text>
         )}

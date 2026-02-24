@@ -1,5 +1,6 @@
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 
 type GroupCardProps = {
   name: string;
@@ -12,22 +13,22 @@ type GroupCardProps = {
 export function GroupCard({ name, description, role, memberCount, onPress }: GroupCardProps) {
   return (
     <TouchableOpacity
-      className="bg-white dark:bg-dark-700 rounded-2xl px-4 py-4 mb-2 flex-row items-center"
+      style={{ backgroundColor: 'rgba(255,255,255,0.05)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)', borderRadius: 20, padding: 16, marginBottom: 12, flexDirection: 'row', alignItems: 'center' }}
       onPress={onPress}
       activeOpacity={0.7}
     >
-      <View className="w-11 h-11 rounded-2xl bg-lavender/20 items-center justify-center">
-        <Ionicons name="people" size={20} color="#a4a8d1" />
-      </View>
-      <View className="flex-1 ml-3">
-        <Text className="text-gray-900 dark:text-dark-50 font-semibold text-sm">{name}</Text>
-        <Text className="text-gray-400 dark:text-dark-400 text-xs mt-0.5">
+      <LinearGradient colors={['#8875ff', '#c084fc']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ width: 44, height: 44, borderRadius: 12, alignItems: 'center', justifyContent: 'center' }}>
+        <Ionicons name="grid" size={20} color="#ffffff" />
+      </LinearGradient>
+      <View style={{ flex: 1, marginLeft: 12 }}>
+        <Text style={{ color: '#f0f0ff', fontWeight: '700', fontSize: 15 }}>{name}</Text>
+        <Text style={{ color: '#8b8fa8', fontSize: 13, marginTop: 2 }}>
           {memberCount !== undefined ? `${memberCount} member${memberCount !== 1 ? 's' : ''}` : description ?? ''}
         </Text>
       </View>
       {role && role !== 'member' && (
-        <View className="bg-lavender/20 rounded-full px-2 py-0.5 mr-2">
-          <Text className="text-lavender-500 dark:text-lavender text-xs font-semibold uppercase">
+        <View style={{ backgroundColor: 'rgba(136,117,255,0.15)', borderRadius: 999, paddingHorizontal: 8, paddingVertical: 3, marginRight: 8 }}>
+          <Text style={{ color: '#8875ff', fontSize: 11, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5 }}>
             {role}
           </Text>
         </View>
@@ -35,7 +36,7 @@ export function GroupCard({ name, description, role, memberCount, onPress }: Gro
       <Ionicons
         name="chevron-forward"
         size={16}
-        color="#475569"
+        color="#5a5f7a"
       />
     </TouchableOpacity>
   );

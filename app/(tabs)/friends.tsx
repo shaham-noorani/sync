@@ -34,29 +34,34 @@ export default function FriendsTabScreen() {
   ];
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50 dark:bg-dark-900" edges={['top']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#09090f' }} edges={['top']}>
       {/* Header */}
-      <View className="flex-row items-center justify-between px-6 pt-2 pb-4">
-        <Text className="text-xl font-bold text-gray-900 dark:text-dark-50">Friends</Text>
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 24, paddingTop: 8, paddingBottom: 16 }}>
+        <Text style={{ fontFamily: 'SpaceGrotesk_700Bold', color: '#f0f0ff', fontSize: 22 }}>Friends</Text>
         <TouchableOpacity onPress={() => router.push('/friends/add')}>
-          <Ionicons name="person-add" size={24} color="#a4a8d1" />
+          <Ionicons name="person-add" size={24} color="#8875ff" />
         </TouchableOpacity>
       </View>
 
       {/* Tabs */}
-      <View className="flex-row px-6 mb-4">
+      <View style={{ flexDirection: 'row', paddingHorizontal: 24, marginBottom: 16 }}>
         {tabs.map((tab) => (
           <TouchableOpacity
             key={tab.key}
-            className={`mr-4 pb-2 ${
-              activeTab === tab.key ? 'border-b-2 border-lavender' : ''
-            }`}
+            style={[
+              { marginRight: 16 },
+              activeTab === tab.key
+                ? { borderBottomWidth: 2, borderBottomColor: '#8875ff', paddingBottom: 8 }
+                : { paddingBottom: 8 },
+            ]}
             onPress={() => setActiveTab(tab.key)}
           >
             <Text
-              className={`text-base font-medium ${
-                activeTab === tab.key ? 'text-lavender-500 dark:text-lavender' : 'text-gray-400 dark:text-dark-300'
-              }`}
+              style={
+                activeTab === tab.key
+                  ? { color: '#8875ff', fontWeight: '700', fontSize: 14 }
+                  : { color: '#5a5f7a', fontWeight: '600', fontSize: 14 }
+              }
             >
               {tab.label}
               {tab.count !== undefined && tab.count > 0
@@ -67,7 +72,7 @@ export default function FriendsTabScreen() {
         ))}
       </View>
 
-      <ScrollView className="flex-1 px-6">
+      <ScrollView style={{ flex: 1, paddingHorizontal: 24 }}>
         {activeTab === 'friends' && (
           <>
             {friendsLoading ? (
@@ -75,7 +80,7 @@ export default function FriendsTabScreen() {
                 <SkeletonLoader key={i} height={60} borderRadius={12} className="mb-3" />
               ))
             ) : friends?.length === 0 ? (
-              <Text className="text-gray-500 dark:text-dark-300 text-center mt-8">
+              <Text style={{ color: '#5a5f7a', textAlign: 'center', marginTop: 32 }}>
                 No friends yet. Tap + to add some!
               </Text>
             ) : (
@@ -99,7 +104,7 @@ export default function FriendsTabScreen() {
                 <SkeletonLoader key={i} height={60} borderRadius={12} className="mb-3" />
               ))
             ) : requests?.incoming.length === 0 ? (
-              <Text className="text-gray-500 dark:text-dark-300 text-center mt-8">
+              <Text style={{ color: '#5a5f7a', textAlign: 'center', marginTop: 32 }}>
                 No pending requests
               </Text>
             ) : (
@@ -136,7 +141,7 @@ export default function FriendsTabScreen() {
                 <SkeletonLoader key={i} height={60} borderRadius={12} className="mb-3" />
               ))
             ) : requests?.outgoing.length === 0 ? (
-              <Text className="text-gray-500 dark:text-dark-300 text-center mt-8">
+              <Text style={{ color: '#5a5f7a', textAlign: 'center', marginTop: 32 }}>
                 No sent requests
               </Text>
             ) : (

@@ -1,5 +1,6 @@
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Avatar } from './Avatar';
 
 type FriendCardProps = {
@@ -30,41 +31,37 @@ export function FriendCard({
   const hasButtons = !!(actionLabel || secondaryActionLabel);
 
   const inner = (
-    <View className="flex-row items-center">
+    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
       <Avatar url={avatarUrl} name={displayName} size={44} />
-      <View className="flex-1 ml-3">
-        <Text className="text-gray-900 dark:text-dark-50 font-semibold text-sm">
+      <View style={{ flex: 1, marginLeft: 12 }}>
+        <Text style={{ color: '#f0f0ff', fontWeight: '700', fontSize: 15 }}>
           {displayName}
         </Text>
-        <Text className="text-gray-400 dark:text-dark-400 text-xs mt-0.5">@{username}</Text>
+        <Text style={{ color: '#8b8fa8', fontSize: 13, marginTop: 2 }}>@{username}</Text>
       </View>
       {hasButtons ? (
-        <View className="flex-row gap-2">
+        <View style={{ flexDirection: 'row', gap: 8 }}>
           {secondaryActionLabel && onSecondaryAction && (
             <TouchableOpacity
-              className="bg-gray-100 dark:bg-dark-600 rounded-lg px-3 py-2"
+              style={{ backgroundColor: 'rgba(255,255,255,0.07)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)', borderRadius: 12, paddingHorizontal: 16, paddingVertical: 8 }}
               onPress={onSecondaryAction}
               disabled={loading}
             >
-              <Text className="text-gray-600 dark:text-dark-200 text-sm font-medium">
+              <Text style={{ color: '#8b8fa8', fontWeight: '600', fontSize: 13 }}>
                 {secondaryActionLabel}
               </Text>
             </TouchableOpacity>
           )}
           {actionLabel && onAction && (
-            <TouchableOpacity
-              className="bg-lavender rounded-lg px-3 py-2"
-              onPress={onAction}
-              disabled={loading}
-            >
-              <Text className="text-dark-900 text-sm font-semibold">
-                {actionLabel}
-              </Text>
+            <TouchableOpacity onPress={onAction} activeOpacity={0.8} style={{ borderRadius: 12, overflow: 'hidden' }} disabled={loading}>
+              <LinearGradient colors={['#8875ff', '#c084fc']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ paddingHorizontal: 16, paddingVertical: 8 }}>
+                <Text style={{ color: '#fff', fontWeight: '600', fontSize: 13 }}>{actionLabel}</Text>
+              </LinearGradient>
             </TouchableOpacity>
           )}
         </View>
       ) : (
-        <Ionicons name="chevron-forward" size={16} color="#475569" />
+        <Ionicons name="chevron-forward" size={16} color="#5a5f7a" />
       )}
     </View>
   );
@@ -72,7 +69,7 @@ export function FriendCard({
   if (onPress || (!hasButtons)) {
     return (
       <TouchableOpacity
-        className="bg-white dark:bg-dark-700 rounded-2xl px-4 py-3 mb-2"
+        style={{ backgroundColor: 'rgba(255,255,255,0.05)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)', borderRadius: 20, padding: 16, marginBottom: 12 }}
         onPress={onPress}
         activeOpacity={0.7}
       >
@@ -82,7 +79,7 @@ export function FriendCard({
   }
 
   return (
-    <View className="bg-white dark:bg-dark-700 rounded-2xl px-4 py-3 mb-2">
+    <View style={{ backgroundColor: 'rgba(255,255,255,0.05)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)', borderRadius: 20, padding: 16, marginBottom: 12 }}>
       {inner}
     </View>
   );
