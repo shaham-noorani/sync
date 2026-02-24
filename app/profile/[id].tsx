@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -10,7 +10,6 @@ import { InterestChip } from '../../components/ui/InterestChip';
 import { SkeletonLoader } from '../../components/SkeletonLoader';
 import { HeatmapGrid } from '../../components/HeatmapGrid';
 import { WeekNavigator } from '../../components/WeekNavigator';
-import { useTheme } from '../../providers/ThemeProvider';
 
 function getWeekDates(weekOffset: number): string[] {
   const now = new Date();
@@ -36,7 +35,6 @@ function formatWeekLabel(dates: string[]): string {
 export default function UserProfileScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
-  const { isDark } = useTheme();
   const { data: profile, isLoading } = useProfile(id);
   const [weekOffset, setWeekOffset] = useState(0);
 
@@ -49,14 +47,14 @@ export default function UserProfileScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView className="flex-1 bg-gray-50 dark:bg-dark-900" edges={['top']}>
-        <View className="px-6 pt-4">
-          <View className="flex-row items-center mb-8">
-            <TouchableOpacity onPress={() => router.back()} className="p-1">
-              <Ionicons name="chevron-back" size={24} color={isDark ? '#94a3b8' : '#6b7280'} />
+      <SafeAreaView style={styles.safeArea} edges={['top']}>
+        <View style={{ paddingHorizontal: 24, paddingTop: 16 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 32 }}>
+            <TouchableOpacity onPress={() => router.back()} style={{ padding: 4 }}>
+              <Ionicons name="chevron-back" size={24} color="#8875ff" />
             </TouchableOpacity>
           </View>
-          <View className="items-center">
+          <View style={{ alignItems: 'center' }}>
             <SkeletonLoader width={80} height={80} borderRadius={40} />
             <SkeletonLoader width={150} height={24} borderRadius={8} className="mt-4" />
             <SkeletonLoader width={100} height={16} borderRadius={8} className="mt-2" />
@@ -69,38 +67,38 @@ export default function UserProfileScreen() {
   if (!profile) return null;
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50 dark:bg-dark-900" edges={['top']}>
-      <ScrollView className="flex-1" contentContainerClassName="pb-12">
+    <SafeAreaView style={styles.safeArea} edges={['top']}>
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 48 }}>
         {/* Header */}
-        <View className="flex-row items-center px-6 pt-4 pb-2">
-          <TouchableOpacity onPress={() => router.back()} className="p-1 mr-2">
-            <Ionicons name="chevron-back" size={24} color={isDark ? '#94a3b8' : '#6b7280'} />
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => router.back()} style={{ padding: 4, marginRight: 8 }}>
+            <Ionicons name="chevron-back" size={24} color="#8875ff" />
           </TouchableOpacity>
-          <Text className="text-lg font-bold text-gray-900 dark:text-dark-50">Profile</Text>
+          <Text style={styles.headerTitle}>Profile</Text>
         </View>
 
         {/* Profile Info */}
-        <View className="items-center py-6">
+        <View style={{ alignItems: 'center', paddingVertical: 24 }}>
           <Avatar url={profile.avatar_url} name={profile.display_name} size={80} />
-          <Text className="text-2xl font-bold text-gray-900 dark:text-dark-50 mt-4">
+          <Text style={styles.displayName}>
             {profile.display_name}
           </Text>
-          <Text className="text-gray-400 dark:text-dark-400 mt-1">@{profile.username}</Text>
+          <Text style={styles.username}>@{profile.username}</Text>
           {profile.city && (
-            <View className="flex-row items-center mt-1">
-              <Ionicons name="location" size={12} color={isDark ? '#64748b' : '#9ca3af'} />
-              <Text className="text-gray-400 dark:text-dark-400 text-sm ml-1">{profile.city}</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4 }}>
+              <Ionicons name="location" size={12} color="#5a5f7a" />
+              <Text style={styles.cityText}>{profile.city}</Text>
             </View>
           )}
         </View>
 
         {/* Interests */}
         {profile.interests.length > 0 && (
-          <View className="px-6 mb-6">
-            <Text className="text-gray-500 dark:text-dark-300 text-xs font-semibold uppercase tracking-widest mb-3">
-              Interests
+          <View style={{ paddingHorizontal: 24, marginBottom: 24 }}>
+            <Text style={styles.sectionLabel}>
+              INTERESTS
             </Text>
-            <View className="flex-row flex-wrap">
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
               {profile.interests.map((interest: string) => (
                 <InterestChip key={interest} label={interest} selected />
               ))}
@@ -109,9 +107,9 @@ export default function UserProfileScreen() {
         )}
 
         {/* Availability Heatmap */}
-        <View className="px-6">
-          <Text className="text-gray-500 dark:text-dark-300 text-xs font-semibold uppercase tracking-widest mb-1">
-            When {profile.display_name.split(' ')[0]} is Free
+        <View style={{ paddingHorizontal: 24 }}>
+          <Text style={styles.sectionLabel}>
+            WHEN {profile.display_name.split(' ')[0].toUpperCase()} IS FREE
           </Text>
           <WeekNavigator
             label={formatWeekLabel(dates)}
@@ -119,9 +117,9 @@ export default function UserProfileScreen() {
             onNext={() => setWeekOffset((o) => o + 1)}
             canGoPrev={weekOffset > 0}
           />
-          <View className="mt-1">
+          <View style={{ marginTop: 4 }}>
             {availLoading ? (
-              <View className="h-32 bg-white dark:bg-dark-700 rounded-xl opacity-60" />
+              <View style={styles.availabilityPlaceholder} />
             ) : (
               <HeatmapGrid
                 dates={dates}
@@ -134,3 +132,50 @@ export default function UserProfileScreen() {
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#09090f',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+    paddingTop: 16,
+    paddingBottom: 8,
+  },
+  headerTitle: {
+    color: '#f0f0ff',
+    fontWeight: '700',
+    fontSize: 18,
+  },
+  displayName: {
+    fontFamily: 'SpaceGrotesk_700Bold',
+    color: '#f0f0ff',
+    fontSize: 24,
+    marginTop: 16,
+  },
+  username: {
+    color: '#8b8fa8',
+    marginTop: 4,
+  },
+  cityText: {
+    color: '#8b8fa8',
+    fontSize: 14,
+    marginLeft: 4,
+  },
+  sectionLabel: {
+    color: '#5a5f7a',
+    fontSize: 10,
+    fontWeight: '700',
+    letterSpacing: 1.5,
+    marginBottom: 12,
+  },
+  availabilityPlaceholder: {
+    height: 128,
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    borderRadius: 12,
+    opacity: 0.6,
+  },
+});

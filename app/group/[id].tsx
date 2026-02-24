@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Alert, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -12,7 +12,6 @@ import { Button } from '../../components/ui/Button';
 import { SkeletonLoader } from '../../components/SkeletonLoader';
 import { HeatmapGrid } from '../../components/HeatmapGrid';
 import { WeekNavigator } from '../../components/WeekNavigator';
-import { useTheme } from '../../providers/ThemeProvider';
 
 function getWeekDates(weekOffset: number): string[] {
   const now = new Date();
@@ -39,7 +38,6 @@ export default function GroupDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const { user } = useAuth();
-  const { isDark } = useTheme();
   const { data: group, isLoading } = useGroup(id);
   const leaveGroup = useLeaveGroup();
   const [weekOffset, setWeekOffset] = useState(0);
@@ -79,8 +77,8 @@ export default function GroupDetailScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView className="flex-1 bg-gray-50 dark:bg-dark-900" edges={['top']}>
-        <View className="px-6 pt-4">
+      <SafeAreaView style={styles.safeArea} edges={['top']}>
+        <View style={{ paddingHorizontal: 24, paddingTop: 16 }}>
           <SkeletonLoader height={32} borderRadius={8} className="mb-4" />
           <SkeletonLoader height={20} borderRadius={8} className="mb-8" />
           <SkeletonLoader height={60} borderRadius={12} className="mb-3" />
@@ -93,49 +91,49 @@ export default function GroupDetailScreen() {
   if (!group) return null;
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50 dark:bg-dark-900" edges={['top']}>
-      <ScrollView className="flex-1" contentContainerClassName="pb-12">
+    <SafeAreaView style={styles.safeArea} edges={['top']}>
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 48 }}>
         {/* Header */}
-        <View className="flex-row items-center px-6 pt-4 pb-2">
-          <TouchableOpacity onPress={() => router.back()} className="p-1 mr-2">
-            <Ionicons name="chevron-back" size={24} color={isDark ? '#94a3b8' : '#6b7280'} />
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => router.back()} style={{ padding: 4, marginRight: 8 }}>
+            <Ionicons name="chevron-back" size={24} color="#8875ff" />
           </TouchableOpacity>
-          <Text className="text-xl font-bold text-gray-900 dark:text-dark-50 flex-1" numberOfLines={1}>
+          <Text style={styles.groupName} numberOfLines={1}>
             {group.name}
           </Text>
         </View>
 
         {group.description && (
-          <Text className="text-gray-500 dark:text-dark-300 text-sm px-6 pb-4">
+          <Text style={styles.descriptionText}>
             {group.description}
           </Text>
         )}
 
         {/* Invite Code */}
-        <View className="px-6 mb-6">
+        <View style={{ paddingHorizontal: 24, marginBottom: 24 }}>
           <TouchableOpacity
-            className="bg-white dark:bg-dark-700 rounded-2xl px-4 py-4 flex-row items-center justify-between"
+            style={[styles.glassCard, { paddingHorizontal: 16, paddingVertical: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }]}
             onPress={copyInviteCode}
             activeOpacity={0.8}
           >
             <View>
-              <Text className="text-gray-500 dark:text-dark-400 text-xs font-semibold uppercase tracking-wider">
-                Invite Code
+              <Text style={styles.inviteCodeLabel}>
+                INVITE CODE
               </Text>
-              <Text className="text-lavender-500 dark:text-lavender text-2xl font-bold mt-1 tracking-widest">
+              <Text style={styles.inviteCodeValue}>
                 {group.invite_code}
               </Text>
             </View>
-            <View className="bg-lavender/20 rounded-full p-2">
-              <Ionicons name="copy-outline" size={20} color="#a4a8d1" />
+            <View style={styles.copyIconContainer}>
+              <Ionicons name="copy-outline" size={20} color="#8875ff" />
             </View>
           </TouchableOpacity>
         </View>
 
         {/* Group Availability Heatmap */}
-        <View className="px-6 mb-6">
-          <Text className="text-gray-500 dark:text-dark-300 text-xs font-semibold uppercase tracking-widest mb-1">
-            Group Availability
+        <View style={{ paddingHorizontal: 24, marginBottom: 24 }}>
+          <Text style={styles.sectionLabel}>
+            GROUP AVAILABILITY
           </Text>
           <WeekNavigator
             label={formatWeekLabel(dates)}
@@ -143,9 +141,9 @@ export default function GroupDetailScreen() {
             onNext={() => setWeekOffset((o) => o + 1)}
             canGoPrev={weekOffset > 0}
           />
-          <View className="mt-1">
+          <View style={{ marginTop: 4 }}>
             {overlapsLoading ? (
-              <View className="h-32 bg-white dark:bg-dark-700 rounded-xl opacity-60" />
+              <View style={styles.heatmapPlaceholder} />
             ) : (
               <HeatmapGrid
                 dates={dates}
@@ -154,21 +152,21 @@ export default function GroupDetailScreen() {
               />
             )}
           </View>
-          <Text className="text-gray-400 dark:text-dark-400 text-xs text-center mt-2">
+          <Text style={styles.heatmapHint}>
             Numbers show how many members are free
           </Text>
         </View>
 
         {/* Members */}
-        <View className="px-6">
-          <Text className="text-gray-500 dark:text-dark-300 text-xs font-semibold uppercase tracking-widest mb-3">
-            Members · {group.members.length}
+        <View style={{ paddingHorizontal: 24 }}>
+          <Text style={styles.sectionLabel}>
+            MEMBERS · {group.members.length}
           </Text>
 
           {group.members.map((member: any) => (
             <TouchableOpacity
               key={member.id}
-              className="flex-row items-center bg-white dark:bg-dark-700 rounded-2xl px-4 py-3 mb-2"
+              style={[styles.glassCard, { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, marginBottom: 8 }]}
               onPress={() => router.push(`/profile/${member.user_id}`)}
               activeOpacity={0.8}
             >
@@ -177,32 +175,32 @@ export default function GroupDetailScreen() {
                 name={member.profile.display_name}
                 size={40}
               />
-              <View className="flex-1 ml-3">
-                <Text className="text-gray-900 dark:text-dark-50 font-semibold text-sm">
+              <View style={{ flex: 1, marginLeft: 12 }}>
+                <Text style={styles.memberName}>
                   {member.profile.display_name}
                 </Text>
-                <Text className="text-gray-400 dark:text-dark-400 text-xs">
+                <Text style={styles.memberUsername}>
                   @{member.profile.username}
                 </Text>
               </View>
               {member.role !== 'member' && (
-                <View className="bg-lavender/20 rounded-full px-2 py-0.5">
-                  <Text className="text-lavender-500 dark:text-lavender text-xs font-semibold uppercase">
-                    {member.role}
+                <View style={styles.roleBadge}>
+                  <Text style={styles.roleBadgeText}>
+                    {member.role.toUpperCase()}
                   </Text>
                 </View>
               )}
               <Ionicons
                 name="chevron-forward"
                 size={16}
-                color={isDark ? '#475569' : '#9ca3af'}
+                color="#5a5f7a"
                 style={{ marginLeft: 8 }}
               />
             </TouchableOpacity>
           ))}
 
           {/* Leave */}
-          <View className="mt-8">
+          <View style={{ marginTop: 32 }}>
             <Button
               title="Leave Group"
               onPress={handleLeave}
@@ -215,3 +213,94 @@ export default function GroupDetailScreen() {
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#09090f',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+    paddingTop: 16,
+    paddingBottom: 8,
+  },
+  groupName: {
+    flex: 1,
+    color: '#f0f0ff',
+    fontWeight: '700',
+    fontSize: 22,
+  },
+  descriptionText: {
+    color: '#8b8fa8',
+    fontSize: 14,
+    paddingHorizontal: 24,
+    paddingBottom: 16,
+  },
+  glassCard: {
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.08)',
+    borderRadius: 20,
+  },
+  inviteCodeLabel: {
+    color: '#5a5f7a',
+    fontSize: 10,
+    fontWeight: '700',
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
+  },
+  inviteCodeValue: {
+    color: '#8875ff',
+    fontSize: 24,
+    fontWeight: '700',
+    letterSpacing: 4,
+    marginTop: 4,
+  },
+  copyIconContainer: {
+    backgroundColor: 'rgba(136,117,255,0.15)',
+    borderRadius: 999,
+    padding: 8,
+  },
+  sectionLabel: {
+    color: '#5a5f7a',
+    fontSize: 10,
+    fontWeight: '700',
+    letterSpacing: 1.5,
+    marginBottom: 12,
+  },
+  heatmapPlaceholder: {
+    height: 128,
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    borderRadius: 14,
+    opacity: 0.6,
+  },
+  heatmapHint: {
+    color: '#5a5f7a',
+    fontSize: 12,
+    textAlign: 'center',
+    marginTop: 8,
+  },
+  memberName: {
+    color: '#f0f0ff',
+    fontWeight: '600',
+    fontSize: 14,
+  },
+  memberUsername: {
+    color: '#8b8fa8',
+    fontSize: 12,
+  },
+  roleBadge: {
+    backgroundColor: 'rgba(136,117,255,0.15)',
+    borderRadius: 999,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+  },
+  roleBadgeText: {
+    color: '#8875ff',
+    fontSize: 11,
+    fontWeight: '700',
+    textTransform: 'uppercase',
+  },
+});

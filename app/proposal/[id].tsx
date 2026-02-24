@@ -1,12 +1,11 @@
 import { useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Alert, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useProposal, useRespondToProposal, useCompleteProposal } from '../../hooks/useProposals';
 import { useLogHangout } from '../../hooks/useHangouts';
 import { useAuth } from '../../providers/AuthProvider';
-import { useTheme } from '../../providers/ThemeProvider';
 import { Avatar } from '../../components/Avatar';
 import { SkeletonLoader } from '../../components/SkeletonLoader';
 
@@ -16,18 +15,17 @@ const ACTIVITY_EMOJIS: Record<string, string> = {
   coffee: '☕',
 };
 
-const RESPONSE_CONFIG = {
-  accepted: { label: 'Going', color: 'text-green-500', bg: 'bg-green-100 dark:bg-green-900/30' },
-  declined: { label: 'Can\'t go', color: 'text-red-400', bg: 'bg-red-100 dark:bg-red-900/30' },
-  maybe: { label: 'Maybe', color: 'text-yellow-500', bg: 'bg-yellow-100 dark:bg-yellow-900/30' },
-  pending: { label: 'Pending', color: 'text-gray-400 dark:text-dark-400', bg: 'bg-gray-100 dark:bg-dark-700' },
+const RESPONSE_STYLES: Record<string, { label: string; bgColor: string; textColor: string }> = {
+  accepted: { label: 'Going', bgColor: 'rgba(34,197,94,0.15)', textColor: '#22c55e' },
+  declined: { label: "Can't go", bgColor: 'rgba(239,68,68,0.15)', textColor: '#f87171' },
+  maybe: { label: 'Maybe', bgColor: 'rgba(234,179,8,0.15)', textColor: '#eab308' },
+  pending: { label: 'Pending', bgColor: 'rgba(255,255,255,0.07)', textColor: '#5a5f7a' },
 };
 
 export default function ProposalDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const { user } = useAuth();
-  const { isDark } = useTheme();
   const { data: proposal, isLoading } = useProposal(id);
   const respondToProposal = useRespondToProposal();
   const completeProposal = useCompleteProposal();
@@ -81,8 +79,8 @@ export default function ProposalDetailScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView className="flex-1 bg-gray-50 dark:bg-dark-900" edges={['top']}>
-        <View className="px-6 pt-4">
+      <SafeAreaView style={styles.safeArea} edges={['top']}>
+        <View style={{ paddingHorizontal: 24, paddingTop: 16 }}>
           <SkeletonLoader height={24} borderRadius={8} className="mb-3 w-3/4" />
           <SkeletonLoader height={16} borderRadius={8} className="mb-6 w-1/2" />
           <SkeletonLoader height={120} borderRadius={12} />
@@ -104,61 +102,61 @@ export default function ProposalDetailScreen() {
     : null;
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50 dark:bg-dark-900" edges={['top']}>
-      <ScrollView className="flex-1" contentContainerClassName="pb-12">
+    <SafeAreaView style={styles.safeArea} edges={['top']}>
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 48 }}>
         {/* Header */}
-        <View className="flex-row items-center px-6 pt-4 pb-2">
-          <TouchableOpacity onPress={() => router.back()} className="mr-3">
-            <Ionicons name="chevron-back" size={24} color={isDark ? '#94a3b8' : '#6b7280'} />
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => router.back()} style={{ marginRight: 12 }}>
+            <Ionicons name="chevron-back" size={24} color="#8875ff" />
           </TouchableOpacity>
-          <Text className="text-lg font-bold text-gray-900 dark:text-dark-50 flex-1" numberOfLines={1}>
+          <Text style={styles.headerTitle} numberOfLines={1}>
             {proposal.title}
           </Text>
         </View>
 
         {/* Card */}
-        <View className="mx-6 bg-white dark:bg-dark-700 rounded-2xl p-5 mb-4">
-          <View className="flex-row items-start mb-3">
-            <Text className="text-4xl mr-3">
+        <View style={[styles.glassCard, { marginHorizontal: 24, marginBottom: 16, padding: 20 }]}>
+          <View style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: 12 }}>
+            <Text style={{ fontSize: 36, marginRight: 12 }}>
               {ACTIVITY_EMOJIS[proposal.activity_tag?.toLowerCase() ?? ''] ?? '📅'}
             </Text>
-            <View className="flex-1">
-              <Text className="text-gray-900 dark:text-dark-50 font-bold text-lg" numberOfLines={2}>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.cardTitle} numberOfLines={2}>
                 {proposal.title}
               </Text>
               {proposal.description && (
-                <Text className="text-gray-500 dark:text-dark-300 text-sm mt-1">
+                <Text style={[styles.secondaryText, { marginTop: 4 }]}>
                   {proposal.description}
                 </Text>
               )}
             </View>
           </View>
 
-          <View className="gap-2">
+          <View style={{ gap: 8 }}>
             {dateStr && (
-              <View className="flex-row items-center">
-                <Ionicons name="calendar" size={15} color={isDark ? '#64748b' : '#9ca3af'} />
-                <Text className="text-gray-500 dark:text-dark-300 text-sm ml-2">
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Ionicons name="calendar" size={15} color="#5a5f7a" />
+                <Text style={[styles.metaText, { marginLeft: 8 }]}>
                   {dateStr}
                   {proposal.proposed_time_block ? ` · ${proposal.proposed_time_block}` : ''}
                 </Text>
               </View>
             )}
             {proposal.location_name && (
-              <View className="flex-row items-center">
-                <Ionicons name="location" size={15} color={isDark ? '#64748b' : '#9ca3af'} />
-                <Text className="text-gray-500 dark:text-dark-300 text-sm ml-2">
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Ionicons name="location" size={15} color="#5a5f7a" />
+                <Text style={[styles.metaText, { marginLeft: 8 }]}>
                   {proposal.location_name}
                 </Text>
               </View>
             )}
-            <View className="flex-row items-center">
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Avatar
                 url={proposal.creator.avatar_url}
                 name={proposal.creator.display_name}
                 size={16}
               />
-              <Text className="text-gray-400 dark:text-dark-400 text-xs ml-2">
+              <Text style={[styles.metaText, { marginLeft: 8 }]}>
                 Proposed by {proposal.creator.display_name}
               </Text>
             </View>
@@ -167,28 +165,31 @@ export default function ProposalDetailScreen() {
 
         {/* My Response */}
         {!isCreator && (
-          <View className="mx-6 mb-4">
-            <Text className="text-gray-500 dark:text-dark-200 text-sm font-medium mb-2">
+          <View style={{ marginHorizontal: 24, marginBottom: 16 }}>
+            <Text style={styles.areYouInLabel}>
               Are you in?
             </Text>
-            <View className="flex-row gap-2">
+            <View style={{ flexDirection: 'row', gap: 8 }}>
               {(['accepted', 'maybe', 'declined'] as const).map((r) => {
                 const isActive = proposal.my_response === r;
-                const labels = { accepted: '✅ Going', maybe: '🤔 Maybe', declined: '❌ Can\'t' };
+                const labels = { accepted: '✅ Going', maybe: '🤔 Maybe', declined: "❌ Can't" };
                 return (
                   <TouchableOpacity
                     key={r}
                     onPress={() => handleRespond(r)}
                     disabled={responding}
-                    className={`flex-1 py-3 rounded-xl items-center ${
-                      isActive ? 'bg-lavender' : 'bg-white dark:bg-dark-700'
-                    }`}
+                    style={[
+                      styles.responseButton,
+                      isActive ? styles.responseButtonActive : styles.glassCard,
+                    ]}
                     activeOpacity={0.7}
                   >
                     <Text
-                      className={`text-sm font-medium ${
-                        isActive ? 'text-dark-900' : 'text-gray-600 dark:text-dark-200'
-                      }`}
+                      style={
+                        isActive
+                          ? { color: '#ffffff', fontWeight: '700', fontSize: 14 }
+                          : { color: '#8b8fa8', fontSize: 14 }
+                      }
                     >
                       {labels[r]}
                     </Text>
@@ -200,27 +201,30 @@ export default function ProposalDetailScreen() {
         )}
 
         {/* Responses */}
-        <View className="mx-6 mb-4">
-          <Text className="text-gray-500 dark:text-dark-200 text-sm font-medium mb-2">
-            Responses · {acceptedCount} going
+        <View style={{ marginHorizontal: 24, marginBottom: 16 }}>
+          <Text style={styles.sectionLabel}>
+            RESPONSES · {acceptedCount} GOING
           </Text>
           {proposal.responses.map((res) => {
-            const config = RESPONSE_CONFIG[res.response ?? 'pending'];
+            const config = RESPONSE_STYLES[res.response ?? 'pending'];
             return (
               <View
                 key={res.user_id}
-                className="flex-row items-center bg-white dark:bg-dark-700 rounded-xl px-4 py-3 mb-2"
+                style={[
+                  styles.glassCard,
+                  { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, marginBottom: 8 },
+                ]}
               >
                 <Avatar
                   url={res.profile.avatar_url}
                   name={res.profile.display_name}
                   size={32}
                 />
-                <Text className="flex-1 text-gray-900 dark:text-dark-50 font-medium text-sm ml-3">
+                <Text style={[styles.personName, { flex: 1, marginLeft: 12 }]}>
                   {res.profile.display_name}
                 </Text>
-                <View className={`rounded-full px-2 py-0.5 ${config.bg}`}>
-                  <Text className={`text-xs font-medium ${config.color}`}>{config.label}</Text>
+                <View style={{ borderRadius: 999, paddingHorizontal: 8, paddingVertical: 2, backgroundColor: config.bgColor }}>
+                  <Text style={{ fontSize: 12, fontWeight: '600', color: config.textColor }}>{config.label}</Text>
                 </View>
               </View>
             );
@@ -229,14 +233,14 @@ export default function ProposalDetailScreen() {
 
         {/* It Happened */}
         {canMarkHappened && (
-          <View className="mx-6">
+          <View style={{ marginHorizontal: 24 }}>
             <TouchableOpacity
               onPress={handleItHappened}
               disabled={logHangout.isPending}
-              className="bg-lavender/20 border border-lavender/40 rounded-2xl py-4 items-center"
+              style={styles.itHappenedButton}
               activeOpacity={0.8}
             >
-              <Text className="text-lavender-500 dark:text-lavender font-bold text-base">
+              <Text style={styles.itHappenedText}>
                 {logHangout.isPending ? 'Logging…' : '🎉 It Happened! Log the hangout'}
               </Text>
             </TouchableOpacity>
@@ -246,3 +250,83 @@ export default function ProposalDetailScreen() {
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#09090f',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+    paddingTop: 16,
+    paddingBottom: 8,
+  },
+  headerTitle: {
+    flex: 1,
+    color: '#f0f0ff',
+    fontWeight: '700',
+    fontSize: 18,
+  },
+  glassCard: {
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.08)',
+    borderRadius: 20,
+  },
+  cardTitle: {
+    color: '#f0f0ff',
+    fontWeight: '700',
+    fontSize: 18,
+  },
+  secondaryText: {
+    color: '#8b8fa8',
+    fontSize: 14,
+  },
+  metaText: {
+    color: '#8b8fa8',
+    fontSize: 13,
+  },
+  areYouInLabel: {
+    color: '#8b8fa8',
+    fontSize: 13,
+    fontWeight: '600',
+    marginBottom: 8,
+  },
+  responseButton: {
+    flex: 1,
+    paddingVertical: 12,
+    borderRadius: 12,
+    alignItems: 'center',
+  },
+  responseButtonActive: {
+    backgroundColor: '#8875ff',
+    borderRadius: 12,
+  },
+  sectionLabel: {
+    color: '#5a5f7a',
+    fontSize: 10,
+    fontWeight: '700',
+    letterSpacing: 1.5,
+    marginBottom: 8,
+  },
+  personName: {
+    color: '#f0f0ff',
+    fontWeight: '600',
+    fontSize: 14,
+  },
+  itHappenedButton: {
+    backgroundColor: 'rgba(136,117,255,0.12)',
+    borderWidth: 1,
+    borderColor: 'rgba(136,117,255,0.3)',
+    borderRadius: 20,
+    paddingVertical: 16,
+    alignItems: 'center',
+  },
+  itHappenedText: {
+    color: '#8875ff',
+    fontWeight: '700',
+    fontSize: 16,
+  },
+});

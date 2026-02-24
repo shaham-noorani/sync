@@ -1,9 +1,8 @@
-import { View, Text, ScrollView, TouchableOpacity, Image } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useHangout, useToggleReaction, getPhotoUrl } from '../../hooks/useHangouts';
-import { useTheme } from '../../providers/ThemeProvider';
 import { Avatar } from '../../components/Avatar';
 import { SkeletonLoader } from '../../components/SkeletonLoader';
 
@@ -18,14 +17,13 @@ const REACTION_EMOJIS = ['❤️', '🔥', '😂', '🎉', '👏'];
 export default function HangoutDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
-  const { isDark } = useTheme();
   const { data: hangout, isLoading } = useHangout(id);
   const toggleReaction = useToggleReaction();
 
   if (isLoading) {
     return (
-      <SafeAreaView className="flex-1 bg-gray-50 dark:bg-dark-900" edges={['top']}>
-        <View className="px-6 pt-4">
+      <SafeAreaView style={styles.safeArea} edges={['top']}>
+        <View style={{ paddingHorizontal: 24, paddingTop: 16 }}>
           <SkeletonLoader height={250} borderRadius={16} className="mb-4" />
           <SkeletonLoader height={24} borderRadius={8} className="mb-2" />
           <SkeletonLoader height={16} borderRadius={8} className="mb-2 w-1/2" />
@@ -48,15 +46,15 @@ export default function HangoutDetailScreen() {
     : null;
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50 dark:bg-dark-900" edges={['top']}>
-      <ScrollView className="flex-1" contentContainerClassName="pb-12">
+    <SafeAreaView style={styles.safeArea} edges={['top']}>
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 48 }}>
         {/* Photos */}
         {hangout.photos?.length > 0 && (
           <ScrollView
             horizontal
             pagingEnabled
             showsHorizontalScrollIndicator={false}
-            className="h-64"
+            style={{ height: 256 }}
           >
             {hangout.photos.map((photo) => (
               <Image
@@ -69,47 +67,47 @@ export default function HangoutDetailScreen() {
           </ScrollView>
         )}
 
-        {/* Back button overlay if photos, else top bar */}
-        <View className={`flex-row items-center px-6 ${hangout.photos?.length > 0 ? 'mt-3' : 'pt-4'}`}>
-          <TouchableOpacity onPress={() => router.back()} className="mr-3">
-            <Ionicons name="chevron-back" size={24} color={isDark ? '#94a3b8' : '#6b7280'} />
+        {/* Back button */}
+        <View style={[styles.backRow, hangout.photos?.length > 0 ? { marginTop: 12 } : { paddingTop: 16 }]}>
+          <TouchableOpacity onPress={() => router.back()} style={{ marginRight: 12 }}>
+            <Ionicons name="chevron-back" size={24} color="#8875ff" />
           </TouchableOpacity>
         </View>
 
-        <View className="px-6">
+        <View style={{ paddingHorizontal: 24 }}>
           {/* Title row */}
-          <View className="flex-row items-center mb-1">
-            <Text className="text-2xl mr-2">
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}>
+            <Text style={{ fontSize: 24, marginRight: 8 }}>
               {ACTIVITY_EMOJIS[hangout.activity_tag?.toLowerCase() ?? ''] ?? '📅'}
             </Text>
-            <Text className="text-gray-900 dark:text-dark-50 font-bold text-xl flex-1">
+            <Text style={styles.hangoutTitle} numberOfLines={2}>
               {hangout.title}
             </Text>
           </View>
 
           {/* Meta */}
-          <View className="gap-1.5 mb-4">
+          <View style={{ gap: 6, marginBottom: 16 }}>
             {dateStr && (
-              <View className="flex-row items-center">
-                <Ionicons name="calendar" size={14} color={isDark ? '#64748b' : '#9ca3af'} />
-                <Text className="text-gray-500 dark:text-dark-300 text-sm ml-1.5">{dateStr}</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Ionicons name="calendar" size={14} color="#5a5f7a" />
+                <Text style={[styles.metaText, { marginLeft: 6 }]}>{dateStr}</Text>
               </View>
             )}
             {hangout.location_name && (
-              <View className="flex-row items-center">
-                <Ionicons name="location" size={14} color={isDark ? '#64748b' : '#9ca3af'} />
-                <Text className="text-gray-500 dark:text-dark-300 text-sm ml-1.5">
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Ionicons name="location" size={14} color="#5a5f7a" />
+                <Text style={[styles.metaText, { marginLeft: 6 }]}>
                   {hangout.location_name}
                 </Text>
               </View>
             )}
-            <View className="flex-row items-center">
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Avatar
                 url={hangout.creator?.avatar_url}
                 name={hangout.creator?.display_name}
                 size={16}
               />
-              <Text className="text-gray-400 dark:text-dark-400 text-xs ml-1.5">
+              <Text style={[styles.metaText, { marginLeft: 6 }]}>
                 Logged by {hangout.creator?.display_name}
               </Text>
             </View>
@@ -117,19 +115,19 @@ export default function HangoutDetailScreen() {
 
           {/* Attendees */}
           {hangout.attendees?.length > 0 && (
-            <View className="mb-5">
-              <Text className="text-gray-500 dark:text-dark-200 text-sm font-medium mb-2">
+            <View style={{ marginBottom: 20 }}>
+              <Text style={styles.sectionSubLabel}>
                 Who was there
               </Text>
-              <View className="flex-row flex-wrap">
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
                 {hangout.attendees.map((a) => (
-                  <View key={a.user_id} className="items-center mr-4 mb-2">
+                  <View key={a.user_id} style={{ alignItems: 'center', marginRight: 16, marginBottom: 8 }}>
                     <Avatar
                       url={a.profile?.avatar_url}
                       name={a.profile?.display_name}
                       size={40}
                     />
-                    <Text className="text-gray-600 dark:text-dark-200 text-xs mt-1" numberOfLines={1}>
+                    <Text style={styles.attendeeName} numberOfLines={1}>
                       {a.profile?.display_name?.split(' ')[0]}
                     </Text>
                   </View>
@@ -139,11 +137,11 @@ export default function HangoutDetailScreen() {
           )}
 
           {/* Reactions */}
-          <View className="mb-4">
-            <Text className="text-gray-500 dark:text-dark-200 text-sm font-medium mb-2">
+          <View style={{ marginBottom: 16 }}>
+            <Text style={styles.sectionSubLabel}>
               Reactions
             </Text>
-            <View className="flex-row flex-wrap">
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
               {REACTION_EMOJIS.map((emoji) => {
                 const count = reactionCounts[emoji] ?? 0;
                 const isActive = hangout.my_reaction === emoji;
@@ -151,14 +149,15 @@ export default function HangoutDetailScreen() {
                   <TouchableOpacity
                     key={emoji}
                     onPress={() => toggleReaction.mutate({ hangoutId: hangout.id, emoji })}
-                    className={`flex-row items-center rounded-full px-3 py-1.5 mr-2 mb-2 ${
-                      isActive ? 'bg-lavender/30' : 'bg-white dark:bg-dark-700'
-                    }`}
+                    style={[
+                      styles.reactionButton,
+                      isActive ? styles.reactionButtonActive : styles.reactionButtonInactive,
+                    ]}
                     activeOpacity={0.7}
                   >
-                    <Text className="text-lg">{emoji}</Text>
+                    <Text style={{ fontSize: 18 }}>{emoji}</Text>
                     {count > 0 && (
-                      <Text className="text-gray-500 dark:text-dark-300 text-xs ml-1 font-medium">
+                      <Text style={styles.reactionCount}>
                         {count}
                       </Text>
                     )}
@@ -172,3 +171,61 @@ export default function HangoutDetailScreen() {
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#09090f',
+  },
+  backRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+  },
+  hangoutTitle: {
+    fontFamily: 'SpaceGrotesk_700Bold',
+    color: '#f0f0ff',
+    fontSize: 22,
+    flex: 1,
+  },
+  metaText: {
+    color: '#8b8fa8',
+    fontSize: 13,
+  },
+  sectionSubLabel: {
+    color: '#8b8fa8',
+    fontSize: 13,
+    fontWeight: '600',
+    marginBottom: 8,
+  },
+  attendeeName: {
+    color: '#8b8fa8',
+    fontSize: 12,
+    marginTop: 4,
+  },
+  reactionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 999,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    marginRight: 8,
+    marginBottom: 8,
+  },
+  reactionButtonInactive: {
+    backgroundColor: 'rgba(255,255,255,0.07)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
+  },
+  reactionButtonActive: {
+    backgroundColor: 'rgba(136,117,255,0.2)',
+    borderWidth: 1,
+    borderColor: '#8875ff',
+  },
+  reactionCount: {
+    color: '#8b8fa8',
+    fontSize: 12,
+    marginLeft: 4,
+    fontWeight: '500',
+  },
+});
