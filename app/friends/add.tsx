@@ -6,11 +6,9 @@ import { Ionicons } from '@expo/vector-icons';
 import { useSearchUsers, useSendFriendRequest } from '../../hooks/useFriends';
 import { Input } from '../../components/ui/Input';
 import { FriendCard } from '../../components/FriendCard';
-import { useTheme } from '../../providers/ThemeProvider';
 
 export default function AddFriendScreen() {
   const router = useRouter();
-  const { isDark } = useTheme();
   const [search, setSearch] = useState('');
   const { data: results, isLoading } = useSearchUsers(search);
   const sendRequest = useSendFriendRequest();
@@ -22,17 +20,17 @@ export default function AddFriendScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50 dark:bg-dark-900" edges={['top']}>
-      <View className="flex-row items-center px-6 pt-2 pb-4">
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#09090f' }} edges={['top']}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 24, paddingTop: 8, paddingBottom: 16 }}>
         <TouchableOpacity onPress={() => router.back()}>
-          <Ionicons name="arrow-back" size={24} color={isDark ? '#f8fafc' : '#111827'} />
+          <Ionicons name="arrow-back" size={24} color="#8875ff" />
         </TouchableOpacity>
-        <Text className="text-xl font-bold text-gray-900 dark:text-dark-50 ml-4">
+        <Text style={{ fontFamily: 'SpaceGrotesk_700Bold', color: '#f0f0ff', fontSize: 22, marginLeft: 16 }}>
           Add Friend
         </Text>
       </View>
 
-      <View className="px-6">
+      <View style={{ paddingHorizontal: 24 }}>
         <Input
           label="Search by username"
           value={search}
@@ -41,15 +39,15 @@ export default function AddFriendScreen() {
         />
       </View>
 
-      <ScrollView className="flex-1 px-6">
+      <ScrollView style={{ flex: 1, paddingHorizontal: 24 }}>
         {search.length < 2 ? (
-          <Text className="text-gray-500 dark:text-dark-300 text-center mt-8">
+          <Text style={{ color: '#5a5f7a', textAlign: 'center', marginTop: 32 }}>
             Type at least 2 characters to search
           </Text>
         ) : isLoading ? (
-          <Text className="text-gray-500 dark:text-dark-300 text-center mt-8">Searching...</Text>
+          <Text style={{ color: '#5a5f7a', textAlign: 'center', marginTop: 32 }}>Searching...</Text>
         ) : results?.length === 0 ? (
-          <Text className="text-gray-500 dark:text-dark-300 text-center mt-8">
+          <Text style={{ color: '#5a5f7a', textAlign: 'center', marginTop: 32 }}>
             No users found
           </Text>
         ) : (

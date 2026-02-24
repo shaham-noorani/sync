@@ -12,13 +12,11 @@ import {
 } from '../../hooks/useFriends';
 import { FriendCard } from '../../components/FriendCard';
 import { SkeletonLoader } from '../../components/SkeletonLoader';
-import { useTheme } from '../../providers/ThemeProvider';
 
 type Tab = 'friends' | 'requests' | 'sent';
 
 export default function FriendsScreen() {
   const router = useRouter();
-  const { isDark } = useTheme();
   const [activeTab, setActiveTab] = useState<Tab>('friends');
   const { data: friends, isLoading: friendsLoading, refetch: refetchFriends } = useFriendsList();
   const { data: requests, isLoading: requestsLoading, refetch: refetchRequests } = usePendingRequests();
@@ -41,34 +39,41 @@ export default function FriendsScreen() {
   ];
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50 dark:bg-dark-900" edges={['top']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#09090f' }} edges={['top']}>
       {/* Header */}
-      <View className="flex-row items-center justify-between px-6 pt-2 pb-4">
-        <View className="flex-row items-center">
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 24, paddingTop: 8, paddingBottom: 16 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <TouchableOpacity onPress={() => router.back()}>
-            <Ionicons name="arrow-back" size={24} color={isDark ? '#f8fafc' : '#111827'} />
+            <Ionicons name="arrow-back" size={24} color="#8875ff" />
           </TouchableOpacity>
-          <Text className="text-xl font-bold text-gray-900 dark:text-dark-50 ml-4">Friends</Text>
+          <Text style={{ fontFamily: 'SpaceGrotesk_700Bold', color: '#f0f0ff', fontSize: 22, marginLeft: 16 }}>
+            Friends
+          </Text>
         </View>
         <TouchableOpacity onPress={() => router.push('/friends/add')}>
-          <Ionicons name="person-add" size={24} color="#a4a8d1" />
+          <Ionicons name="person-add" size={24} color="#8875ff" />
         </TouchableOpacity>
       </View>
 
       {/* Tabs */}
-      <View className="flex-row px-6 mb-4">
+      <View style={{ flexDirection: 'row', paddingHorizontal: 24, marginBottom: 16 }}>
         {tabs.map((tab) => (
           <TouchableOpacity
             key={tab.key}
-            className={`mr-4 pb-2 ${
-              activeTab === tab.key ? 'border-b-2 border-lavender' : ''
-            }`}
+            style={[
+              { marginRight: 16, paddingBottom: 8 },
+              activeTab === tab.key
+                ? { borderBottomWidth: 2, borderBottomColor: '#8875ff' }
+                : {},
+            ]}
             onPress={() => setActiveTab(tab.key)}
           >
             <Text
-              className={`text-base font-medium ${
-                activeTab === tab.key ? 'text-lavender-500 dark:text-lavender' : 'text-gray-400 dark:text-dark-300'
-              }`}
+              style={
+                activeTab === tab.key
+                  ? { color: '#8875ff', fontWeight: '700', fontSize: 15 }
+                  : { color: '#5a5f7a', fontWeight: '600', fontSize: 15 }
+              }
             >
               {tab.label}
               {tab.count !== undefined && tab.count > 0
@@ -80,7 +85,7 @@ export default function FriendsScreen() {
       </View>
 
       <ScrollView
-        className="flex-1 px-6"
+        style={{ flex: 1, paddingHorizontal: 24, backgroundColor: '#09090f' }}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       >
         {activeTab === 'friends' && (
@@ -90,7 +95,7 @@ export default function FriendsScreen() {
                 <SkeletonLoader key={i} height={60} borderRadius={12} className="mb-3" />
               ))
             ) : friends?.length === 0 ? (
-              <Text className="text-gray-500 dark:text-dark-300 text-center mt-8">
+              <Text style={{ color: '#5a5f7a', textAlign: 'center', marginTop: 32 }}>
                 No friends yet. Tap + to add some!
               </Text>
             ) : (
@@ -115,7 +120,7 @@ export default function FriendsScreen() {
                 <SkeletonLoader key={i} height={60} borderRadius={12} className="mb-3" />
               ))
             ) : requests?.incoming.length === 0 ? (
-              <Text className="text-gray-500 dark:text-dark-300 text-center mt-8">
+              <Text style={{ color: '#5a5f7a', textAlign: 'center', marginTop: 32 }}>
                 No pending requests
               </Text>
             ) : (
@@ -152,7 +157,7 @@ export default function FriendsScreen() {
                 <SkeletonLoader key={i} height={60} borderRadius={12} className="mb-3" />
               ))
             ) : requests?.outgoing.length === 0 ? (
-              <Text className="text-gray-500 dark:text-dark-300 text-center mt-8">
+              <Text style={{ color: '#5a5f7a', textAlign: 'center', marginTop: 32 }}>
                 No sent requests
               </Text>
             ) : (

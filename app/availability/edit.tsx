@@ -24,7 +24,6 @@ import { HeatmapGrid } from '../../components/HeatmapGrid';
 import { WeekNavigator } from '../../components/WeekNavigator';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
-import { useTheme } from '../../providers/ThemeProvider';
 
 const DAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const TIME_BLOCKS = ['morning', 'afternoon', 'evening'] as const;
@@ -58,7 +57,6 @@ function formatWeekLabel(dates: string[]): string {
 
 export default function EditAvailabilityScreen() {
   const router = useRouter();
-  const { isDark } = useTheme();
   const [mode, setMode] = useState<Mode>('pattern');
   const [weekOffset, setWeekOffset] = useState(0);
 
@@ -139,44 +137,52 @@ export default function EditAvailabilityScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50 dark:bg-dark-900" edges={['top']}>
-      <ScrollView className="flex-1" contentContainerClassName="px-6 pt-2 pb-12">
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#09090f' }} edges={['top']}>
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 8, paddingBottom: 48 }}>
         {/* Header */}
-        <View className="flex-row items-center mb-6">
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 24 }}>
           <TouchableOpacity onPress={() => router.back()}>
-            <Ionicons name="arrow-back" size={24} color={isDark ? '#f8fafc' : '#111827'} />
+            <Ionicons name="arrow-back" size={24} color="#8875ff" />
           </TouchableOpacity>
-          <Text className="text-xl font-bold text-gray-900 dark:text-dark-50 ml-4">
+          <Text style={{ fontFamily: 'SpaceGrotesk_700Bold', color: '#f0f0ff', fontSize: 22, marginLeft: 16 }}>
             Edit Availability
           </Text>
         </View>
 
         {/* Mode Tabs */}
-        <View className="flex-row bg-white dark:bg-dark-700 rounded-xl p-1 mb-6">
+        <View style={{ flexDirection: 'row', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 14, padding: 4, marginBottom: 24 }}>
           <TouchableOpacity
-            className={`flex-1 py-2.5 rounded-lg items-center ${
-              mode === 'pattern' ? 'bg-lavender' : ''
-            }`}
+            style={
+              mode === 'pattern'
+                ? { backgroundColor: '#8875ff', borderRadius: 10, paddingVertical: 10, flex: 1, alignItems: 'center' }
+                : { flex: 1, paddingVertical: 10, alignItems: 'center' }
+            }
             onPress={() => setMode('pattern')}
           >
             <Text
-              className={`font-medium ${
-                mode === 'pattern' ? 'text-dark-900' : 'text-gray-500 dark:text-dark-300'
-              }`}
+              style={
+                mode === 'pattern'
+                  ? { color: '#ffffff', fontWeight: '700' }
+                  : { color: '#5a5f7a', fontWeight: '500' }
+              }
             >
               Weekly Pattern
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
-            className={`flex-1 py-2.5 rounded-lg items-center ${
-              mode === 'specific' ? 'bg-lavender' : ''
-            }`}
+            style={
+              mode === 'specific'
+                ? { backgroundColor: '#8875ff', borderRadius: 10, paddingVertical: 10, flex: 1, alignItems: 'center' }
+                : { flex: 1, paddingVertical: 10, alignItems: 'center' }
+            }
             onPress={() => setMode('specific')}
           >
             <Text
-              className={`font-medium ${
-                mode === 'specific' ? 'text-dark-900' : 'text-gray-500 dark:text-dark-300'
-              }`}
+              style={
+                mode === 'specific'
+                  ? { color: '#ffffff', fontWeight: '700' }
+                  : { color: '#5a5f7a', fontWeight: '500' }
+              }
             >
               Specific Dates
             </Text>
@@ -185,7 +191,7 @@ export default function EditAvailabilityScreen() {
 
         {mode === 'pattern' ? (
           <>
-            <Text className="text-gray-500 dark:text-dark-300 text-sm mb-4">
+            <Text style={{ color: '#8b8fa8', fontSize: 14, marginBottom: 16 }}>
               Set your recurring weekly schedule. Tap cells to toggle free/busy.
             </Text>
             <HeatmapGrid
@@ -194,7 +200,7 @@ export default function EditAvailabilityScreen() {
               editable
               onCellPress={handlePatternCellPress}
             />
-            <Text className="text-gray-400 dark:text-dark-400 text-xs mt-3 text-center">
+            <Text style={{ color: '#5a5f7a', fontSize: 12, marginTop: 12, textAlign: 'center' }}>
               Pattern applies to the same day every week
             </Text>
           </>
@@ -205,7 +211,7 @@ export default function EditAvailabilityScreen() {
               onPrev={() => setWeekOffset((o) => o - 1)}
               onNext={() => setWeekOffset((o) => o + 1)}
             />
-            <Text className="text-gray-500 dark:text-dark-300 text-sm mb-4 mt-2">
+            <Text style={{ color: '#8b8fa8', fontSize: 14, marginBottom: 16, marginTop: 8 }}>
               Override specific dates. These take priority over your weekly pattern.
             </Text>
             <HeatmapGrid
@@ -218,11 +224,11 @@ export default function EditAvailabilityScreen() {
         )}
 
         {/* Travel Periods */}
-        <View className="mt-10">
-          <Text className="text-lg font-semibold text-gray-900 dark:text-dark-50 mb-4">
+        <View style={{ marginTop: 40 }}>
+          <Text style={{ color: '#f0f0ff', fontWeight: '700', fontSize: 18, marginBottom: 16 }}>
             Travel Periods
           </Text>
-          <Text className="text-gray-500 dark:text-dark-300 text-sm mb-4">
+          <Text style={{ color: '#8b8fa8', fontSize: 14, marginBottom: 16 }}>
             Mark dates when you're away. All time blocks will show as busy.
           </Text>
 
@@ -254,24 +260,34 @@ export default function EditAvailabilityScreen() {
           />
 
           {travelPeriods && travelPeriods.length > 0 && (
-            <View className="mt-6">
+            <View style={{ marginTop: 24 }}>
               {travelPeriods.map((tp) => (
                 <View
                   key={tp.id}
-                  className="flex-row items-center bg-white dark:bg-dark-700 rounded-xl px-4 py-3 mb-3"
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    backgroundColor: 'rgba(255,255,255,0.05)',
+                    borderWidth: 1,
+                    borderColor: 'rgba(255,255,255,0.08)',
+                    borderRadius: 20,
+                    paddingHorizontal: 16,
+                    paddingVertical: 12,
+                    marginBottom: 12,
+                  }}
                 >
-                  <Ionicons name="airplane" size={18} color="#a4a8d1" />
-                  <View className="flex-1 ml-3">
-                    <Text className="text-gray-900 dark:text-dark-50 font-medium">
+                  <Ionicons name="airplane" size={18} color="#8875ff" />
+                  <View style={{ flex: 1, marginLeft: 12 }}>
+                    <Text style={{ color: '#f0f0ff', fontWeight: '600' }}>
                       {tp.label || 'Travel'}
                     </Text>
-                    <Text className="text-gray-500 dark:text-dark-300 text-sm">
+                    <Text style={{ color: '#8b8fa8', fontSize: 13 }}>
                       {tp.start_date} → {tp.end_date}
                     </Text>
                   </View>
                   <TouchableOpacity
                     onPress={() => deleteTravel.mutate(tp.id)}
-                    className="p-2"
+                    style={{ padding: 8 }}
                   >
                     <Ionicons name="trash-outline" size={18} color="#ef4444" />
                   </TouchableOpacity>
