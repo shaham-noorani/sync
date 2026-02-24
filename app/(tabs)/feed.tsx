@@ -55,12 +55,12 @@ export default function FeedScreen() {
   }, [hangouts, activeFilter]);
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50 dark:bg-dark-900" edges={['top']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#09090f' }} edges={['top']}>
       {/* Header */}
-      <View className="flex-row items-center justify-between px-6 pt-2 pb-3">
-        <Text className="text-xl font-bold text-gray-900 dark:text-dark-50">Feed</Text>
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 24, paddingTop: 8, paddingBottom: 12 }}>
+        <Text style={{ fontFamily: 'SpaceGrotesk_700Bold', color: '#f0f0ff', fontSize: 22 }}>Feed</Text>
         <TouchableOpacity onPress={() => router.push('/hangout/log')}>
-          <Ionicons name="add-circle" size={28} color="#a4a8d1" />
+          <Ionicons name="add-circle" size={28} color="#8875ff" />
         </TouchableOpacity>
       </View>
 
@@ -73,14 +73,18 @@ export default function FeedScreen() {
         >
           <TouchableOpacity
             onPress={() => setActiveFilter(null)}
-            className={`mr-2 rounded-full px-3 py-1.5 ${
-              !activeFilter ? 'bg-lavender' : 'bg-white dark:bg-dark-700'
-            }`}
+            style={[
+              { marginRight: 8, borderRadius: 999, paddingHorizontal: 12, paddingVertical: 6 },
+              !activeFilter
+                ? { backgroundColor: '#8875ff' }
+                : { backgroundColor: 'rgba(255,255,255,0.07)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' },
+            ]}
           >
             <Text
-              className={`text-xs font-semibold ${
-                !activeFilter ? 'text-dark-900' : 'text-gray-500 dark:text-dark-300'
-              }`}
+              style={[
+                { fontSize: 12, fontWeight: '600' },
+                !activeFilter ? { color: '#fff' } : { color: '#8b8fa8' },
+              ]}
             >
               All
             </Text>
@@ -91,17 +95,21 @@ export default function FeedScreen() {
               <TouchableOpacity
                 key={tag}
                 onPress={() => setActiveFilter(isActive ? null : tag)}
-                className={`mr-2 flex-row items-center rounded-full px-3 py-1.5 ${
-                  isActive ? 'bg-lavender' : 'bg-white dark:bg-dark-700'
-                }`}
+                style={[
+                  { marginRight: 8, flexDirection: 'row', alignItems: 'center', borderRadius: 999, paddingHorizontal: 12, paddingVertical: 6 },
+                  isActive
+                    ? { backgroundColor: '#8875ff' }
+                    : { backgroundColor: 'rgba(255,255,255,0.07)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' },
+                ]}
               >
-                <Text className="text-xs mr-1">
+                <Text style={{ fontSize: 12, marginRight: 4 }}>
                   {ACTIVITY_EMOJIS[tag.toLowerCase()] ?? '📅'}
                 </Text>
                 <Text
-                  className={`text-xs font-semibold capitalize ${
-                    isActive ? 'text-dark-900' : 'text-gray-500 dark:text-dark-300'
-                  }`}
+                  style={[
+                    { fontSize: 12, fontWeight: '600', textTransform: 'capitalize' },
+                    isActive ? { color: '#fff' } : { color: '#8b8fa8' },
+                  ]}
                 >
                   {tag}
                 </Text>
@@ -112,33 +120,33 @@ export default function FeedScreen() {
       )}
 
       <ScrollView
-        className="flex-1"
-        contentContainerClassName="pb-12"
+        style={{ flex: 1 }}
+        contentContainerStyle={{ paddingBottom: 48 }}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       >
         {isLoading ? (
-          <View className="px-6">
+          <View style={{ paddingHorizontal: 24 }}>
             {Array.from({ length: 3 }).map((_, i) => (
-              <View key={i} className="mb-4">
+              <View key={i} style={{ marginBottom: 16 }}>
                 <SkeletonLoader height={200} borderRadius={16} />
               </View>
             ))}
           </View>
         ) : filteredHangouts.length === 0 ? (
-          <View className="items-center justify-center px-8 mt-20">
+          <View style={{ alignItems: 'center', justifyContent: 'center', paddingHorizontal: 32, marginTop: 80 }}>
             <Text style={{ fontSize: 56 }}>📸</Text>
-            <Text className="text-gray-900 dark:text-dark-50 font-bold text-xl text-center mt-4">
+            <Text style={{ fontFamily: 'SpaceGrotesk_700Bold', color: '#f0f0ff', fontSize: 20, textAlign: 'center', marginTop: 16 }}>
               Nothing here yet
             </Text>
-            <Text className="text-gray-500 dark:text-dark-300 text-sm text-center mt-2 leading-5">
+            <Text style={{ color: '#5a5f7a', fontSize: 14, textAlign: 'center', marginTop: 8, lineHeight: 20 }}>
               Log a hangout to capture the moment and share it with your crew.
             </Text>
             <TouchableOpacity
               onPress={() => router.push('/hangout/log')}
-              className="bg-lavender rounded-2xl px-8 py-3.5 mt-8"
+              style={{ backgroundColor: '#8875ff', borderRadius: 20, paddingHorizontal: 32, paddingVertical: 14, marginTop: 32 }}
               activeOpacity={0.8}
             >
-              <Text className="text-dark-900 font-bold text-base">Log a Hangout</Text>
+              <Text style={{ color: '#fff', fontWeight: '700', fontSize: 16 }}>Log a Hangout</Text>
             </TouchableOpacity>
           </View>
         ) : (
@@ -152,7 +160,7 @@ export default function FeedScreen() {
             return (
               <TouchableOpacity
                 key={hangout.id}
-                className="mx-4 mb-4 bg-white dark:bg-dark-700 rounded-2xl overflow-hidden"
+                style={{ marginHorizontal: 16, marginBottom: 16, backgroundColor: 'rgba(255,255,255,0.05)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)', borderRadius: 20, overflow: 'hidden' }}
                 onPress={() => router.push(`/hangout/${hangout.id}`)}
                 activeOpacity={0.9}
               >
@@ -162,7 +170,7 @@ export default function FeedScreen() {
                     horizontal
                     pagingEnabled
                     showsHorizontalScrollIndicator={false}
-                    className="h-48"
+                    style={{ height: 192 }}
                   >
                     {hangout.photos.map((photo) => (
                       <Image
@@ -175,41 +183,41 @@ export default function FeedScreen() {
                   </ScrollView>
                 )}
 
-                <View className="p-4">
+                <View style={{ padding: 16 }}>
                   {/* Creator row */}
-                  <View className="flex-row items-center mb-3">
+                  <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
                     <Avatar
                       url={hangout.creator?.avatar_url}
                       name={hangout.creator?.display_name}
                       size={32}
                     />
-                    <View className="flex-1 ml-2">
-                      <Text className="text-gray-900 dark:text-dark-50 font-semibold text-sm">
+                    <View style={{ flex: 1, marginLeft: 8 }}>
+                      <Text style={{ fontFamily: 'SpaceGrotesk_700Bold', color: '#f0f0ff', fontSize: 14 }}>
                         {hangout.creator?.display_name}
                       </Text>
-                      <Text className="text-gray-400 dark:text-dark-400 text-xs">
+                      <Text style={{ color: '#8b8fa8', fontSize: 12 }}>
                         {formatRelativeDate(hangout.date || hangout.created_at)}
                       </Text>
                     </View>
-                    <Text className="text-xl">
+                    <Text style={{ fontSize: 20 }}>
                       {ACTIVITY_EMOJIS[hangout.activity_tag?.toLowerCase() ?? ''] ?? '📅'}
                     </Text>
                   </View>
 
                   {/* Title */}
-                  <Text className="text-gray-900 dark:text-dark-50 font-bold text-base mb-1">
+                  <Text style={{ fontFamily: 'SpaceGrotesk_700Bold', color: '#f0f0ff', fontSize: 16, marginBottom: 4 }}>
                     {hangout.title}
                   </Text>
 
                   {hangout.location_name && (
-                    <Text className="text-gray-400 dark:text-dark-400 text-xs mb-2">
+                    <Text style={{ color: '#8b8fa8', fontSize: 12, marginBottom: 8 }}>
                       📍 {hangout.location_name}
                     </Text>
                   )}
 
                   {/* Attendees */}
                   {hangout.attendees?.length > 0 && (
-                    <View className="flex-row items-center mb-3">
+                    <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
                       {hangout.attendees.slice(0, 4).map((a, i) => (
                         <View key={a.user_id} style={{ marginLeft: i > 0 ? -8 : 0, zIndex: 4 - i }}>
                           <Avatar
@@ -220,7 +228,7 @@ export default function FeedScreen() {
                         </View>
                       ))}
                       {hangout.attendees.length > 4 && (
-                        <Text className="text-gray-400 dark:text-dark-400 text-xs ml-2">
+                        <Text style={{ color: '#8b8fa8', fontSize: 12, marginLeft: 8 }}>
                           +{hangout.attendees.length - 4} more
                         </Text>
                       )}
@@ -228,21 +236,22 @@ export default function FeedScreen() {
                   )}
 
                   {/* Reactions bar */}
-                  <View className="flex-row items-center">
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     {/* Existing reactions */}
-                    <View className="flex-row flex-1">
+                    <View style={{ flexDirection: 'row', flex: 1 }}>
                       {Object.entries(reactionCounts).map(([emoji, count]) => (
                         <TouchableOpacity
                           key={emoji}
                           onPress={() => toggleReaction.mutate({ hangoutId: hangout.id, emoji })}
-                          className={`flex-row items-center rounded-full px-2 py-1 mr-1 ${
+                          style={[
+                            { flexDirection: 'row', alignItems: 'center', borderRadius: 999, paddingHorizontal: 8, paddingVertical: 4, marginRight: 4 },
                             hangout.my_reaction === emoji
-                              ? 'bg-lavender/30'
-                              : 'bg-gray-100 dark:bg-dark-600'
-                          }`}
+                              ? { backgroundColor: 'rgba(136,117,255,0.2)', borderWidth: 1, borderColor: '#8875ff' }
+                              : { backgroundColor: 'rgba(255,255,255,0.07)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' },
+                          ]}
                         >
-                          <Text className="text-sm">{emoji}</Text>
-                          <Text className="text-gray-500 dark:text-dark-300 text-xs ml-1">{count}</Text>
+                          <Text style={{ fontSize: 14 }}>{emoji}</Text>
+                          <Text style={{ color: '#8b8fa8', fontSize: 12, marginLeft: 4 }}>{count}</Text>
                         </TouchableOpacity>
                       ))}
                     </View>
@@ -250,19 +259,19 @@ export default function FeedScreen() {
                     {/* Add reaction */}
                     <TouchableOpacity
                       onPress={() => setExpandedReactions(isReactionOpen ? null : hangout.id)}
-                      className="p-1"
+                      style={{ padding: 4 }}
                     >
                       <Ionicons
                         name="add-circle-outline"
                         size={20}
-                        color={isDark ? '#64748b' : '#9ca3af'}
+                        color="#5a5f7a"
                       />
                     </TouchableOpacity>
                   </View>
 
                   {/* Emoji picker */}
                   {isReactionOpen && (
-                    <View className="flex-row mt-2 bg-gray-100 dark:bg-dark-600 rounded-full px-3 py-2 self-start">
+                    <View style={{ flexDirection: 'row', marginTop: 8, backgroundColor: 'rgba(255,255,255,0.07)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)', borderRadius: 999, paddingHorizontal: 12, paddingVertical: 8, alignSelf: 'flex-start' }}>
                       {REACTION_EMOJIS.map((emoji) => (
                         <TouchableOpacity
                           key={emoji}
@@ -270,9 +279,9 @@ export default function FeedScreen() {
                             toggleReaction.mutate({ hangoutId: hangout.id, emoji });
                             setExpandedReactions(null);
                           }}
-                          className="mx-1"
+                          style={{ marginHorizontal: 4 }}
                         >
-                          <Text className="text-xl">{emoji}</Text>
+                          <Text style={{ fontSize: 20 }}>{emoji}</Text>
                         </TouchableOpacity>
                       ))}
                     </View>

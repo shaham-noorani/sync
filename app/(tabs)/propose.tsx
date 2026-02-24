@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useState, useCallback } from 'react';
 import { RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-native';
@@ -15,18 +16,10 @@ const ACTIVITY_EMOJIS: Record<string, string> = {
   coffee: '☕',
 };
 
-const RESPONSE_COLORS: Record<string, string> = {
-  accepted: 'text-green-500',
-  declined: 'text-red-400',
-  maybe: 'text-yellow-500',
-};
-
 function ProposalCard({ proposal, isMe }: { proposal: Proposal; isMe: boolean }) {
   const router = useRouter();
-  const { isDark } = useTheme();
   const acceptedCount = proposal.responses.filter((r) => r.response === 'accepted').length;
   const pendingResponse = !isMe && (proposal.my_response === 'pending' || proposal.my_response === null);
-  const myResponseColor = proposal.my_response ? RESPONSE_COLORS[proposal.my_response] : null;
 
   const dateStr = proposal.proposed_date
     ? new Date(proposal.proposed_date + 'T12:00:00').toLocaleDateString('en-US', {
@@ -34,51 +27,70 @@ function ProposalCard({ proposal, isMe }: { proposal: Proposal; isMe: boolean })
       })
     : 'Date TBD';
 
+  const myResponseBadge = () => {
+    if (proposal.my_response === 'accepted') {
+      return (
+        <View style={{ backgroundColor: 'rgba(34,197,94,0.15)', borderRadius: 999, paddingHorizontal: 10, paddingVertical: 4, marginLeft: 8 }}>
+          <Text style={{ color: '#22c55e', fontSize: 12, fontWeight: '700' }}>Going</Text>
+        </View>
+      );
+    }
+    if (proposal.my_response === 'declined') {
+      return (
+        <View style={{ backgroundColor: 'rgba(239,68,68,0.15)', borderRadius: 999, paddingHorizontal: 10, paddingVertical: 4, marginLeft: 8 }}>
+          <Text style={{ color: '#f87171', fontSize: 12, fontWeight: '700' }}>Declined</Text>
+        </View>
+      );
+    }
+    if (proposal.my_response === 'maybe') {
+      return (
+        <View style={{ backgroundColor: 'rgba(234,179,8,0.15)', borderRadius: 999, paddingHorizontal: 10, paddingVertical: 4, marginLeft: 8 }}>
+          <Text style={{ color: '#eab308', fontSize: 12, fontWeight: '700' }}>Maybe</Text>
+        </View>
+      );
+    }
+    return null;
+  };
+
   return (
     <TouchableOpacity
       onPress={() => router.push(`/proposal/${proposal.id}`)}
-      className="bg-white dark:bg-dark-700 rounded-2xl px-4 py-4 mb-3"
+      style={{ backgroundColor: 'rgba(255,255,255,0.05)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)', borderRadius: 20, paddingHorizontal: 16, paddingVertical: 16, marginBottom: 12 }}
       activeOpacity={0.8}
     >
-      <View className="flex-row items-start">
-        <View className="w-10 h-10 rounded-xl bg-lavender/20 items-center justify-center mr-3">
-          <Text className="text-lg">
+      <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
+        <View style={{ width: 40, height: 40, borderRadius: 12, backgroundColor: 'rgba(136,117,255,0.15)', alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
+          <Text style={{ fontSize: 18 }}>
             {ACTIVITY_EMOJIS[proposal.activity_tag?.toLowerCase() ?? ''] ?? '📅'}
           </Text>
         </View>
-        <View className="flex-1">
-          <Text className="text-gray-900 dark:text-dark-50 font-bold text-sm" numberOfLines={1}>
+        <View style={{ flex: 1 }}>
+          <Text style={{ color: '#f0f0ff', fontWeight: '700', fontSize: 15 }} numberOfLines={1}>
             {proposal.title}
           </Text>
-          <Text className="text-gray-400 dark:text-dark-400 text-xs mt-0.5">{dateStr}</Text>
+          <Text style={{ color: '#8b8fa8', fontSize: 13, marginTop: 2 }}>{dateStr}</Text>
         </View>
         {pendingResponse ? (
-          <View className="bg-lavender rounded-full px-2.5 py-1 ml-2">
-            <Text className="text-dark-900 text-xs font-bold">Respond</Text>
-          </View>
-        ) : myResponseColor ? (
-          <Text className={`text-xs font-semibold ml-2 ${myResponseColor}`}>
-            {proposal.my_response === 'accepted' ? '✓ Going'
-              : proposal.my_response === 'declined' ? '✗ Declined'
-              : '? Maybe'}
-          </Text>
-        ) : null}
+          <LinearGradient colors={['#8875ff', '#c084fc']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ borderRadius: 999, paddingHorizontal: 12, paddingVertical: 5, marginLeft: 8 }}>
+            <Text style={{ color: '#fff', fontSize: 12, fontWeight: '700' }}>Respond</Text>
+          </LinearGradient>
+        ) : myResponseBadge()}
       </View>
 
       {/* Footer row */}
-      <View className="flex-row items-center mt-3 pt-3 border-t border-gray-100 dark:border-dark-600">
+      <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 12, paddingTop: 12, borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.06)' }}>
         {/* Avatar stack */}
-        <View className="flex-row flex-1 items-center">
+        <View style={{ flexDirection: 'row', flex: 1, alignItems: 'center' }}>
           {proposal.responses.slice(0, 4).map((r, i) => (
             <View key={r.user_id} style={{ marginLeft: i > 0 ? -8 : 0, zIndex: 4 - i }}>
               <Avatar url={r.profile.avatar_url} name={r.profile.display_name} size={22} />
             </View>
           ))}
-          <Text className="text-gray-400 dark:text-dark-400 text-xs ml-2">
+          <Text style={{ color: '#8b8fa8', fontSize: 12, marginLeft: 8 }}>
             {acceptedCount} going
           </Text>
         </View>
-        <Text className="text-gray-400 dark:text-dark-400 text-xs">
+        <Text style={{ color: '#8b8fa8', fontSize: 12 }}>
           {isMe ? 'by you' : `by ${proposal.creator.display_name.split(' ')[0]}`}
         </Text>
       </View>
@@ -104,18 +116,18 @@ export default function ProposalsScreen() {
   const incoming = proposals?.filter((p) => p.created_by !== user?.id) ?? [];
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50 dark:bg-dark-900" edges={['top']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#09090f' }} edges={['top']}>
       {/* Header */}
-      <View className="flex-row items-center justify-between px-6 pt-2 pb-4">
-        <Text className="text-xl font-bold text-gray-900 dark:text-dark-50">Proposals</Text>
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 24, paddingTop: 8, paddingBottom: 16 }}>
+        <Text style={{ fontFamily: 'SpaceGrotesk_700Bold', color: '#f0f0ff', fontSize: 22 }}>Proposals</Text>
         <TouchableOpacity onPress={() => router.push('/proposal/create')}>
-          <Ionicons name="add-circle" size={28} color="#a4a8d1" />
+          <Ionicons name="add-circle" size={28} color="#8875ff" />
         </TouchableOpacity>
       </View>
 
       <ScrollView
-        className="flex-1"
-        contentContainerClassName="px-6 pb-12"
+        style={{ flex: 1 }}
+        contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 48 }}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
@@ -125,28 +137,30 @@ export default function ProposalsScreen() {
             <SkeletonLoader key={i} height={96} borderRadius={16} className="mb-3" />
           ))
         ) : proposals?.length === 0 ? (
-          <View className="items-center justify-center mt-20">
+          <View style={{ alignItems: 'center', justifyContent: 'center', marginTop: 80 }}>
             <Text style={{ fontSize: 48 }}>🤙</Text>
-            <Text className="text-gray-900 dark:text-dark-50 font-bold text-lg text-center mt-4">
+            <Text style={{ color: '#f0f0ff', fontWeight: '700', fontSize: 18, textAlign: 'center', marginTop: 16 }}>
               No proposals yet
             </Text>
-            <Text className="text-gray-500 dark:text-dark-300 text-sm text-center mt-2 leading-5">
+            <Text style={{ color: '#5a5f7a', fontSize: 14, textAlign: 'center', marginTop: 8, lineHeight: 20 }}>
               Tap + to propose a hangout to your friends or a group.
             </Text>
             <TouchableOpacity
               onPress={() => router.push('/proposal/create')}
-              className="bg-lavender rounded-2xl px-8 py-3.5 mt-8"
+              style={{ borderRadius: 20, overflow: 'hidden', marginTop: 32 }}
               activeOpacity={0.8}
             >
-              <Text className="text-dark-900 font-bold text-base">Propose a Hangout</Text>
+              <LinearGradient colors={['#8875ff', '#c084fc']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ paddingHorizontal: 32, paddingVertical: 14 }}>
+                <Text style={{ color: '#fff', fontWeight: '700', fontSize: 16 }}>Propose a Hangout</Text>
+              </LinearGradient>
             </TouchableOpacity>
           </View>
         ) : (
           <>
             {incoming.length > 0 && (
-              <View className="mb-6">
-                <Text className="text-gray-500 dark:text-dark-300 text-xs font-semibold uppercase tracking-widest mb-3">
-                  Invited · {incoming.length}
+              <View style={{ marginBottom: 24 }}>
+                <Text style={{ color: '#5a5f7a', fontSize: 10, fontWeight: '700', letterSpacing: 1.5, marginBottom: 12 }}>
+                  INVITED · {incoming.length}
                 </Text>
                 {incoming.map((p) => (
                   <ProposalCard key={p.id} proposal={p} isMe={false} />
@@ -156,8 +170,8 @@ export default function ProposalsScreen() {
 
             {mine.length > 0 && (
               <View>
-                <Text className="text-gray-500 dark:text-dark-300 text-xs font-semibold uppercase tracking-widest mb-3">
-                  Sent by You · {mine.length}
+                <Text style={{ color: '#5a5f7a', fontSize: 10, fontWeight: '700', letterSpacing: 1.5, marginBottom: 12 }}>
+                  SENT BY YOU · {mine.length}
                 </Text>
                 {mine.map((p) => (
                   <ProposalCard key={p.id} proposal={p} isMe={true} />
