@@ -92,25 +92,35 @@ export default function SignupScreen() {
   if (step === 'interests') {
     return (
       <KeyboardAvoidingView
-        className="flex-1 bg-gray-50 dark:bg-dark-900"
+        style={{ flex: 1, backgroundColor: '#09090f' }}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
+        {/* Background glow orb */}
+        <View
+          style={{
+            position: 'absolute', top: -120, left: '50%', marginLeft: -160,
+            width: 320, height: 320, borderRadius: 160,
+            backgroundColor: 'rgba(136,117,255,0.12)',
+          }}
+          pointerEvents="none"
+        />
+
         <ScrollView
-          contentContainerClassName="px-6 pt-16 pb-8"
+          contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 64, paddingBottom: 32 }}
           keyboardShouldPersistTaps="handled"
         >
           <TouchableOpacity onPress={() => setStep('info')}>
-            <Text className="text-lavender-500 dark:text-lavender text-base mb-6">← Back</Text>
+            <Text style={{ color: '#8875ff', fontSize: 16, marginBottom: 24 }}>← Back</Text>
           </TouchableOpacity>
 
-          <Text className="text-2xl font-bold text-gray-900 dark:text-dark-50 mb-2">
+          <Text style={{ fontFamily: 'SpaceGrotesk_700Bold', fontSize: 28, color: '#f0f0ff', marginBottom: 8 }}>
             Pick your interests
           </Text>
-          <Text className="text-gray-500 dark:text-dark-300 mb-6">
+          <Text style={{ color: '#8b8fa8', marginBottom: 24 }}>
             Choose at least a few so friends know what you're into
           </Text>
 
-          <View className="flex-row flex-wrap mb-8">
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginBottom: 32 }}>
             {INTERESTS.map((interest) => (
               <InterestChip
                 key={interest}
@@ -122,9 +132,9 @@ export default function SignupScreen() {
           </View>
 
           {error ? (
-            <Text className="text-red-400 text-sm mb-4 text-center">
-              {error}
-            </Text>
+            <View style={{ backgroundColor: 'rgba(239,68,68,0.1)', borderRadius: 12, paddingHorizontal: 16, paddingVertical: 12, marginBottom: 16 }}>
+              <Text style={{ color: '#f87171', fontSize: 13, textAlign: 'center' }}>{error}</Text>
+            </View>
           ) : null}
 
           <Button
@@ -139,21 +149,30 @@ export default function SignupScreen() {
 
   return (
     <KeyboardAvoidingView
-      className="flex-1 bg-gray-50 dark:bg-dark-900"
+      style={{ flex: 1, backgroundColor: '#09090f' }}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
+      {/* Background glow orb */}
+      <View
+        style={{
+          position: 'absolute', top: -120, left: '50%', marginLeft: -160,
+          width: 320, height: 320, borderRadius: 160,
+          backgroundColor: 'rgba(136,117,255,0.12)',
+        }}
+        pointerEvents="none"
+      />
+
       <ScrollView
-        contentContainerClassName="flex-1 justify-center px-6"
+        contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', paddingHorizontal: 24 }}
         keyboardShouldPersistTaps="handled"
       >
-        <View className="items-center mb-10">
-          <Text
-            style={{ fontFamily: 'SpaceGrotesk_700Bold', fontSize: 36 }}
-            className="text-lavender-500 dark:text-lavender"
-          >
+        <View style={{ alignItems: 'center', marginBottom: 40 }}>
+          <Text style={{ fontFamily: 'SpaceGrotesk_700Bold', fontSize: 64, letterSpacing: -3, color: '#8875ff' }}>
             sync
           </Text>
-          <Text className="text-gray-500 dark:text-dark-300 mt-2 text-base">Create your account</Text>
+          <Text style={{ fontFamily: 'SpaceGrotesk_700Bold', fontSize: 28, color: '#f0f0ff', marginTop: 8 }}>
+            Create your account
+          </Text>
         </View>
 
         <View>
@@ -197,18 +216,18 @@ export default function SignupScreen() {
           />
 
           {error ? (
-            <Text className="text-red-400 text-sm mb-4 text-center">
-              {error}
-            </Text>
+            <View style={{ backgroundColor: 'rgba(239,68,68,0.1)', borderRadius: 12, paddingHorizontal: 16, paddingVertical: 12, marginBottom: 16 }}>
+              <Text style={{ color: '#f87171', fontSize: 13, textAlign: 'center' }}>{error}</Text>
+            </View>
           ) : null}
 
           <Button title="Next — Pick Interests" onPress={handleNext} />
 
-          <View className="flex-row justify-center mt-6">
-            <Text className="text-gray-500 dark:text-dark-300">Already have an account? </Text>
+          <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 24 }}>
+            <Text style={{ color: '#5a5f7a' }}>Already have an account? </Text>
             <Link href="/(auth)/login" asChild>
               <TouchableOpacity>
-                <Text className="text-lavender-500 dark:text-lavender font-semibold">Sign In</Text>
+                <Text style={{ color: '#8875ff', fontWeight: '600' }}>Sign In</Text>
               </TouchableOpacity>
             </Link>
           </View>

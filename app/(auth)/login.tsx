@@ -1,12 +1,5 @@
 import { useState } from 'react';
-import {
-  View,
-  Text,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  TouchableOpacity,
-} from 'react-native';
+import { View, Text, KeyboardAvoidingView, Platform, ScrollView, TouchableOpacity } from 'react-native';
 import { Link } from 'expo-router';
 import { supabase } from '../../lib/supabase';
 import { Button } from '../../components/ui/Button';
@@ -19,82 +12,63 @@ export default function LoginScreen() {
   const [error, setError] = useState('');
 
   const handleLogin = async () => {
-    if (!email || !password) {
-      setError('Please fill in all fields');
-      return;
-    }
-
+    if (!email || !password) { setError('Please fill in all fields'); return; }
     setLoading(true);
     setError('');
-
-    const { error: authError } = await supabase.auth.signInWithPassword({
-      email: email.trim(),
-      password,
-    });
-
-    if (authError) {
-      setError(authError.message);
-    }
+    const { error: authError } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
+    if (authError) setError(authError.message);
     setLoading(false);
   };
 
   return (
     <KeyboardAvoidingView
-      className="flex-1 bg-dark-900"
+      style={{ flex: 1, backgroundColor: '#09090f' }}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
+      {/* Background glow orb */}
+      <View
+        style={{
+          position: 'absolute', top: -120, left: '50%', marginLeft: -160,
+          width: 320, height: 320, borderRadius: 160,
+          backgroundColor: 'rgba(136,117,255,0.12)',
+        }}
+        pointerEvents="none"
+      />
+
       <ScrollView
-        contentContainerClassName="flex-1 justify-center px-6"
+        contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', paddingHorizontal: 24 }}
         keyboardShouldPersistTaps="handled"
       >
         {/* Logo */}
-        <View className="items-center mb-14">
-          <Text
-            style={{ fontFamily: 'SpaceGrotesk_700Bold', fontSize: 56, letterSpacing: -2, color: '#a4a8d1' }}
-          >
+        <View style={{ alignItems: 'center', marginBottom: 56 }}>
+          <Text style={{ fontFamily: 'SpaceGrotesk_700Bold', fontSize: 64, letterSpacing: -3, color: '#8875ff' }}>
             sync
           </Text>
-          <Text className="text-dark-300 mt-2 text-base">
+          <Text style={{ color: '#8b8fa8', marginTop: 8, fontSize: 15 }}>
             coordinate hangouts with friends
           </Text>
         </View>
 
         {/* Form */}
-        <View className="gap-2">
-          <Input
-            label="Email"
-            value={email}
-            onChangeText={setEmail}
-            placeholder="you@example.com"
-            keyboardType="email-address"
-            autoCapitalize="none"
-            testID="email-input"
-          />
-
-          <Input
-            label="Password"
-            value={password}
-            onChangeText={setPassword}
-            placeholder="Your password"
-            secureTextEntry
-            testID="password-input"
-          />
+        <View style={{ gap: 4 }}>
+          <Input label="Email" value={email} onChangeText={setEmail} placeholder="you@example.com" keyboardType="email-address" autoCapitalize="none" testID="email-input" />
+          <Input label="Password" value={password} onChangeText={setPassword} placeholder="Your password" secureTextEntry testID="password-input" />
 
           {error ? (
-            <View className="bg-red-500/10 rounded-xl px-4 py-3">
-              <Text className="text-red-400 text-sm text-center">{error}</Text>
+            <View style={{ backgroundColor: 'rgba(239,68,68,0.1)', borderRadius: 12, paddingHorizontal: 16, paddingVertical: 12, marginBottom: 8 }}>
+              <Text style={{ color: '#f87171', fontSize: 13, textAlign: 'center' }}>{error}</Text>
             </View>
           ) : null}
 
-          <View className="mt-2">
+          <View style={{ marginTop: 8 }}>
             <Button title="Sign In" onPress={handleLogin} loading={loading} />
           </View>
 
-          <View className="flex-row justify-center mt-6">
-            <Text className="text-dark-300">Don't have an account? </Text>
+          <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 24 }}>
+            <Text style={{ color: '#5a5f7a' }}>Don't have an account? </Text>
             <Link href="/(auth)/signup" asChild>
               <TouchableOpacity>
-                <Text className="text-lavender font-semibold">Sign Up</Text>
+                <Text style={{ color: '#8875ff', fontWeight: '600' }}>Sign Up</Text>
               </TouchableOpacity>
             </Link>
           </View>
