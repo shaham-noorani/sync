@@ -9,7 +9,6 @@ import { useFriendsAvailability, useFriendOverlaps } from '../../hooks/useOverla
 import { useProposals } from '../../hooks/useProposals';
 import { HeatmapGrid } from '../../components/HeatmapGrid';
 import { WeekNavigator } from '../../components/WeekNavigator';
-import { useTheme } from '../../providers/ThemeProvider';
 
 const ACTIVITY_EMOJIS: Record<string, string> = {
   tennis: '🎾', 'board games': '🎲', dinner: '🍽️', climbing: '🧗',
@@ -88,7 +87,6 @@ function HeatmapSkeleton() {
 
 export default function HomeScreen() {
   const router = useRouter();
-  const { isDark } = useTheme();
   const [weekOffset, setWeekOffset] = useState(0);
 
   const dates = useMemo(() => getWeekDates(weekOffset), [weekOffset]);

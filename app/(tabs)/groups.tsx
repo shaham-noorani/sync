@@ -7,11 +7,9 @@ import { useCreateGroup, useMyGroups } from '../../hooks/useGroups';
 import { Input } from '../../components/ui/Input';
 import { Button } from '../../components/ui/Button';
 import { GroupCard } from '../../components/GroupCard';
-import { useTheme } from '../../providers/ThemeProvider';
 
 export default function GroupsTabScreen() {
   const router = useRouter();
-  const { isDark } = useTheme();
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [inviteCode, setInviteCode] = useState('');

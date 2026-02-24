@@ -19,12 +19,10 @@ import { Button } from '../../components/ui/Button';
 import { InterestChip } from '../../components/ui/InterestChip';
 import { INTERESTS } from '../../lib/constants';
 import { Ionicons } from '@expo/vector-icons';
-import { useTheme } from '../../providers/ThemeProvider';
 
 export default function EditProfileScreen() {
   const router = useRouter();
   const { user } = useAuth();
-  const { isDark } = useTheme();
   const { data: profile } = useProfile();
   const updateProfile = useUpdateProfile();
 
@@ -92,26 +90,26 @@ export default function EditProfileScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50 dark:bg-dark-900" edges={['top']}>
-      <ScrollView className="flex-1" contentContainerClassName="px-6 pt-2 pb-12">
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#09090f' }} edges={['top']}>
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 8, paddingBottom: 48 }}>
         {/* Header */}
-        <View className="flex-row items-center mb-8">
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 32 }}>
           <TouchableOpacity onPress={() => router.back()}>
-            <Ionicons name="arrow-back" size={24} color={isDark ? '#f8fafc' : '#111827'} />
+            <Ionicons name="arrow-back" size={24} color="#8875ff" />
           </TouchableOpacity>
-          <Text className="text-xl font-bold text-gray-900 dark:text-dark-50 ml-4">
+          <Text style={{ color: '#f0f0ff', fontWeight: '700', fontSize: 20, marginLeft: 16 }}>
             Edit Profile
           </Text>
         </View>
 
         {/* Avatar */}
         <TouchableOpacity
-          className="items-center mb-8"
+          style={{ alignItems: 'center', marginBottom: 32 }}
           onPress={pickImage}
           disabled={uploading}
         >
-          <Avatar url={avatarUrl} name={displayName || 'U'} size={96} />
-          <Text className="text-lavender-500 dark:text-lavender mt-2 text-sm">
+          <Avatar url={avatarUrl} name={displayName || 'U'} size={96} ring />
+          <Text style={{ color: '#8875ff', marginTop: 8, fontSize: 14 }}>
             {uploading ? 'Uploading...' : 'Change photo'}
           </Text>
         </TouchableOpacity>
@@ -134,8 +132,8 @@ export default function EditProfileScreen() {
         />
 
         {/* Interests */}
-        <Text className="text-gray-500 dark:text-dark-200 text-sm mb-3 ml-1">Interests</Text>
-        <View className="flex-row flex-wrap mb-8">
+        <Text style={{ color: '#8b8fa8', fontSize: 13, marginBottom: 12, marginLeft: 4 }}>Interests</Text>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginBottom: 32 }}>
           {INTERESTS.map((interest) => (
             <InterestChip
               key={interest}

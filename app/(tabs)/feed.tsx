@@ -4,7 +4,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useFeed, useToggleReaction, getPhotoUrl } from '../../hooks/useHangouts';
-import { useTheme } from '../../providers/ThemeProvider';
 import { Avatar } from '../../components/Avatar';
 import { SkeletonLoader } from '../../components/SkeletonLoader';
 
@@ -29,7 +28,6 @@ function formatRelativeDate(dateStr: string): string {
 
 export default function FeedScreen() {
   const router = useRouter();
-  const { isDark } = useTheme();
   const { data: hangouts, isLoading, refetch } = useFeed();
   const toggleReaction = useToggleReaction();
   const [expandedReactions, setExpandedReactions] = useState<string | null>(null);

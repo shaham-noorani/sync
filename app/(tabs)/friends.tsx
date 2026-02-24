@@ -12,13 +12,11 @@ import {
 } from '../../hooks/useFriends';
 import { FriendCard } from '../../components/FriendCard';
 import { SkeletonLoader } from '../../components/SkeletonLoader';
-import { useTheme } from '../../providers/ThemeProvider';
 
 type Tab = 'friends' | 'requests' | 'sent';
 
 export default function FriendsTabScreen() {
   const router = useRouter();
-  const { isDark } = useTheme();
   const [activeTab, setActiveTab] = useState<Tab>('friends');
   const { data: friends, isLoading: friendsLoading } = useFriendsList();
   const { data: requests, isLoading: requestsLoading } = usePendingRequests();
