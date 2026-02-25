@@ -32,6 +32,7 @@ export default function GroupEditScreen() {
   const [description, setDescription] = useState('');
   const [selectedEmoji, setSelectedEmoji] = useState<string | null>(null);
   const [photoUri, setPhotoUri] = useState<string | null>(null);
+  const [iconChanged, setIconChanged] = useState(false);
   const [initialized, setInitialized] = useState(false);
 
   // Initialize form from group data once loaded
@@ -70,6 +71,7 @@ export default function GroupEditScreen() {
     if (!result.canceled) {
       setPhotoUri(result.assets[0].uri);
       setSelectedEmoji(null);
+      setIconChanged(true);
     }
   };
 
@@ -79,8 +81,7 @@ export default function GroupEditScreen() {
       groupId: id,
       name: name.trim(),
       description: description.trim() || null,
-      iconName: photoUri ? null : selectedEmoji,
-      iconPhotoUri: photoUri,
+      ...(iconChanged ? { iconName: photoUri ? null : selectedEmoji, iconPhotoUri: photoUri } : {}),
     });
     router.back();
   };
@@ -174,7 +175,7 @@ export default function GroupEditScreen() {
           {ICON_OPTIONS.map((emoji) => (
             <TouchableOpacity
               key={emoji}
-              onPress={() => { setSelectedEmoji(emoji === selectedEmoji ? null : emoji); setPhotoUri(null); }}
+              onPress={() => { setSelectedEmoji(emoji === selectedEmoji ? null : emoji); setPhotoUri(null); setIconChanged(true); }}
               style={[
                 { width: 44, height: 44, borderRadius: 12, alignItems: 'center', justifyContent: 'center', marginRight: 8, marginBottom: 8 },
                 selectedEmoji === emoji
