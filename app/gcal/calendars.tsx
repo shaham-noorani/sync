@@ -99,7 +99,7 @@ export default function CalendarPickerScreen() {
                     )}
                   </View>
                   <Switch
-                    value={cal.is_enabled}
+                    value={cal.is_enabled ?? false}
                     onValueChange={(val) => toggleCalendar.mutate({ id: cal.id, is_enabled: val })}
                     trackColor={{ false: c.border, true: c.accent }}
                     thumbColor="#ffffff"
