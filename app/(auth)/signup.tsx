@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { Link, useRouter } from 'expo-router';
+import { makeRedirectUri } from 'expo-auth-session';
 import { supabase } from '../../lib/supabase';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
@@ -26,7 +27,20 @@ export default function SignupScreen() {
   const [city, setCity] = useState('');
   const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState('');
+
+  const handleGoogleSignIn = async () => {
+    setGoogleLoading(true);
+    setError('');
+    const redirectTo = makeRedirectUri({ scheme: 'sync' });
+    const { error: authError } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo },
+    });
+    if (authError) setError(authError.message);
+    setGoogleLoading(false);
+  };
 
   const toggleInterest = (interest: string) => {
     setSelectedInterests((prev) =>
@@ -178,6 +192,31 @@ export default function SignupScreen() {
         </View>
 
         <View>
+          {/* Google button */}
+          <TouchableOpacity
+            onPress={handleGoogleSignIn}
+            disabled={googleLoading}
+            activeOpacity={0.8}
+            style={{
+              flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
+              backgroundColor: c.bgCard, borderWidth: 1, borderColor: c.border,
+              borderRadius: 14, paddingVertical: 14, gap: 8, marginBottom: 8,
+              opacity: googleLoading ? 0.6 : 1,
+            }}
+          >
+            <Text style={{ fontSize: 18 }}>G</Text>
+            <Text style={{ color: c.text, fontWeight: '600', fontSize: 15 }}>
+              {googleLoading ? 'Opening…' : 'Continue with Google'}
+            </Text>
+          </TouchableOpacity>
+
+          {/* Divider */}
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 12, gap: 12 }}>
+            <View style={{ flex: 1, height: 1, backgroundColor: c.border }} />
+            <Text style={{ color: c.textMuted, fontSize: 12 }}>or sign up with email</Text>
+            <View style={{ flex: 1, height: 1, backgroundColor: c.border }} />
+          </View>
+
           <Input
             label="Email *"
             value={email}
