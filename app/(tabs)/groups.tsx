@@ -119,6 +119,8 @@ export default function GroupsTabScreen() {
               description={group.description}
               role={group.role}
               memberCount={group.member_count}
+              iconUrl={group.icon_url}
+              iconName={group.icon_name}
               onPress={() => router.push(`/group/${group.id}`)}
             />
           ))

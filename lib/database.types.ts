@@ -88,6 +88,8 @@ export interface Database {
           created_by: string;
           created_at: string;
           updated_at: string;
+          icon_url: string | null;
+          icon_name: string | null;
         };
         Insert: {
           id?: string;
@@ -97,12 +99,16 @@ export interface Database {
           created_by: string;
           created_at?: string;
           updated_at?: string;
+          icon_url?: string | null;
+          icon_name?: string | null;
         };
         Update: {
           id?: string;
           name?: string;
           description?: string | null;
           updated_at?: string;
+          icon_url?: string | null;
+          icon_name?: string | null;
         };
       };
       group_members: {

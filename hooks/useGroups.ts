@@ -1,6 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../providers/AuthProvider';
+import * as ImagePicker from 'expo-image-picker';
+import * as FileSystem from 'expo-file-system';
+import { decode } from 'base64-arraybuffer';
 
 export function useMyGroups() {
   const { user } = useAuth();
@@ -16,7 +19,7 @@ export function useMyGroups() {
           `
           group_id,
           role,
-          group:groups!group_members_group_id_fkey(id, name, description, invite_code, created_by, members:group_members(count))
+          group:groups!group_members_group_id_fkey(id, name, description, invite_code, created_by, icon_url, icon_name, members:group_members(count))
         `
         )
         .eq('user_id', user.id);
@@ -82,6 +85,24 @@ export function useGroupByCode(code: string) {
   });
 }
 
+async function uploadGroupIcon(groupId: string, localUri: string): Promise<string> {
+  const base64 = await FileSystem.readAsStringAsync(localUri, {
+    encoding: FileSystem.EncodingType.Base64,
+  });
+  const ext = localUri.split('.').pop()?.toLowerCase() ?? 'jpg';
+  const contentType = ext === 'png' ? 'image/png' : 'image/jpeg';
+  const storagePath = `groups/${groupId}/icon.${ext}`;
+
+  const { error } = await supabase.storage
+    .from('avatars')
+    .upload(storagePath, decode(base64), { contentType, upsert: true });
+
+  if (error) throw error;
+
+  const { data } = supabase.storage.from('avatars').getPublicUrl(storagePath);
+  return data.publicUrl;
+}
+
 export function useCreateGroup() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
@@ -90,9 +111,13 @@ export function useCreateGroup() {
     mutationFn: async ({
       name,
       description,
+      iconName,
+      iconPhotoUri,
     }: {
       name: string;
       description?: string;
+      iconName?: string | null;
+      iconPhotoUri?: string | null;
     }) => {
       if (!user) throw new Error('Not authenticated');
 
@@ -102,26 +127,66 @@ export function useCreateGroup() {
           name,
           description: description || null,
           created_by: user.id,
+          icon_name: iconName || null,
         })
         .select()
         .single();
 
       if (groupError) throw groupError;
 
+      // Upload photo if provided
+      if (iconPhotoUri) {
+        const iconUrl = await uploadGroupIcon(group.id, iconPhotoUri);
+        await supabase.from('groups').update({ icon_url: iconUrl }).eq('id', group.id);
+        group.icon_url = iconUrl;
+      }
+
       // Add creator as owner
       const { error: memberError } = await supabase
         .from('group_members')
-        .insert({
-          group_id: group.id,
-          user_id: user.id,
-          role: 'owner',
-        });
+        .insert({ group_id: group.id, user_id: user.id, role: 'owner' });
 
       if (memberError) throw memberError;
 
       return group;
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['my-groups'] });
+    },
+  });
+}
+
+export function useUpdateGroupIcon() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      groupId,
+      iconName,
+      iconPhotoUri,
+    }: {
+      groupId: string;
+      iconName?: string | null;
+      iconPhotoUri?: string | null;
+    }) => {
+      let iconUrl: string | null = null;
+
+      if (iconPhotoUri) {
+        iconUrl = await uploadGroupIcon(groupId, iconPhotoUri);
+      }
+
+      const { error } = await supabase
+        .from('groups')
+        .update({
+          icon_url: iconUrl,
+          icon_name: iconName ?? null,
+        })
+        .eq('id', groupId);
+
+      if (error) throw error;
+    },
+    onSuccess: (_data, { groupId }) => {
+      queryClient.invalidateQueries({ queryKey: ['group', groupId] });
       queryClient.invalidateQueries({ queryKey: ['my-groups'] });
     },
   });

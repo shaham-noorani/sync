@@ -1,5 +1,6 @@
 import { View, Text, TouchableOpacity } from 'react-native';
 import { AvailabilityCell } from '../hooks/useAvailability';
+import { useColors } from '../providers/ThemeProvider';
 
 const TIME_BLOCKS = ['morning', 'afternoon', 'evening'] as const;
 const TIME_LABELS: Record<string, string> = {
@@ -25,15 +26,15 @@ function getDayNumber(dateStr: string) {
   return d.getDate();
 }
 
-function getCellInlineStyle(isAvailable: boolean, overlapCount: number, isToday: boolean) {
+function getCellInlineStyle(isAvailable: boolean, overlapCount: number, isToday: boolean, busyColor: string) {
   if (isAvailable && overlapCount > 0) {
-    return { backgroundColor: isToday ? '#8875ff' : '#8875ff' };
+    return { backgroundColor: '#8875ff' };
   } else if (isAvailable) {
     return { backgroundColor: '#8875ff', opacity: isToday ? 0.8 : 0.6 };
   } else if (overlapCount > 0) {
     return { backgroundColor: '#c084fc', opacity: 0.4 };
   }
-  return { backgroundColor: 'rgba(255,255,255,0.06)' };
+  return { backgroundColor: busyColor };
 }
 
 export function HeatmapGrid({
@@ -43,6 +44,9 @@ export function HeatmapGrid({
   onCellPress,
   friendOverlapCounts = {},
 }: HeatmapGridProps) {
+  const c = useColors();
+  const busyColor = c.bg === '#09090f' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.08)';
+
   const getCell = (date: string, timeBlock: string) => {
     return availability.find(
       (a) => a.date === date && a.time_block === timeBlock
@@ -101,7 +105,7 @@ export function HeatmapGrid({
             const isAvailable = cell?.is_available ?? false;
             const overlapCount = friendOverlapCounts[`${date}|${block}`] ?? 0;
             const isToday = date === TODAY;
-            const cellInlineStyle = getCellInlineStyle(isAvailable, overlapCount, isToday);
+            const cellInlineStyle = getCellInlineStyle(isAvailable, overlapCount, isToday, busyColor);
 
             return (
               <TouchableOpacity
@@ -139,7 +143,7 @@ export function HeatmapGrid({
           <Text className="text-gray-400 dark:text-dark-400 text-xs">Friends free</Text>
         </View>
         <View className="flex-row items-center">
-          <View className="w-2.5 h-2.5 rounded-sm mr-1.5" style={{ backgroundColor: 'rgba(255,255,255,0.06)' }} />
+          <View className="w-2.5 h-2.5 rounded-sm mr-1.5" style={{ backgroundColor: busyColor }} />
           <Text className="text-gray-400 dark:text-dark-400 text-xs">Busy</Text>
         </View>
       </View>

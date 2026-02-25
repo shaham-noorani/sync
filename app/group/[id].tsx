@@ -1,10 +1,12 @@
 import { useState, useMemo } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Alert, StyleSheet } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import * as Clipboard from 'expo-clipboard';
-import { useGroup, useLeaveGroup } from '../../hooks/useGroups';
+import { useGroup, useLeaveGroup, useUpdateGroupIcon } from '../../hooks/useGroups';
+import { GroupIcon } from '../../components/GroupCard';
 import { useGroupAvailability } from '../../hooks/useAvailability';
 import { useAuth } from '../../providers/AuthProvider';
 import { Avatar } from '../../components/Avatar';
@@ -42,7 +44,20 @@ export default function GroupDetailScreen() {
   const { user } = useAuth();
   const { data: group, isLoading } = useGroup(id);
   const leaveGroup = useLeaveGroup();
+  const updateIcon = useUpdateGroupIcon();
   const [weekOffset, setWeekOffset] = useState(0);
+
+  const handlePickIcon = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.8,
+    });
+    if (!result.canceled) {
+      await updateIcon.mutateAsync({ groupId: id, iconPhotoUri: result.assets[0].uri, iconName: null });
+    }
+  };
 
   const dates = useMemo(() => getWeekDates(weekOffset), [weekOffset]);
 
@@ -104,6 +119,9 @@ export default function GroupDetailScreen() {
       }}>
         <TouchableOpacity onPress={() => router.back()} style={{ padding: 4, marginRight: 8 }}>
           <Ionicons name="chevron-back" size={24} color={c.accent} />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={handlePickIcon} activeOpacity={0.8} style={{ marginRight: 12 }}>
+          <GroupIcon iconUrl={group.icon_url} iconName={group.icon_name} size={36} />
         </TouchableOpacity>
         <Text style={{
           flex: 1,
