@@ -74,7 +74,14 @@ export default function ProfileScreen() {
     }
 
     if (oauthData?.url) {
-      await WebBrowser.openAuthSessionAsync(oauthData.url, redirectTo);
+      try {
+        await WebBrowser.openAuthSessionAsync(oauthData.url, redirectTo);
+      } finally {
+        // Unsubscribe if auth state change hasn't fired yet (user cancelled or browser error)
+        // If it already fired and unsubscribed itself, this is a no-op
+        subscription.unsubscribe();
+        setConnectingCalendar(false);
+      }
     }
   };
 
