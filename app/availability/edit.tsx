@@ -25,6 +25,7 @@ import { WeekNavigator } from '../../components/WeekNavigator';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { useColors } from '../../providers/ThemeProvider';
+import { AiAvailabilityModal } from '../../components/AiAvailabilityModal';
 
 const DAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const TIME_BLOCKS = ['morning', 'afternoon', 'evening'] as const;
@@ -65,6 +66,7 @@ export default function EditAvailabilityScreen() {
   const [travelStart, setTravelStart] = useState('');
   const [travelEnd, setTravelEnd] = useState('');
   const [travelLabel, setTravelLabel] = useState('');
+  const [aiModalVisible, setAiModalVisible] = useState(false);
 
   const dates = useMemo(() => getWeekDates(weekOffset), [weekOffset]);
 
@@ -149,6 +151,23 @@ export default function EditAvailabilityScreen() {
           <Text style={{ fontFamily: 'SpaceGrotesk_700Bold', color: c.text, fontSize: 22, marginLeft: 16 }}>
             Edit Availability
           </Text>
+          <View style={{ flex: 1 }} />
+          <TouchableOpacity
+            onPress={() => setAiModalVisible(true)}
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              backgroundColor: c.accentBg,
+              borderRadius: 999,
+              paddingHorizontal: 12,
+              paddingVertical: 6,
+              gap: 4,
+            }}
+            activeOpacity={0.7}
+          >
+            <Text style={{ fontSize: 13 }}>✨</Text>
+            <Text style={{ color: c.accent, fontWeight: '600', fontSize: 13 }}>Ask AI</Text>
+          </TouchableOpacity>
         </View>
 
         {/* Mode Tabs */}
@@ -299,6 +318,10 @@ export default function EditAvailabilityScreen() {
           )}
         </View>
       </ScrollView>
+      <AiAvailabilityModal
+        visible={aiModalVisible}
+        onClose={() => setAiModalVisible(false)}
+      />
     </SafeAreaView>
   );
 }
