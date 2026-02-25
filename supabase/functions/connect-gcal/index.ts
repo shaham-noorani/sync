@@ -48,20 +48,21 @@ serve(async (req) => {
     const adminClient = createClient(supabaseUrl, serviceRoleKey)
 
     // Store refresh token in Vault (upsert: delete old secret if exists, create new)
-    const vaultSecretName = `gcal_refresh_${user.id}_${googleEmail.replace('@', '_').replace('.', '_')}`
+    const vaultSecretName = `gcal_refresh_${user.id}_${googleEmail.replace(/@/g, '_').replace(/\./g, '_')}`
 
     // Check if a secret with this name already exists
     const { data: existingSecrets } = await adminClient
-      .from('vault.secrets')
+      .schema('vault')
+      .from('secrets')
       .select('id')
       .eq('name', vaultSecretName)
       .limit(1)
 
     if (existingSecrets && existingSecrets.length > 0) {
       // Update existing secret
-      await adminClient.rpc('vault.update_secret', {
-        secret_id: existingSecrets[0].id,
-        new_secret: refresh_token ?? '',
+      await adminClient.schema('vault').rpc('update_secret', {
+        id: existingSecrets[0].id,
+        secret: refresh_token ?? '',
       })
     } else {
       // Create new secret
@@ -87,6 +88,7 @@ serve(async (req) => {
       .single()
 
     if (connError) throw connError
+    if (!connection) throw new Error('Failed to retrieve gcal_connection after upsert')
 
     // Upsert gcal_calendars
     const calendars = (calListData.items ?? []).map((cal: any) => ({
