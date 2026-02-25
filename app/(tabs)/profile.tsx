@@ -1,10 +1,9 @@
-import { View, Text, ScrollView, TouchableOpacity, Switch } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../../providers/AuthProvider';
 import { useProfile } from '../../hooks/useProfile';
 import { useMyHangoutStats } from '../../hooks/useHangouts';
-import { useTheme } from '../../providers/ThemeProvider';
 import { Avatar } from '../../components/Avatar';
 import { InterestChip } from '../../components/ui/InterestChip';
 import { Button } from '../../components/ui/Button';
@@ -21,7 +20,6 @@ export default function ProfileScreen() {
   const { user, signOut } = useAuth();
   const { data: profile, isLoading } = useProfile();
   const { data: stats } = useMyHangoutStats();
-  const { isDark, toggleTheme } = useTheme();
   const router = useRouter();
 
   if (isLoading) {
@@ -149,22 +147,6 @@ export default function ProfileScreen() {
             <Ionicons name="chevron-forward" size={16} color="#5a5f7a" />
           </TouchableOpacity>
 
-          <View className="flex-row items-center justify-between px-4 py-4">
-            <View className="flex-row items-center">
-              <Ionicons
-                name={isDark ? 'moon-outline' : 'sunny-outline'}
-                size={20}
-                color="#8875ff"
-              />
-              <Text style={{ color: '#f0f0ff', marginLeft: 12, fontSize: 14, fontWeight: '500' }}>Dark Mode</Text>
-            </View>
-            <Switch
-              value={isDark}
-              onValueChange={toggleTheme}
-              trackColor={{ false: 'rgba(255,255,255,0.1)', true: '#8875ff' }}
-              thumbColor="#ffffff"
-            />
-          </View>
         </View>
 
         {/* Sign Out */}
