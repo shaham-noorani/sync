@@ -1,55 +1,32 @@
--- Add source column to availability_slots
--- 'manual' = user set this explicitly, 'gcal' = synced from Google Calendar
-alter table availability_slots
-  add column source text not null default 'manual'
-  check (source in ('manual', 'gcal'));
+-- Corrective migration: replace FOR ALL RLS policies with explicit per-operation policies
+-- and fix get_effective_availability to read is_available from the gcal row.
 
--- Mark all existing slots as manual
-update availability_slots set source = 'manual';
+-- Drop old FOR ALL policies
+drop policy if exists "users manage own gcal_connections" on gcal_connections;
+drop policy if exists "users manage own gcal_calendars" on gcal_calendars;
 
--- gcal_connections: one row per connected Google account per user
-create table gcal_connections (
-  id uuid primary key default gen_random_uuid(),
-  user_id uuid not null references profiles(id) on delete cascade,
-  google_email text not null,
-  vault_secret_name text not null,
-  -- access_token is short-lived (1hr) and refreshed by sync-gcal; storing plaintext is accepted here
-  access_token text,
-  token_expiry timestamptz,
-  connected_at timestamptz not null default now(),
-  unique(user_id, google_email)
-);
+-- Explicit per-operation policies for gcal_connections
+create policy "users view own gcal_connections"
+  on gcal_connections for select using (user_id = auth.uid());
+create policy "users insert own gcal_connections"
+  on gcal_connections for insert with check (user_id = auth.uid());
+create policy "users update own gcal_connections"
+  on gcal_connections for update using (user_id = auth.uid());
+create policy "users delete own gcal_connections"
+  on gcal_connections for delete using (user_id = auth.uid());
 
--- gcal_calendars: one row per calendar per connection
-create table gcal_calendars (
-  id uuid primary key default gen_random_uuid(),
-  gcal_connection_id uuid not null references gcal_connections(id) on delete cascade,
-  user_id uuid not null references profiles(id) on delete cascade,
-  google_calendar_id text not null,
-  calendar_name text not null,
-  color text,
-  is_enabled boolean not null default false,
-  is_primary boolean not null default false,
-  unique(gcal_connection_id, google_calendar_id)
-);
+-- Explicit per-operation policies for gcal_calendars
+create policy "users view own gcal_calendars"
+  on gcal_calendars for select using (user_id = auth.uid());
+create policy "users insert own gcal_calendars"
+  on gcal_calendars for insert with check (user_id = auth.uid());
+create policy "users update own gcal_calendars"
+  on gcal_calendars for update using (user_id = auth.uid());
+create policy "users delete own gcal_calendars"
+  on gcal_calendars for delete using (user_id = auth.uid());
 
--- RLS
-alter table gcal_connections enable row level security;
-alter table gcal_calendars enable row level security;
-
-create policy "users manage own gcal_connections"
-  on gcal_connections for all using (user_id = auth.uid());
-
-create policy "users manage own gcal_calendars"
-  on gcal_calendars for all using (user_id = auth.uid());
-
--- Indexes
-create index idx_gcal_connections_user on gcal_connections(user_id);
-create index idx_gcal_calendars_connection on gcal_calendars(gcal_connection_id);
-create index idx_gcal_calendars_user_enabled on gcal_calendars(user_id, is_enabled);
-
--- Updated get_effective_availability:
--- Priority: travel (highest) → manual slot → gcal slot → pattern → default (lowest)
+-- Replace get_effective_availability with fixed version:
+-- GCal branch now reads is_available from the actual row instead of hardcoding false.
 create or replace function get_effective_availability(
   p_user_id uuid,
   p_start_date date,
@@ -92,7 +69,7 @@ begin
           and s.time_block = tb
           and s.source = 'manual';
 
-      -- 3. GCal busy slot
+      -- 3. GCal slot — reads is_available from the actual row
       elsif exists (
         select 1 from availability_slots s
         where s.user_id = p_user_id
