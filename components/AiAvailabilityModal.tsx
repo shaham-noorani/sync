@@ -120,31 +120,30 @@ export function AiAvailabilityModal({ visible, onClose }: Props) {
     if (!result) return;
     setApplying(true);
     try {
-      await Promise.all(
-        result.trips.map((trip) =>
+      await Promise.all([
+        ...result.trips.map((trip) =>
           addTravel.mutateAsync({
             startDate: trip.start_date,
             endDate: trip.end_date,
             label: trip.label ?? undefined,
           })
-        )
-      );
-      await Promise.all(
-        result.slots.map((slot) =>
+        ),
+        ...result.slots.map((slot) =>
           toggleSlot.mutateAsync({
             date: slot.date,
             timeBlock: slot.time_block,
             isAvailable: slot.is_available,
           })
-        )
-      );
-      handleClose();
+        ),
+      ]);
     } catch {
       setErrorMsg('Failed to apply changes. Please try again.');
       setUiState('error');
-    } finally {
       setApplying(false);
+      return;
     }
+    setApplying(false);
+    handleClose();
   };
 
   const slotsByDate = (result?.slots ?? []).reduce<Record<string, Slot[]>>((acc, slot) => {
@@ -400,7 +399,7 @@ export function AiAvailabilityModal({ visible, onClose }: Props) {
                     {errorMsg}
                   </Text>
                 </View>
-                <Button title="Try Again" onPress={() => setUiState('idle')} />
+                <Button title="Try Again" onPress={() => { setUiState('idle'); setResult(null); setErrorMsg(''); }} />
               </>
             )}
           </ScrollView>
