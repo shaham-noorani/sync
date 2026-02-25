@@ -78,6 +78,7 @@ export function AiAvailabilityModal({ visible, onClose }: Props) {
     setUiState('idle');
     setResult(null);
     setErrorMsg('');
+    setApplying(false);
   };
 
   const handleClose = () => {
