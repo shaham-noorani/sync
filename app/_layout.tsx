@@ -61,6 +61,14 @@ export default function RootLayout() {
 
   // Handle OAuth deep link redirects (PKCE code exchange)
   useEffect(() => {
+    // Cold-start: app opened via OAuth redirect URL
+    Linking.getInitialURL().then((url) => {
+      if (url && url.includes('code=')) {
+        supabase.auth.exchangeCodeForSession(url);
+      }
+    });
+
+    // Warm-start: app already running when OAuth redirect arrives
     const sub = Linking.addEventListener('url', async ({ url }) => {
       if (url.includes('code=')) {
         await supabase.auth.exchangeCodeForSession(url);

@@ -33,9 +33,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       setSession(session);
-      if (session) checkProfile(session.user.id);
+      if (session) await checkProfile(session.user.id);
       setIsLoading(false);
     });
 
