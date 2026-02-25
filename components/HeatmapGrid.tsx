@@ -17,8 +17,10 @@ type HeatmapGridProps = {
   availability: AvailabilityCell[];
   editable?: boolean;
   onCellPress?: (date: string, timeBlock: string) => void;
-  // Map of "date|time_block" → number of free friends
+  // Map of "date|time_block" → number of free members
   friendOverlapCounts?: Record<string, number>;
+  // Total member count — enables intensity gradient when provided
+  totalMembers?: number;
 };
 
 function getDayNumber(dateStr: string) {
@@ -26,12 +28,47 @@ function getDayNumber(dateStr: string) {
   return d.getDate();
 }
 
-function getCellInlineStyle(isAvailable: boolean, overlapCount: number, isToday: boolean, busyColor: string) {
+// Interpolate between two hex colors by factor 0–1
+function lerpColor(a: string, b: string, t: number): string {
+  const parse = (hex: string) => [
+    parseInt(hex.slice(1, 3), 16),
+    parseInt(hex.slice(3, 5), 16),
+    parseInt(hex.slice(5, 7), 16),
+  ];
+  const [ar, ag, ab] = parse(a);
+  const [br, bg, bb] = parse(b);
+  const r = Math.round(ar + (br - ar) * t);
+  const g = Math.round(ag + (bg - ag) * t);
+  const bv = Math.round(ab + (bb - ab) * t);
+  return `rgb(${r},${g},${bv})`;
+}
+
+// Low-intensity purple → deep violet for the group overlap gradient
+const COLOR_LOW = '#c4bafe';  // very light lavender
+const COLOR_HIGH = '#5b21b6'; // deep violet
+
+function getCellInlineStyle(
+  isAvailable: boolean,
+  overlapCount: number,
+  isToday: boolean,
+  busyColor: string,
+  totalMembers?: number,
+) {
+  // Group heatmap: intensity gradient based on fraction free
+  if (overlapCount > 0 && totalMembers && totalMembers > 0) {
+    const fraction = Math.min(overlapCount / totalMembers, 1);
+    // Map fraction to a curve that keeps low counts visible
+    const t = 0.15 + fraction * 0.85;
+    return { backgroundColor: lerpColor(COLOR_LOW, COLOR_HIGH, t) };
+  }
+  // Personal availability (own schedule)
   if (isAvailable && overlapCount > 0) {
     return { backgroundColor: '#8875ff' };
-  } else if (isAvailable) {
+  }
+  if (isAvailable) {
     return { backgroundColor: '#8875ff', opacity: isToday ? 0.8 : 0.6 };
-  } else if (overlapCount > 0) {
+  }
+  if (overlapCount > 0) {
     return { backgroundColor: '#c084fc', opacity: 0.4 };
   }
   return { backgroundColor: busyColor };
@@ -43,6 +80,7 @@ export function HeatmapGrid({
   editable = false,
   onCellPress,
   friendOverlapCounts = {},
+  totalMembers,
 }: HeatmapGridProps) {
   const c = useColors();
   const busyColor = c.bg === '#09090f' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.08)';
@@ -105,7 +143,7 @@ export function HeatmapGrid({
             const isAvailable = cell?.is_available ?? false;
             const overlapCount = friendOverlapCounts[`${date}|${block}`] ?? 0;
             const isToday = date === TODAY;
-            const cellInlineStyle = getCellInlineStyle(isAvailable, overlapCount, isToday, busyColor);
+            const cellInlineStyle = getCellInlineStyle(isAvailable, overlapCount, isToday, busyColor, totalMembers);
 
             return (
               <TouchableOpacity
@@ -133,20 +171,38 @@ export function HeatmapGrid({
       ))}
 
       {/* Legend */}
-      <View className="flex-row items-center justify-center mt-4 gap-5">
-        <View className="flex-row items-center">
-          <View className="w-2.5 h-2.5 rounded-sm mr-1.5" style={{ backgroundColor: '#8875ff' }} />
-          <Text className="text-gray-400 dark:text-dark-400 text-xs">You free</Text>
+      {totalMembers ? (
+        <View className="flex-row items-center justify-center mt-4 gap-3">
+          <Text className="text-gray-400 dark:text-dark-400 text-xs">Few free</Text>
+          <View style={{ flexDirection: 'row', borderRadius: 4, overflow: 'hidden', width: 80, height: 10 }}>
+            {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => (
+              <View
+                key={i}
+                style={{
+                  flex: 1,
+                  backgroundColor: lerpColor(COLOR_LOW, COLOR_HIGH, 0.15 + (i / 7) * 0.85),
+                }}
+              />
+            ))}
+          </View>
+          <Text className="text-gray-400 dark:text-dark-400 text-xs">All free</Text>
         </View>
-        <View className="flex-row items-center">
-          <View className="w-2.5 h-2.5 rounded-sm mr-1.5" style={{ backgroundColor: '#c084fc', opacity: 0.4 }} />
-          <Text className="text-gray-400 dark:text-dark-400 text-xs">Friends free</Text>
+      ) : (
+        <View className="flex-row items-center justify-center mt-4 gap-5">
+          <View className="flex-row items-center">
+            <View className="w-2.5 h-2.5 rounded-sm mr-1.5" style={{ backgroundColor: '#8875ff' }} />
+            <Text className="text-gray-400 dark:text-dark-400 text-xs">You free</Text>
+          </View>
+          <View className="flex-row items-center">
+            <View className="w-2.5 h-2.5 rounded-sm mr-1.5" style={{ backgroundColor: '#c084fc', opacity: 0.4 }} />
+            <Text className="text-gray-400 dark:text-dark-400 text-xs">Friends free</Text>
+          </View>
+          <View className="flex-row items-center">
+            <View className="w-2.5 h-2.5 rounded-sm mr-1.5" style={{ backgroundColor: busyColor }} />
+            <Text className="text-gray-400 dark:text-dark-400 text-xs">Busy</Text>
+          </View>
         </View>
-        <View className="flex-row items-center">
-          <View className="w-2.5 h-2.5 rounded-sm mr-1.5" style={{ backgroundColor: busyColor }} />
-          <Text className="text-gray-400 dark:text-dark-400 text-xs">Busy</Text>
-        </View>
-      </View>
+      )}
     </View>
   );
 }
