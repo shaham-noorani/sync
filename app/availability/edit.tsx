@@ -144,31 +144,33 @@ export default function EditAvailabilityScreen() {
     <SafeAreaView style={{ flex: 1, backgroundColor: c.bg }} edges={['top']}>
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 8, paddingBottom: 48 }}>
         {/* Header */}
-        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 24 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
           <TouchableOpacity onPress={() => router.back()}>
             <Ionicons name="arrow-back" size={24} color={c.accent} />
           </TouchableOpacity>
           <Text style={{ fontFamily: 'SpaceGrotesk_700Bold', color: c.text, fontSize: 22, marginLeft: 16 }}>
             Edit Availability
           </Text>
-          <View style={{ flex: 1 }} />
-          <TouchableOpacity
-            onPress={() => setAiModalVisible(true)}
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              backgroundColor: c.accentBg,
-              borderRadius: 999,
-              paddingHorizontal: 12,
-              paddingVertical: 6,
-              gap: 4,
-            }}
-            activeOpacity={0.7}
-          >
-            <Text style={{ fontSize: 13 }}>✨</Text>
-            <Text style={{ color: c.accent, fontWeight: '600', fontSize: 13 }}>Ask AI</Text>
-          </TouchableOpacity>
         </View>
+
+        {/* AI button */}
+        <TouchableOpacity
+          onPress={() => setAiModalVisible(true)}
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: c.accentBg,
+            borderRadius: 14,
+            paddingVertical: 10,
+            marginBottom: 20,
+            gap: 6,
+          }}
+          activeOpacity={0.7}
+        >
+          <Text style={{ fontSize: 14 }}>✨</Text>
+          <Text style={{ color: c.accent, fontWeight: '600', fontSize: 14 }}>Update availability with AI</Text>
+        </TouchableOpacity>
 
         {/* Mode Tabs */}
         <View style={{ flexDirection: 'row', backgroundColor: c.bgCard, borderRadius: 14, padding: 4, marginBottom: 24 }}>
@@ -229,8 +231,10 @@ export default function EditAvailabilityScreen() {
           <>
             <WeekNavigator
               label={formatWeekLabel(dates)}
-              onPrev={() => setWeekOffset((o) => o - 1)}
+              onPrev={() => setWeekOffset((o) => Math.max(0, o - 1))}
               onNext={() => setWeekOffset((o) => o + 1)}
+              canGoPrev={weekOffset > 0}
+              onToday={() => setWeekOffset(0)}
             />
             <Text style={{ color: c.textSecondary, fontSize: 14, marginBottom: 16, marginTop: 8 }}>
               Override specific dates. These take priority over your weekly pattern.

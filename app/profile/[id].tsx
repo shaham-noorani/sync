@@ -115,9 +115,10 @@ export default function UserProfileScreen() {
           </Text>
           <WeekNavigator
             label={formatWeekLabel(dates)}
-            onPrev={() => setWeekOffset((o) => o - 1)}
+            onPrev={() => setWeekOffset((o) => Math.max(0, o - 1))}
             onNext={() => setWeekOffset((o) => o + 1)}
             canGoPrev={weekOffset > 0}
+            onToday={() => setWeekOffset(0)}
           />
           <View style={{ marginTop: 4 }}>
             {availLoading ? (
