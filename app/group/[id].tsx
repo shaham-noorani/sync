@@ -120,8 +120,25 @@ export default function GroupDetailScreen() {
         <TouchableOpacity onPress={() => router.back()} style={{ padding: 4, marginRight: 8 }}>
           <Ionicons name="chevron-back" size={24} color={c.accent} />
         </TouchableOpacity>
-        <TouchableOpacity onPress={handlePickIcon} activeOpacity={0.8} style={{ marginRight: 12 }}>
-          <GroupIcon iconUrl={group.icon_url} iconName={group.icon_name} size={36} />
+        <TouchableOpacity onPress={handlePickIcon} activeOpacity={0.7} style={{ marginRight: 12 }}>
+          <View style={{ position: 'relative' }}>
+            <GroupIcon iconUrl={group.icon_url} iconName={group.icon_name} size={36} />
+            <View style={{
+              position: 'absolute',
+              bottom: -3,
+              right: -3,
+              backgroundColor: c.accent,
+              borderRadius: 999,
+              width: 16,
+              height: 16,
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderWidth: 1.5,
+              borderColor: c.bg,
+            }}>
+              <Ionicons name="pencil" size={8} color="#fff" />
+            </View>
+          </View>
         </TouchableOpacity>
         <Text style={{
           flex: 1,
