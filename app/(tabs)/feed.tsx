@@ -67,7 +67,8 @@ export default function FeedScreen() {
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 12 }}
+          style={{ flexShrink: 0, flexGrow: 0 }}
+          contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 12, alignItems: 'center', height: 44 }}
         >
           <TouchableOpacity
             onPress={() => setActiveFilter(null)}
@@ -164,21 +165,11 @@ export default function FeedScreen() {
               >
                 {/* Photos */}
                 {hangout.photos?.length > 0 && (
-                  <ScrollView
-                    horizontal
-                    pagingEnabled
-                    showsHorizontalScrollIndicator={false}
-                    style={{ height: 192 }}
-                  >
-                    {hangout.photos.map((photo) => (
-                      <Image
-                        key={photo.id}
-                        source={{ uri: getPhotoUrl(photo.storage_path) }}
-                        style={{ width: 350, height: 192 }}
-                        resizeMode="cover"
-                      />
-                    ))}
-                  </ScrollView>
+                  <Image
+                    source={{ uri: getPhotoUrl(hangout.photos[0].storage_path) }}
+                    style={{ width: '100%', height: 220 }}
+                    resizeMode="cover"
+                  />
                 )}
 
                 <View style={{ padding: 16 }}>
