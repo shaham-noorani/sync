@@ -68,15 +68,15 @@ export default function UserProfileScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
-      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 48 }}>
-        {/* Header */}
-        <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.back()} style={{ padding: 4, marginRight: 8 }}>
-            <Ionicons name="chevron-back" size={24} color="#8875ff" />
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>Profile</Text>
-        </View>
+      {/* Header — sticky, outside ScrollView */}
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => router.back()} style={{ padding: 4, marginRight: 8 }}>
+          <Ionicons name="chevron-back" size={24} color="#8875ff" />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Profile</Text>
+      </View>
 
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 48 }}>
         {/* Profile Info */}
         <View style={{ alignItems: 'center', paddingVertical: 24 }}>
           <Avatar url={profile.avatar_url} name={profile.display_name} size={80} />

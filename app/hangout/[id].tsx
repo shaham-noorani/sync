@@ -47,40 +47,33 @@ export default function HangoutDetailScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
+      {/* Header — sticky, outside ScrollView */}
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => router.back()} style={{ marginRight: 12 }}>
+          <Ionicons name="chevron-back" size={24} color="#8875ff" />
+        </TouchableOpacity>
+        <Text style={styles.hangoutTitle} numberOfLines={1}>
+          {hangout.title}
+        </Text>
+      </View>
+
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 48 }}>
-        {/* Photos */}
+        {/* Photo */}
         {hangout.photos?.length > 0 && (
-          <ScrollView
-            horizontal
-            pagingEnabled
-            showsHorizontalScrollIndicator={false}
-            style={{ height: 256 }}
-          >
-            {hangout.photos.map((photo) => (
-              <Image
-                key={photo.id}
-                source={{ uri: getPhotoUrl(photo.storage_path) }}
-                style={{ width: 400, height: 256 }}
-                resizeMode="cover"
-              />
-            ))}
-          </ScrollView>
+          <Image
+            source={{ uri: getPhotoUrl(hangout.photos[0].storage_path) }}
+            style={{ width: '100%', height: 256 }}
+            resizeMode="cover"
+          />
         )}
 
-        {/* Back button */}
-        <View style={[styles.backRow, hangout.photos?.length > 0 ? { marginTop: 12 } : { paddingTop: 16 }]}>
-          <TouchableOpacity onPress={() => router.back()} style={{ marginRight: 12 }}>
-            <Ionicons name="chevron-back" size={24} color="#8875ff" />
-          </TouchableOpacity>
-        </View>
-
-        <View style={{ paddingHorizontal: 24 }}>
+        <View style={{ paddingHorizontal: 24, paddingTop: 16 }}>
           {/* Title row */}
           <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}>
             <Text style={{ fontSize: 24, marginRight: 8 }}>
               {ACTIVITY_EMOJIS[hangout.activity_tag?.toLowerCase() ?? ''] ?? '📅'}
             </Text>
-            <Text style={styles.hangoutTitle} numberOfLines={2}>
+            <Text style={styles.hangoutTitleContent} numberOfLines={2}>
               {hangout.title}
             </Text>
           </View>
@@ -177,12 +170,21 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#09090f',
   },
-  backRow: {
+  header: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 24,
+    paddingTop: 16,
+    paddingBottom: 8,
   },
   hangoutTitle: {
+    fontFamily: 'SpaceGrotesk_700Bold',
+    color: '#f0f0ff',
+    fontSize: 18,
+    fontWeight: '700',
+    flex: 1,
+  },
+  hangoutTitleContent: {
     fontFamily: 'SpaceGrotesk_700Bold',
     color: '#f0f0ff',
     fontSize: 22,

@@ -92,17 +92,17 @@ export default function GroupDetailScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
-      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 48 }}>
-        {/* Header */}
-        <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.back()} style={{ padding: 4, marginRight: 8 }}>
-            <Ionicons name="chevron-back" size={24} color="#8875ff" />
-          </TouchableOpacity>
-          <Text style={styles.groupName} numberOfLines={1}>
-            {group.name}
-          </Text>
-        </View>
+      {/* Header — sticky, outside ScrollView */}
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => router.back()} style={{ padding: 4, marginRight: 8 }}>
+          <Ionicons name="chevron-back" size={24} color="#8875ff" />
+        </TouchableOpacity>
+        <Text style={styles.groupName} numberOfLines={1}>
+          {group.name}
+        </Text>
+      </View>
 
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 48 }}>
         {group.description && (
           <Text style={styles.descriptionText}>
             {group.description}

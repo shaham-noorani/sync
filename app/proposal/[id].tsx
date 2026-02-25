@@ -103,17 +103,17 @@ export default function ProposalDetailScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
-      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 48 }}>
-        {/* Header */}
-        <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.back()} style={{ marginRight: 12 }}>
-            <Ionicons name="chevron-back" size={24} color="#8875ff" />
-          </TouchableOpacity>
-          <Text style={styles.headerTitle} numberOfLines={1}>
-            {proposal.title}
-          </Text>
-        </View>
+      {/* Header — sticky, outside ScrollView */}
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => router.back()} style={{ marginRight: 12 }}>
+          <Ionicons name="chevron-back" size={24} color="#8875ff" />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle} numberOfLines={1}>
+          {proposal.title}
+        </Text>
+      </View>
 
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 48 }}>
         {/* Card */}
         <View style={[styles.glassCard, { marginHorizontal: 24, marginBottom: 16, padding: 20 }]}>
           <View style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: 12 }}>
