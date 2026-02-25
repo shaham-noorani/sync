@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { Link, useRouter } from 'expo-router';
 import { makeRedirectUri } from 'expo-auth-session';
+import * as WebBrowser from 'expo-web-browser';
 import { supabase } from '../../lib/supabase';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
@@ -34,11 +35,18 @@ export default function SignupScreen() {
     setGoogleLoading(true);
     setError('');
     const redirectTo = makeRedirectUri({ scheme: 'sync' });
-    const { error: authError } = await supabase.auth.signInWithOAuth({
+    const { data, error: authError } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo },
+      options: { redirectTo, skipBrowserRedirect: true },
     });
-    if (authError) setError(authError.message);
+    if (authError) {
+      setError(authError.message);
+      setGoogleLoading(false);
+      return;
+    }
+    if (data?.url) {
+      await WebBrowser.openAuthSessionAsync(data.url, redirectTo);
+    }
     setGoogleLoading(false);
   };
 
