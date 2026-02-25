@@ -10,6 +10,12 @@ import { Button } from '../../components/ui/Button';
 import { SkeletonLoader } from '../../components/SkeletonLoader';
 import { Ionicons } from '@expo/vector-icons';
 import { useColors, useTheme } from '../../providers/ThemeProvider';
+import { makeRedirectUri } from 'expo-auth-session';
+import { useQueryClient } from '@tanstack/react-query';
+import { useGcalConnections } from '../../hooks/useGcalConnection';
+import * as WebBrowser from 'expo-web-browser';
+import { useState } from 'react';
+import { supabase } from '../../lib/supabase';
 
 const ACTIVITY_EMOJIS: Record<string, string> = {
   tennis: '🎾', 'board games': '🎲', dinner: '🍽️', climbing: '🧗',
@@ -24,6 +30,53 @@ export default function ProfileScreen() {
   const router = useRouter();
   const c = useColors();
   const { isDark, toggleTheme } = useTheme();
+  const queryClient = useQueryClient();
+  const { data: gcalConnections } = useGcalConnections();
+  const [connectingCalendar, setConnectingCalendar] = useState(false);
+
+  const handleConnectCalendar = async () => {
+    setConnectingCalendar(true);
+    const redirectTo = makeRedirectUri({ scheme: 'sync' });
+
+    // Subscribe to next auth state change to capture calendar tokens
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      if (session?.provider_token) {
+        subscription.unsubscribe();
+        const { data, error } = await supabase.functions.invoke('connect-gcal', {
+          body: {
+            access_token: session.provider_token,
+            refresh_token: session.provider_refresh_token ?? null,
+            redirect_uri: redirectTo,
+          },
+        });
+        if (!error && data?.calendars) {
+          queryClient.invalidateQueries({ queryKey: ['gcal-connections'] });
+          router.push('/gcal/calendars');
+        }
+        setConnectingCalendar(false);
+      }
+    });
+
+    const { data: oauthData, error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo,
+        scopes: 'https://www.googleapis.com/auth/calendar.readonly',
+        queryParams: { access_type: 'offline', prompt: 'consent' },
+        skipBrowserRedirect: true,
+      },
+    });
+
+    if (error) {
+      subscription.unsubscribe();
+      setConnectingCalendar(false);
+      return;
+    }
+
+    if (oauthData?.url) {
+      await WebBrowser.openAuthSessionAsync(oauthData.url, redirectTo);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -163,6 +216,61 @@ export default function ProfileScreen() {
             />
           </View>
 
+        </View>
+
+        {/* Integrations */}
+        <View style={{ marginBottom: 32, backgroundColor: c.bgCard, borderWidth: 1, borderColor: c.border, borderRadius: 20, overflow: 'hidden' }}>
+          <Text style={{ color: c.textMuted, fontSize: 10, fontWeight: '700', letterSpacing: 1.5, paddingHorizontal: 16, paddingTop: 14, paddingBottom: 10 }}>
+            INTEGRATIONS
+          </Text>
+
+          {gcalConnections && gcalConnections.length > 0 ? (
+            <>
+              {gcalConnections.map((conn) => (
+                <TouchableOpacity
+                  key={conn.id}
+                  style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, borderTopWidth: 1, borderTopColor: c.bgCardHover }}
+                  onPress={() => router.push('/gcal/calendars')}
+                  activeOpacity={0.7}
+                >
+                  <Text style={{ fontSize: 18, marginRight: 12 }}>📅</Text>
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ color: c.text, fontSize: 14, fontWeight: '500' }}>Google Calendar</Text>
+                    <Text style={{ color: c.textMuted, fontSize: 12, marginTop: 1 }}>{conn.google_email}</Text>
+                  </View>
+                  <Ionicons name="chevron-forward" size={16} color={c.textMuted} />
+                </TouchableOpacity>
+              ))}
+              <TouchableOpacity
+                style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, borderTopWidth: 1, borderTopColor: c.bgCardHover, opacity: connectingCalendar ? 0.5 : 1 }}
+                onPress={handleConnectCalendar}
+                disabled={connectingCalendar}
+                activeOpacity={0.7}
+              >
+                <Ionicons name="add-circle-outline" size={20} color={c.accent} />
+                <Text style={{ color: c.accent, marginLeft: 12, fontSize: 14, fontWeight: '500' }}>
+                  {connectingCalendar ? 'Connecting…' : 'Connect another account'}
+                </Text>
+              </TouchableOpacity>
+            </>
+          ) : (
+            <TouchableOpacity
+              style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 14, opacity: connectingCalendar ? 0.5 : 1 }}
+              onPress={handleConnectCalendar}
+              disabled={connectingCalendar}
+              activeOpacity={0.7}
+            >
+              <Text style={{ fontSize: 18, marginRight: 12 }}>📅</Text>
+              <View style={{ flex: 1 }}>
+                <Text style={{ color: c.text, fontSize: 14, fontWeight: '500' }}>Connect Google Calendar</Text>
+                <Text style={{ color: c.textMuted, fontSize: 12, marginTop: 1 }}>Import busy times automatically</Text>
+              </View>
+              {connectingCalendar
+                ? <Text style={{ color: c.textMuted, fontSize: 12 }}>Connecting…</Text>
+                : <Ionicons name="chevron-forward" size={16} color={c.textMuted} />
+              }
+            </TouchableOpacity>
+          )}
         </View>
 
         {/* Sign Out */}
