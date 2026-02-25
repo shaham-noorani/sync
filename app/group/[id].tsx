@@ -1,11 +1,10 @@
 import { useState, useMemo } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Alert, StyleSheet } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
+import { View, Text, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import * as Clipboard from 'expo-clipboard';
-import { useGroup, useLeaveGroup, useUpdateGroupIcon } from '../../hooks/useGroups';
+import { useGroup, useLeaveGroup } from '../../hooks/useGroups';
 import { GroupIcon } from '../../components/GroupCard';
 import { useGroupAvailability } from '../../hooks/useAvailability';
 import { useAuth } from '../../providers/AuthProvider';
@@ -44,20 +43,13 @@ export default function GroupDetailScreen() {
   const { user } = useAuth();
   const { data: group, isLoading } = useGroup(id);
   const leaveGroup = useLeaveGroup();
-  const updateIcon = useUpdateGroupIcon();
   const [weekOffset, setWeekOffset] = useState(0);
 
-  const handlePickIcon = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images'],
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 0.8,
-    });
-    if (!result.canceled) {
-      await updateIcon.mutateAsync({ groupId: id, iconPhotoUri: result.assets[0].uri, iconName: null });
-    }
-  };
+  const myRole = useMemo(
+    () => group?.members?.find((m: any) => m.user_id === user?.id)?.role ?? 'member',
+    [group, user]
+  );
+  const isManager = myRole === 'owner' || myRole === 'admin';
 
   const dates = useMemo(() => getWeekDates(weekOffset), [weekOffset]);
 
@@ -120,34 +112,21 @@ export default function GroupDetailScreen() {
         <TouchableOpacity onPress={() => router.back()} style={{ padding: 4, marginRight: 8 }}>
           <Ionicons name="chevron-back" size={24} color={c.accent} />
         </TouchableOpacity>
-        <TouchableOpacity onPress={handlePickIcon} activeOpacity={0.7} style={{ marginRight: 12 }}>
-          <View style={{ position: 'relative' }}>
-            <GroupIcon iconUrl={group.icon_url} iconName={group.icon_name} size={36} />
-            <View style={{
-              position: 'absolute',
-              bottom: -3,
-              right: -3,
-              backgroundColor: c.accent,
-              borderRadius: 999,
-              width: 16,
-              height: 16,
-              alignItems: 'center',
-              justifyContent: 'center',
-              borderWidth: 1.5,
-              borderColor: c.bg,
-            }}>
-              <Ionicons name="pencil" size={8} color="#fff" />
-            </View>
-          </View>
-        </TouchableOpacity>
-        <Text style={{
-          flex: 1,
-          color: c.text,
-          fontWeight: '700',
-          fontSize: 22,
-        }} numberOfLines={1}>
+        <View style={{ marginRight: 12 }}>
+          <GroupIcon iconUrl={group.icon_url} iconName={group.icon_name} size={36} />
+        </View>
+        <Text style={{ flex: 1, color: c.text, fontWeight: '700', fontSize: 22 }} numberOfLines={1}>
           {group.name}
         </Text>
+        {isManager && (
+          <TouchableOpacity
+            onPress={() => router.push(`/group/edit/${id}`)}
+            style={{ backgroundColor: c.bgCard, borderWidth: 1, borderColor: c.border, borderRadius: 999, padding: 8 }}
+            activeOpacity={0.7}
+          >
+            <Ionicons name="settings-outline" size={18} color={c.textSecondary} />
+          </TouchableOpacity>
+        )}
       </View>
 
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 48 }}>

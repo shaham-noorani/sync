@@ -189,6 +189,80 @@ export function useUpdateGroupIcon() {
   });
 }
 
+export function useUpdateGroup() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      groupId,
+      name,
+      description,
+      iconName,
+      iconPhotoUri,
+    }: {
+      groupId: string;
+      name?: string;
+      description?: string | null;
+      iconName?: string | null;
+      iconPhotoUri?: string | null;
+    }) => {
+      const updates: Record<string, any> = {};
+      if (name !== undefined) updates.name = name;
+      if (description !== undefined) updates.description = description;
+      if (iconName !== undefined) updates.icon_name = iconName;
+
+      if (iconPhotoUri) {
+        updates.icon_url = await uploadGroupIcon(groupId, iconPhotoUri);
+        updates.icon_name = null;
+      } else if (iconName !== undefined) {
+        updates.icon_url = null;
+      }
+
+      const { error } = await supabase.from('groups').update(updates).eq('id', groupId);
+      if (error) throw error;
+    },
+    onSuccess: (_data, { groupId }) => {
+      queryClient.invalidateQueries({ queryKey: ['group', groupId] });
+      queryClient.invalidateQueries({ queryKey: ['my-groups'] });
+    },
+  });
+}
+
+export function useRemoveGroupMember() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ groupId, userId }: { groupId: string; userId: string }) => {
+      const { error } = await supabase
+        .from('group_members')
+        .delete()
+        .eq('group_id', groupId)
+        .eq('user_id', userId);
+      if (error) throw error;
+    },
+    onSuccess: (_data, { groupId }) => {
+      queryClient.invalidateQueries({ queryKey: ['group', groupId] });
+      queryClient.invalidateQueries({ queryKey: ['my-groups'] });
+    },
+  });
+}
+
+export function useAddGroupMember() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ groupId, userId }: { groupId: string; userId: string }) => {
+      const { error } = await supabase
+        .from('group_members')
+        .insert({ group_id: groupId, user_id: userId, role: 'member' });
+      if (error) throw error;
+    },
+    onSuccess: (_data, { groupId }) => {
+      queryClient.invalidateQueries({ queryKey: ['group', groupId] });
+    },
+  });
+}
+
 export function useJoinGroup() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
