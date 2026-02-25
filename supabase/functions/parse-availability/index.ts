@@ -5,6 +5,8 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/
+
 const buildSystemPrompt = (today: string) => `You are a scheduling assistant helping a user update their availability calendar. Today's date is ${today}.
 
 Parse the user's message and return ONLY a valid JSON object with this exact structure:
@@ -34,8 +36,9 @@ serve(async (req) => {
   try {
     const { message, today } = await req.json()
 
-    if (!message || typeof message !== 'string') {
-      return new Response(JSON.stringify({ error: 'Missing message' }), {
+    // Fix 5: validate message presence, type, and length
+    if (!message || typeof message !== 'string' || message.length > 2000) {
+      return new Response(JSON.stringify({ error: 'Invalid or too-long message' }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
@@ -49,7 +52,10 @@ serve(async (req) => {
       })
     }
 
-    const todayStr = today ?? new Date().toISOString().split('T')[0]
+    // Fix 3: validate today before embedding in prompt
+    const todayStr = (typeof today === 'string' && DATE_REGEX.test(today))
+      ? today
+      : new Date().toISOString().split('T')[0]
 
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -67,15 +73,34 @@ serve(async (req) => {
     })
 
     if (!response.ok) {
+      // Fix 1: log full error server-side, return safe message to client
       const errText = await response.text()
-      throw new Error(`Anthropic API error ${response.status}: ${errText}`)
+      console.error(`Anthropic API error ${response.status}: ${errText}`)
+      throw new Error('Failed to contact AI service')
     }
 
     const data = await response.json()
-    const raw = data.content[0].text.trim()
-    // Strip markdown code fences if Claude wraps the JSON
-    const cleaned = raw.replace(/^```json?\n?/, '').replace(/\n?```$/, '')
-    const parsed = JSON.parse(cleaned)
+
+    // Fix 2: guard against unexpected response shape
+    const rawText = data?.content?.[0]?.text
+    if (typeof rawText !== 'string') {
+      console.error('Unexpected Anthropic response shape:', JSON.stringify(data))
+      throw new Error('Unexpected response shape from AI service')
+    }
+
+    const cleaned = rawText.trim().replace(/^```json?\n?/, '').replace(/\n?```$/, '')
+
+    // Fix 4: wrap JSON.parse in try/catch
+    let parsed: unknown
+    try {
+      parsed = JSON.parse(cleaned)
+    } catch {
+      console.error('Claude returned non-JSON:', cleaned)
+      return new Response(
+        JSON.stringify({ error: 'AI service returned an unreadable response' }),
+        { status: 502, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
 
     return new Response(JSON.stringify(parsed), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
