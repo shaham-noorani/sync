@@ -19,12 +19,14 @@ import { Button } from '../../components/ui/Button';
 import { InterestChip } from '../../components/ui/InterestChip';
 import { INTERESTS } from '../../lib/constants';
 import { Ionicons } from '@expo/vector-icons';
+import { useColors } from '../../providers/ThemeProvider';
 
 export default function EditProfileScreen() {
   const router = useRouter();
   const { user } = useAuth();
   const { data: profile } = useProfile();
   const updateProfile = useUpdateProfile();
+  const c = useColors();
 
   const [displayName, setDisplayName] = useState(profile?.display_name ?? '');
   const [city, setCity] = useState(profile?.city ?? '');
@@ -90,14 +92,14 @@ export default function EditProfileScreen() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#09090f' }} edges={['top']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: c.bg }} edges={['top']}>
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 8, paddingBottom: 48 }}>
         {/* Header */}
         <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 32 }}>
           <TouchableOpacity onPress={() => router.back()}>
-            <Ionicons name="arrow-back" size={24} color="#8875ff" />
+            <Ionicons name="arrow-back" size={24} color={c.accent} />
           </TouchableOpacity>
-          <Text style={{ color: '#f0f0ff', fontWeight: '700', fontSize: 20, marginLeft: 16 }}>
+          <Text style={{ color: c.text, fontWeight: '700', fontSize: 20, marginLeft: 16 }}>
             Edit Profile
           </Text>
         </View>
@@ -109,7 +111,7 @@ export default function EditProfileScreen() {
           disabled={uploading}
         >
           <Avatar url={avatarUrl} name={displayName || 'U'} size={96} ring />
-          <Text style={{ color: '#8875ff', marginTop: 8, fontSize: 14 }}>
+          <Text style={{ color: c.accent, marginTop: 8, fontSize: 14 }}>
             {uploading ? 'Uploading...' : 'Change photo'}
           </Text>
         </TouchableOpacity>
@@ -132,7 +134,7 @@ export default function EditProfileScreen() {
         />
 
         {/* Interests */}
-        <Text style={{ color: '#8b8fa8', fontSize: 13, marginBottom: 12, marginLeft: 4 }}>Interests</Text>
+        <Text style={{ color: c.textSecondary, fontSize: 13, marginBottom: 12, marginLeft: 4 }}>Interests</Text>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginBottom: 32 }}>
           {INTERESTS.map((interest) => (
             <InterestChip

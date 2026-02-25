@@ -4,8 +4,10 @@ import { Link } from 'expo-router';
 import { supabase } from '../../lib/supabase';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
+import { useColors } from '../../providers/ThemeProvider';
 
 export default function LoginScreen() {
+  const c = useColors();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -22,7 +24,7 @@ export default function LoginScreen() {
 
   return (
     <KeyboardAvoidingView
-      style={{ flex: 1, backgroundColor: '#09090f' }}
+      style={{ flex: 1, backgroundColor: c.bg }}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       {/* Background glow orb */}
@@ -41,10 +43,10 @@ export default function LoginScreen() {
       >
         {/* Logo */}
         <View style={{ alignItems: 'center', marginBottom: 56 }}>
-          <Text style={{ fontFamily: 'SpaceGrotesk_700Bold', fontSize: 64, letterSpacing: -3, color: '#8875ff' }}>
+          <Text style={{ fontFamily: 'SpaceGrotesk_700Bold', fontSize: 64, letterSpacing: -3, color: c.accent }}>
             sync
           </Text>
-          <Text style={{ color: '#8b8fa8', marginTop: 8, fontSize: 15 }}>
+          <Text style={{ color: c.textSecondary, marginTop: 8, fontSize: 15 }}>
             coordinate hangouts with friends
           </Text>
         </View>
@@ -65,10 +67,10 @@ export default function LoginScreen() {
           </View>
 
           <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 24 }}>
-            <Text style={{ color: '#5a5f7a' }}>Don't have an account? </Text>
+            <Text style={{ color: c.textMuted }}>Don't have an account? </Text>
             <Link href="/(auth)/signup" asChild>
               <TouchableOpacity>
-                <Text style={{ color: '#8875ff', fontWeight: '600' }}>Sign Up</Text>
+                <Text style={{ color: c.accent, fontWeight: '600' }}>Sign Up</Text>
               </TouchableOpacity>
             </Link>
           </View>

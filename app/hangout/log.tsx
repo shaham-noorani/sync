@@ -16,6 +16,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { useLogHangout } from '../../hooks/useHangouts';
 import { useFriendsList } from '../../hooks/useFriends';
 import { Avatar } from '../../components/Avatar';
+import { useColors } from '../../providers/ThemeProvider';
 
 const ACTIVITIES: { tag: string; emoji: string; label: string }[] = [
   { tag: 'dinner', emoji: '🍽️', label: 'Dinner' },
@@ -47,40 +48,41 @@ function getRecentDates(count = 7): { value: string; label: string }[] {
   return dates;
 }
 
-const glassCard = {
-  backgroundColor: 'rgba(255,255,255,0.05)',
-  borderWidth: 1,
-  borderColor: 'rgba(255,255,255,0.08)',
-  borderRadius: 16,
-} as const;
-
-const pillUnselected = {
-  backgroundColor: 'rgba(255,255,255,0.07)',
-  borderWidth: 1,
-  borderColor: 'rgba(255,255,255,0.1)',
-  borderRadius: 12,
-} as const;
-
-const pillSelected = {
-  backgroundColor: '#8875ff',
-  borderRadius: 12,
-} as const;
-
-const textInput = {
-  backgroundColor: 'rgba(255,255,255,0.06)',
-  borderRadius: 14,
-  borderWidth: 1,
-  borderColor: 'rgba(255,255,255,0.1)',
-  paddingHorizontal: 16,
-  paddingVertical: 14,
-  color: '#f0f0ff',
-  fontSize: 15,
-} as const;
-
 export default function LogHangoutScreen() {
   const router = useRouter();
   const logHangout = useLogHangout();
   const { data: friends } = useFriendsList();
+  const c = useColors();
+
+  const glassCard = {
+    backgroundColor: c.bgCard,
+    borderWidth: 1,
+    borderColor: c.border,
+    borderRadius: 16,
+  } as const;
+
+  const pillUnselected = {
+    backgroundColor: c.bgCardHover,
+    borderWidth: 1,
+    borderColor: c.border,
+    borderRadius: 12,
+  } as const;
+
+  const pillSelected = {
+    backgroundColor: c.accent,
+    borderRadius: 12,
+  } as const;
+
+  const textInput = {
+    backgroundColor: c.bgCard,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: c.border,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    color: c.text,
+    fontSize: 15,
+  } as const;
 
   const today = new Date().toISOString().split('T')[0];
   const [title, setTitle] = useState('');
@@ -134,28 +136,28 @@ export default function LogHangoutScreen() {
   const isPending = logHangout.isPending;
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#09090f' }} edges={['top']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: c.bg }} edges={['top']}>
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 8, paddingBottom: 48 }}>
         {/* Header */}
         <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 24 }}>
           <TouchableOpacity onPress={() => router.back()} style={{ marginRight: 12 }}>
-            <Ionicons name="chevron-back" size={24} color="#8875ff" />
+            <Ionicons name="chevron-back" size={24} color={c.accent} />
           </TouchableOpacity>
-          <Text style={{ fontFamily: 'SpaceGrotesk_700Bold', color: '#f0f0ff', fontSize: 22 }}>
+          <Text style={{ fontFamily: 'SpaceGrotesk_700Bold', color: c.text, fontSize: 22 }}>
             Log a Hangout
           </Text>
         </View>
 
         {/* Title */}
         <View style={{ marginBottom: 24 }}>
-          <Text style={{ color: '#8b8fa8', fontSize: 13, fontWeight: '600', marginBottom: 8 }}>
+          <Text style={{ color: c.textSecondary, fontSize: 13, fontWeight: '600', marginBottom: 8 }}>
             What happened?
           </Text>
           <TextInput
             value={title}
             onChangeText={setTitle}
             placeholder="e.g. Rooftop dinner with the crew"
-            placeholderTextColor="#5a5f7a"
+            placeholderTextColor={c.textMuted}
             style={textInput}
             maxLength={80}
           />
@@ -163,7 +165,7 @@ export default function LogHangoutScreen() {
 
         {/* Activity */}
         <View style={{ marginBottom: 24 }}>
-          <Text style={{ color: '#8b8fa8', fontSize: 13, fontWeight: '600', marginBottom: 8 }}>
+          <Text style={{ color: c.textSecondary, fontSize: 13, fontWeight: '600', marginBottom: 8 }}>
             Activity
           </Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
@@ -183,7 +185,7 @@ export default function LogHangoutScreen() {
                     style={{
                       fontSize: 12,
                       marginTop: 2,
-                      color: selected ? '#ffffff' : '#8b8fa8',
+                      color: selected ? '#ffffff' : c.textSecondary,
                       fontWeight: selected ? '700' : '400',
                     }}
                   >
@@ -197,7 +199,7 @@ export default function LogHangoutScreen() {
 
         {/* Date */}
         <View style={{ marginBottom: 24 }}>
-          <Text style={{ color: '#8b8fa8', fontSize: 13, fontWeight: '600', marginBottom: 8 }}>
+          <Text style={{ color: c.textSecondary, fontSize: 13, fontWeight: '600', marginBottom: 8 }}>
             When was it?
           </Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
@@ -215,7 +217,7 @@ export default function LogHangoutScreen() {
                   <Text
                     style={{
                       fontSize: 14,
-                      color: selected ? '#ffffff' : '#8b8fa8',
+                      color: selected ? '#ffffff' : c.textSecondary,
                       fontWeight: selected ? '700' : '400',
                     }}
                   >
@@ -229,14 +231,14 @@ export default function LogHangoutScreen() {
 
         {/* Location */}
         <View style={{ marginBottom: 24 }}>
-          <Text style={{ color: '#8b8fa8', fontSize: 13, fontWeight: '600', marginBottom: 8 }}>
+          <Text style={{ color: c.textSecondary, fontSize: 13, fontWeight: '600', marginBottom: 8 }}>
             Location <Text style={{ fontWeight: '400' }}>(optional)</Text>
           </Text>
           <TextInput
             value={location}
             onChangeText={setLocation}
             placeholder="e.g. Tartine Manufactory"
-            placeholderTextColor="#5a5f7a"
+            placeholderTextColor={c.textMuted}
             style={textInput}
           />
         </View>
@@ -244,7 +246,7 @@ export default function LogHangoutScreen() {
         {/* Who was there */}
         {friends && (friends as any[]).length > 0 && (
           <View style={{ marginBottom: 24 }}>
-            <Text style={{ color: '#8b8fa8', fontSize: 13, fontWeight: '600', marginBottom: 8 }}>
+            <Text style={{ color: c.textSecondary, fontSize: 13, fontWeight: '600', marginBottom: 8 }}>
               Who was there?
             </Text>
             {(friends as any[]).map((friend) => {
@@ -256,21 +258,21 @@ export default function LogHangoutScreen() {
                   style={[
                     glassCard,
                     { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, marginBottom: 8 },
-                    isSelected ? { borderColor: '#8875ff', borderWidth: 1 } : {},
+                    isSelected ? { borderColor: c.accent, borderWidth: 1 } : {},
                   ]}
                   activeOpacity={0.7}
                 >
                   <Avatar url={friend.avatar_url} name={friend.display_name} size={36} />
                   <View style={{ flex: 1, marginLeft: 12 }}>
-                    <Text style={{ color: '#f0f0ff', fontWeight: '600', fontSize: 14 }}>
+                    <Text style={{ color: c.text, fontWeight: '600', fontSize: 14 }}>
                       {friend.display_name}
                     </Text>
-                    <Text style={{ color: '#5a5f7a', fontSize: 12 }}>
+                    <Text style={{ color: c.textMuted, fontSize: 12 }}>
                       @{friend.username}
                     </Text>
                   </View>
                   {isSelected && (
-                    <Ionicons name="checkmark-circle" size={20} color="#8875ff" />
+                    <Ionicons name="checkmark-circle" size={20} color={c.accent} />
                   )}
                 </TouchableOpacity>
               );
@@ -280,7 +282,7 @@ export default function LogHangoutScreen() {
 
         {/* Photos */}
         <View style={{ marginBottom: 24 }}>
-          <Text style={{ color: '#8b8fa8', fontSize: 13, fontWeight: '600', marginBottom: 8 }}>
+          <Text style={{ color: c.textSecondary, fontSize: 13, fontWeight: '600', marginBottom: 8 }}>
             Photos <Text style={{ fontWeight: '400' }}>(optional, up to 5)</Text>
           </Text>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
@@ -306,9 +308,9 @@ export default function LogHangoutScreen() {
                   width: 80,
                   height: 80,
                   borderRadius: 12,
-                  backgroundColor: 'rgba(255,255,255,0.07)',
+                  backgroundColor: c.bgCardHover,
                   borderWidth: 1,
-                  borderColor: 'rgba(255,255,255,0.15)',
+                  borderColor: c.borderStrong,
                   borderStyle: 'dashed',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -316,7 +318,7 @@ export default function LogHangoutScreen() {
                 }}
                 activeOpacity={0.7}
               >
-                <Ionicons name="camera" size={24} color="#5a5f7a" />
+                <Ionicons name="camera" size={24} color={c.textMuted} />
               </TouchableOpacity>
             )}
           </View>

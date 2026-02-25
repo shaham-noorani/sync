@@ -9,6 +9,7 @@ import { useFriendsAvailability, useFriendOverlaps } from '../../hooks/useOverla
 import { useProposals } from '../../hooks/useProposals';
 import { HeatmapGrid } from '../../components/HeatmapGrid';
 import { WeekNavigator } from '../../components/WeekNavigator';
+import { useColors } from '../../providers/ThemeProvider';
 
 const ACTIVITY_EMOJIS: Record<string, string> = {
   tennis: '🎾', 'board games': '🎲', dinner: '🍽️', climbing: '🧗',
@@ -87,6 +88,7 @@ function HeatmapSkeleton() {
 
 export default function HomeScreen() {
   const router = useRouter();
+  const c = useColors();
   const [weekOffset, setWeekOffset] = useState(0);
 
   const dates = useMemo(() => getWeekDates(weekOffset), [weekOffset]);
@@ -113,26 +115,26 @@ export default function HomeScreen() {
   const openProposals = proposals?.slice(0, 6) ?? [];
 
   return (
-    <SafeAreaView className="flex-1" style={{ backgroundColor: '#09090f' }} edges={['top']}>
+    <SafeAreaView className="flex-1" style={{ backgroundColor: c.bg }} edges={['top']}>
       <ScrollView
         className="flex-1"
-        style={{ backgroundColor: '#09090f' }}
+        style={{ backgroundColor: c.bg }}
         contentContainerClassName="pb-12"
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       >
         {/* Header */}
         <View className="flex-row items-center justify-between px-6 pt-4 pb-2">
           <Text
-            style={{ fontFamily: 'SpaceGrotesk_700Bold', fontSize: 28, letterSpacing: -0.5, color: '#8875ff' }}
+            style={{ fontFamily: 'SpaceGrotesk_700Bold', fontSize: 28, letterSpacing: -0.5, color: c.accent }}
           >
             sync
           </Text>
           <TouchableOpacity
             onPress={() => router.push('/availability/edit')}
             style={{
-              backgroundColor: 'rgba(255,255,255,0.07)',
+              backgroundColor: c.bgCardHover,
               borderWidth: 1,
-              borderColor: 'rgba(136,117,255,0.4)',
+              borderColor: c.accentBorder,
               borderRadius: 999,
               paddingHorizontal: 12,
               paddingVertical: 6,
@@ -141,8 +143,8 @@ export default function HomeScreen() {
             }}
             activeOpacity={0.7}
           >
-            <Ionicons name="calendar-outline" size={15} color="#8875ff" />
-            <Text style={{ color: '#8875ff', fontSize: 12, fontWeight: '600', marginLeft: 4 }}>
+            <Ionicons name="calendar-outline" size={15} color={c.accent} />
+            <Text style={{ color: c.accent, fontSize: 12, fontWeight: '600', marginLeft: 4 }}>
               Availability
             </Text>
           </TouchableOpacity>
@@ -151,7 +153,7 @@ export default function HomeScreen() {
         {/* Active Proposals */}
         {openProposals.length > 0 && (
           <View className="mb-6">
-            <Text style={{ color: '#5a5f7a', fontSize: 10, fontWeight: '700', letterSpacing: 1.5 }} className="px-6 mb-3 uppercase">
+            <Text style={{ color: c.textMuted, fontSize: 10, fontWeight: '700', letterSpacing: 1.5 }} className="px-6 mb-3 uppercase">
               Who's Down?
             </Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 24 }}>
@@ -165,7 +167,7 @@ export default function HomeScreen() {
                   <TouchableOpacity
                     key={p.id}
                     className="mr-3 rounded-2xl overflow-hidden"
-                    style={{ width: 180, borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)' }}
+                    style={{ width: 180, borderWidth: 1, borderColor: c.border }}
                     onPress={() => router.push(`/proposal/${p.id}`)}
                     activeOpacity={0.85}
                   >
@@ -176,15 +178,15 @@ export default function HomeScreen() {
                       <Text style={{ fontSize: 36 }}>{emoji}</Text>
                     </View>
                     {/* Card body */}
-                    <View style={{ backgroundColor: 'rgba(255,255,255,0.06)', paddingHorizontal: 12, paddingVertical: 12 }}>
+                    <View style={{ backgroundColor: c.bgCard, paddingHorizontal: 12, paddingVertical: 12 }}>
                       <Text
-                        style={{ color: '#f0f0ff', fontWeight: '700', fontSize: 13 }}
+                        style={{ color: c.text, fontWeight: '700', fontSize: 13 }}
                         numberOfLines={2}
                       >
                         {p.title}
                       </Text>
                       {p.proposed_date && (
-                        <Text style={{ color: '#5a5f7a', fontSize: 11, marginTop: 4 }}>
+                        <Text style={{ color: c.textMuted, fontSize: 11, marginTop: 4 }}>
                           {new Date(p.proposed_date + 'T12:00:00').toLocaleDateString('en-US', {
                             weekday: 'short', month: 'short', day: 'numeric',
                           })}
@@ -192,7 +194,7 @@ export default function HomeScreen() {
                         </Text>
                       )}
                       <View className="flex-row items-center mt-2">
-                        <Text style={{ color: '#5a5f7a', fontSize: 11 }} className="flex-1">
+                        <Text style={{ color: c.textMuted, fontSize: 11 }} className="flex-1">
                           {acceptedCount} going
                         </Text>
                         {pendingResponse && (
@@ -217,7 +219,7 @@ export default function HomeScreen() {
         {/* Overlap Alerts */}
         {topOverlaps.length > 0 && (
           <View className="px-6 mb-6">
-            <Text style={{ color: '#5a5f7a', fontSize: 10, fontWeight: '700', letterSpacing: 1.5 }} className="mb-3 uppercase">
+            <Text style={{ color: c.textMuted, fontSize: 10, fontWeight: '700', letterSpacing: 1.5 }} className="mb-3 uppercase">
               Make a Plan
             </Text>
             {topOverlaps.map((overlap) => {
@@ -229,11 +231,11 @@ export default function HomeScreen() {
                 <TouchableOpacity
                   key={`${overlap.date}-${overlap.time_block}`}
                   style={{
-                    backgroundColor: 'rgba(255,255,255,0.05)',
+                    backgroundColor: c.bgCard,
                     borderWidth: 1,
-                    borderColor: 'rgba(255,255,255,0.08)',
+                    borderColor: c.border,
                     borderLeftWidth: 3,
-                    borderLeftColor: '#8875ff',
+                    borderLeftColor: c.accent,
                     borderRadius: 16,
                     paddingHorizontal: 16,
                     paddingVertical: 14,
@@ -245,15 +247,15 @@ export default function HomeScreen() {
                   activeOpacity={0.8}
                 >
                   <View className="flex-1">
-                    <Text style={{ color: '#f0f0ff', fontWeight: '600', fontSize: 13 }}>
+                    <Text style={{ color: c.text, fontWeight: '600', fontSize: 13 }}>
                       {names}{extra} free · {overlap.time_block}
                     </Text>
-                    <Text style={{ color: '#5a5f7a', fontSize: 12, marginTop: 2 }}>
+                    <Text style={{ color: c.textMuted, fontSize: 12, marginTop: 2 }}>
                       {dateStr}
                     </Text>
                   </View>
-                  <View style={{ backgroundColor: 'rgba(136,117,255,0.15)', borderRadius: 999, paddingHorizontal: 12, paddingVertical: 4 }}>
-                    <Text style={{ color: '#8875ff', fontSize: 12, fontWeight: '700' }}>
+                  <View style={{ backgroundColor: c.accentBg, borderRadius: 999, paddingHorizontal: 12, paddingVertical: 4 }}>
+                    <Text style={{ color: c.accent, fontSize: 12, fontWeight: '700' }}>
                       Plan →
                     </Text>
                   </View>
@@ -265,7 +267,7 @@ export default function HomeScreen() {
 
         {/* Availability Heatmap */}
         <View className="px-6">
-          <Text style={{ color: '#5a5f7a', fontSize: 10, fontWeight: '700', letterSpacing: 1.5 }} className="mb-1 uppercase">
+          <Text style={{ color: c.textMuted, fontSize: 10, fontWeight: '700', letterSpacing: 1.5 }} className="mb-1 uppercase">
             Your Availability
           </Text>
           <WeekNavigator

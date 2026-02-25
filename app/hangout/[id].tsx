@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useHangout, useToggleReaction, getPhotoUrl } from '../../hooks/useHangouts';
 import { Avatar } from '../../components/Avatar';
 import { SkeletonLoader } from '../../components/SkeletonLoader';
+import { useColors } from '../../providers/ThemeProvider';
 
 const ACTIVITY_EMOJIS: Record<string, string> = {
   tennis: '🎾', 'board games': '🎲', dinner: '🍽️', climbing: '🧗',
@@ -19,10 +20,11 @@ export default function HangoutDetailScreen() {
   const router = useRouter();
   const { data: hangout, isLoading } = useHangout(id);
   const toggleReaction = useToggleReaction();
+  const c = useColors();
 
   if (isLoading) {
     return (
-      <SafeAreaView style={styles.safeArea} edges={['top']}>
+      <SafeAreaView style={[styles.safeArea, { backgroundColor: c.bg }]} edges={['top']}>
         <View style={{ paddingHorizontal: 24, paddingTop: 16 }}>
           <SkeletonLoader height={250} borderRadius={16} className="mb-4" />
           <SkeletonLoader height={24} borderRadius={8} className="mb-2" />
@@ -46,13 +48,13 @@ export default function HangoutDetailScreen() {
     : null;
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top']}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: c.bg }]} edges={['top']}>
       {/* Header — sticky, outside ScrollView */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={{ marginRight: 12 }}>
-          <Ionicons name="chevron-back" size={24} color="#8875ff" />
+          <Ionicons name="chevron-back" size={24} color={c.accent} />
         </TouchableOpacity>
-        <Text style={styles.hangoutTitle} numberOfLines={1}>
+        <Text style={[styles.hangoutTitle, { color: c.text }]} numberOfLines={1}>
           {hangout.title}
         </Text>
       </View>
@@ -73,7 +75,7 @@ export default function HangoutDetailScreen() {
             <Text style={{ fontSize: 24, marginRight: 8 }}>
               {ACTIVITY_EMOJIS[hangout.activity_tag?.toLowerCase() ?? ''] ?? '📅'}
             </Text>
-            <Text style={styles.hangoutTitleContent} numberOfLines={2}>
+            <Text style={[styles.hangoutTitleContent, { color: c.text }]} numberOfLines={2}>
               {hangout.title}
             </Text>
           </View>
@@ -82,14 +84,14 @@ export default function HangoutDetailScreen() {
           <View style={{ gap: 6, marginBottom: 16 }}>
             {dateStr && (
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Ionicons name="calendar" size={14} color="#5a5f7a" />
-                <Text style={[styles.metaText, { marginLeft: 6 }]}>{dateStr}</Text>
+                <Ionicons name="calendar" size={14} color={c.textMuted} />
+                <Text style={[styles.metaText, { color: c.textSecondary, marginLeft: 6 }]}>{dateStr}</Text>
               </View>
             )}
             {hangout.location_name && (
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Ionicons name="location" size={14} color="#5a5f7a" />
-                <Text style={[styles.metaText, { marginLeft: 6 }]}>
+                <Ionicons name="location" size={14} color={c.textMuted} />
+                <Text style={[styles.metaText, { color: c.textSecondary, marginLeft: 6 }]}>
                   {hangout.location_name}
                 </Text>
               </View>
@@ -100,7 +102,7 @@ export default function HangoutDetailScreen() {
                 name={hangout.creator?.display_name}
                 size={16}
               />
-              <Text style={[styles.metaText, { marginLeft: 6 }]}>
+              <Text style={[styles.metaText, { color: c.textSecondary, marginLeft: 6 }]}>
                 Logged by {hangout.creator?.display_name}
               </Text>
             </View>
@@ -109,7 +111,7 @@ export default function HangoutDetailScreen() {
           {/* Attendees */}
           {hangout.attendees?.length > 0 && (
             <View style={{ marginBottom: 20 }}>
-              <Text style={styles.sectionSubLabel}>
+              <Text style={[styles.sectionSubLabel, { color: c.textSecondary }]}>
                 Who was there
               </Text>
               <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
@@ -120,7 +122,7 @@ export default function HangoutDetailScreen() {
                       name={a.profile?.display_name}
                       size={40}
                     />
-                    <Text style={styles.attendeeName} numberOfLines={1}>
+                    <Text style={[styles.attendeeName, { color: c.textSecondary }]} numberOfLines={1}>
                       {a.profile?.display_name?.split(' ')[0]}
                     </Text>
                   </View>
@@ -131,7 +133,7 @@ export default function HangoutDetailScreen() {
 
           {/* Reactions */}
           <View style={{ marginBottom: 16 }}>
-            <Text style={styles.sectionSubLabel}>
+            <Text style={[styles.sectionSubLabel, { color: c.textSecondary }]}>
               Reactions
             </Text>
             <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
@@ -144,13 +146,15 @@ export default function HangoutDetailScreen() {
                     onPress={() => toggleReaction.mutate({ hangoutId: hangout.id, emoji })}
                     style={[
                       styles.reactionButton,
-                      isActive ? styles.reactionButtonActive : styles.reactionButtonInactive,
+                      isActive
+                        ? { backgroundColor: c.accentBg, borderWidth: 1, borderColor: c.accent }
+                        : { backgroundColor: c.bgCardHover, borderWidth: 1, borderColor: c.border },
                     ]}
                     activeOpacity={0.7}
                   >
                     <Text style={{ fontSize: 18 }}>{emoji}</Text>
                     {count > 0 && (
-                      <Text style={styles.reactionCount}>
+                      <Text style={[styles.reactionCount, { color: c.textSecondary }]}>
                         {count}
                       </Text>
                     )}
@@ -168,7 +172,6 @@ export default function HangoutDetailScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#09090f',
   },
   header: {
     flexDirection: 'row',
@@ -179,29 +182,24 @@ const styles = StyleSheet.create({
   },
   hangoutTitle: {
     fontFamily: 'SpaceGrotesk_700Bold',
-    color: '#f0f0ff',
     fontSize: 18,
     fontWeight: '700',
     flex: 1,
   },
   hangoutTitleContent: {
     fontFamily: 'SpaceGrotesk_700Bold',
-    color: '#f0f0ff',
     fontSize: 22,
     flex: 1,
   },
   metaText: {
-    color: '#8b8fa8',
     fontSize: 13,
   },
   sectionSubLabel: {
-    color: '#8b8fa8',
     fontSize: 13,
     fontWeight: '600',
     marginBottom: 8,
   },
   attendeeName: {
-    color: '#8b8fa8',
     fontSize: 12,
     marginTop: 4,
   },
@@ -214,18 +212,7 @@ const styles = StyleSheet.create({
     marginRight: 8,
     marginBottom: 8,
   },
-  reactionButtonInactive: {
-    backgroundColor: 'rgba(255,255,255,0.07)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
-  },
-  reactionButtonActive: {
-    backgroundColor: 'rgba(136,117,255,0.2)',
-    borderWidth: 1,
-    borderColor: '#8875ff',
-  },
   reactionCount: {
-    color: '#8b8fa8',
     fontSize: 12,
     marginLeft: 4,
     fontWeight: '500',

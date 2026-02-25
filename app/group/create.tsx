@@ -7,8 +7,10 @@ import { useCreateGroup, useMyGroups } from '../../hooks/useGroups';
 import { Input } from '../../components/ui/Input';
 import { Button } from '../../components/ui/Button';
 import { GroupCard } from '../../components/GroupCard';
+import { useColors } from '../../providers/ThemeProvider';
 
 export default function CreateGroupScreen() {
+  const c = useColors();
   const router = useRouter();
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -26,20 +28,20 @@ export default function CreateGroupScreen() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#09090f' }} edges={['top']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: c.bg }} edges={['top']}>
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 8, paddingBottom: 48 }}>
         {/* Header */}
         <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 32 }}>
           <TouchableOpacity onPress={() => router.back()}>
-            <Ionicons name="arrow-back" size={24} color="#8875ff" />
+            <Ionicons name="arrow-back" size={24} color={c.accent} />
           </TouchableOpacity>
-          <Text style={{ fontFamily: 'SpaceGrotesk_700Bold', color: '#f0f0ff', fontSize: 22, marginLeft: 16 }}>
+          <Text style={{ fontFamily: 'SpaceGrotesk_700Bold', color: c.text, fontSize: 22, marginLeft: 16 }}>
             Groups
           </Text>
         </View>
 
         {/* Create Section */}
-        <Text style={{ color: '#f0f0ff', fontWeight: '700', fontSize: 18, marginBottom: 16 }}>
+        <Text style={{ color: c.text, fontWeight: '700', fontSize: 18, marginBottom: 16 }}>
           Create a Group
         </Text>
 
@@ -68,7 +70,7 @@ export default function CreateGroupScreen() {
 
         {/* Join Section */}
         <View style={{ marginTop: 40, marginBottom: 8 }}>
-          <Text style={{ color: '#f0f0ff', fontWeight: '700', fontSize: 18, marginBottom: 16 }}>
+          <Text style={{ color: c.text, fontWeight: '700', fontSize: 18, marginBottom: 16 }}>
             Join a Group
           </Text>
 
@@ -94,7 +96,7 @@ export default function CreateGroupScreen() {
         {/* My Groups */}
         {myGroups && myGroups.length > 0 && (
           <View style={{ marginTop: 40 }}>
-            <Text style={{ color: '#f0f0ff', fontWeight: '700', fontSize: 18, marginBottom: 16 }}>
+            <Text style={{ color: c.text, fontWeight: '700', fontSize: 18, marginBottom: 16 }}>
               My Groups
             </Text>
             {myGroups.map((group: any) => (

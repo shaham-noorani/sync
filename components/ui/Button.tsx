@@ -1,5 +1,6 @@
 import { TouchableOpacity, Text, ActivityIndicator } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useColors } from '../../providers/ThemeProvider';
 
 type ButtonProps = {
   title: string;
@@ -10,6 +11,7 @@ type ButtonProps = {
 };
 
 export function Button({ title, onPress, loading = false, disabled = false, variant = 'primary' }: ButtonProps) {
+  const c = useColors();
   const isDisabled = disabled || loading;
 
   if (variant === 'primary') {
@@ -37,8 +39,8 @@ export function Button({ title, onPress, loading = false, disabled = false, vari
   }
 
   const variantStyles: Record<string, object> = {
-    secondary: { backgroundColor: 'rgba(255,255,255,0.07)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' },
-    outline:   { borderWidth: 1, borderColor: 'rgba(255,255,255,0.15)' },
+    secondary: { backgroundColor: c.bgCardHover, borderWidth: 1, borderColor: c.border },
+    outline:   { borderWidth: 1, borderColor: c.borderStrong },
   };
 
   return (
@@ -49,9 +51,9 @@ export function Button({ title, onPress, loading = false, disabled = false, vari
       activeOpacity={0.7}
     >
       {loading ? (
-        <ActivityIndicator color="#d0d0e8" />
+        <ActivityIndicator color={c.textSecondary} />
       ) : (
-        <Text style={{ color: '#d0d0e8', fontWeight: '600', fontSize: 16 }}>{title}</Text>
+        <Text style={{ color: c.textSecondary, fontWeight: '600', fontSize: 16 }}>{title}</Text>
       )}
     </TouchableOpacity>
   );

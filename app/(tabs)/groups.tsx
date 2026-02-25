@@ -7,6 +7,7 @@ import { useCreateGroup, useMyGroups } from '../../hooks/useGroups';
 import { Input } from '../../components/ui/Input';
 import { Button } from '../../components/ui/Button';
 import { GroupCard } from '../../components/GroupCard';
+import { useColors } from '../../providers/ThemeProvider';
 
 export default function GroupsTabScreen() {
   const router = useRouter();
@@ -17,6 +18,7 @@ export default function GroupsTabScreen() {
   const createGroup = useCreateGroup();
   const { data: myGroups, refetch } = useMyGroups();
   const [refreshing, setRefreshing] = useState(false);
+  const c = useColors();
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -37,7 +39,7 @@ export default function GroupsTabScreen() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#09090f' }} edges={['top']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: c.bg }} edges={['top']}>
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 8, paddingBottom: 48 }}
@@ -45,16 +47,16 @@ export default function GroupsTabScreen() {
       >
         {/* Header */}
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
-          <Text style={{ fontFamily: 'SpaceGrotesk_700Bold', color: '#f0f0ff', fontSize: 22 }}>Groups</Text>
+          <Text style={{ fontFamily: 'SpaceGrotesk_700Bold', color: c.text, fontSize: 22 }}>Groups</Text>
           <TouchableOpacity onPress={() => setShowCreate(!showCreate)}>
-            <Ionicons name={showCreate ? 'close' : 'add-circle-outline'} size={26} color="#8875ff" />
+            <Ionicons name={showCreate ? 'close' : 'add-circle-outline'} size={26} color={c.accent} />
           </TouchableOpacity>
         </View>
 
         {showCreate && (
           <View style={{ marginBottom: 32 }}>
             {/* Create Section */}
-            <Text style={{ color: '#5a5f7a', fontSize: 10, fontWeight: '700', letterSpacing: 1.5, marginBottom: 16 }}>
+            <Text style={{ color: c.textMuted, fontSize: 10, fontWeight: '700', letterSpacing: 1.5, marginBottom: 16 }}>
               CREATE A GROUP
             </Text>
 
@@ -83,7 +85,7 @@ export default function GroupsTabScreen() {
 
             {/* Join Section */}
             <View style={{ marginTop: 24 }}>
-              <Text style={{ color: '#5a5f7a', fontSize: 10, fontWeight: '700', letterSpacing: 1.5, marginBottom: 16 }}>
+              <Text style={{ color: c.textMuted, fontSize: 10, fontWeight: '700', letterSpacing: 1.5, marginBottom: 16 }}>
                 JOIN A GROUP
               </Text>
 
@@ -121,7 +123,7 @@ export default function GroupsTabScreen() {
             />
           ))
         ) : (
-          <Text style={{ color: '#5a5f7a', textAlign: 'center', marginTop: 32 }}>
+          <Text style={{ color: c.textMuted, textAlign: 'center', marginTop: 32 }}>
             No groups yet. Tap + to create or join one!
           </Text>
         )}

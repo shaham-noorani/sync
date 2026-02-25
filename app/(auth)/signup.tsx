@@ -13,8 +13,10 @@ import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { InterestChip } from '../../components/ui/InterestChip';
 import { INTERESTS } from '../../lib/constants';
+import { useColors } from '../../providers/ThemeProvider';
 
 export default function SignupScreen() {
+  const c = useColors();
   const router = useRouter();
   const [step, setStep] = useState<'info' | 'interests'>('info');
   const [email, setEmail] = useState('');
@@ -92,7 +94,7 @@ export default function SignupScreen() {
   if (step === 'interests') {
     return (
       <KeyboardAvoidingView
-        style={{ flex: 1, backgroundColor: '#09090f' }}
+        style={{ flex: 1, backgroundColor: c.bg }}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
         {/* Background glow orb */}
@@ -110,13 +112,13 @@ export default function SignupScreen() {
           keyboardShouldPersistTaps="handled"
         >
           <TouchableOpacity onPress={() => setStep('info')}>
-            <Text style={{ color: '#8875ff', fontSize: 16, marginBottom: 24 }}>← Back</Text>
+            <Text style={{ color: c.accent, fontSize: 16, marginBottom: 24 }}>← Back</Text>
           </TouchableOpacity>
 
-          <Text style={{ fontFamily: 'SpaceGrotesk_700Bold', fontSize: 28, color: '#f0f0ff', marginBottom: 8 }}>
+          <Text style={{ fontFamily: 'SpaceGrotesk_700Bold', fontSize: 28, color: c.text, marginBottom: 8 }}>
             Pick your interests
           </Text>
-          <Text style={{ color: '#8b8fa8', marginBottom: 24 }}>
+          <Text style={{ color: c.textSecondary, marginBottom: 24 }}>
             Choose at least a few so friends know what you're into
           </Text>
 
@@ -149,7 +151,7 @@ export default function SignupScreen() {
 
   return (
     <KeyboardAvoidingView
-      style={{ flex: 1, backgroundColor: '#09090f' }}
+      style={{ flex: 1, backgroundColor: c.bg }}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       {/* Background glow orb */}
@@ -167,10 +169,10 @@ export default function SignupScreen() {
         keyboardShouldPersistTaps="handled"
       >
         <View style={{ alignItems: 'center', marginBottom: 40 }}>
-          <Text style={{ fontFamily: 'SpaceGrotesk_700Bold', fontSize: 64, letterSpacing: -3, color: '#8875ff' }}>
+          <Text style={{ fontFamily: 'SpaceGrotesk_700Bold', fontSize: 64, letterSpacing: -3, color: c.accent }}>
             sync
           </Text>
-          <Text style={{ fontFamily: 'SpaceGrotesk_700Bold', fontSize: 28, color: '#f0f0ff', marginTop: 8 }}>
+          <Text style={{ fontFamily: 'SpaceGrotesk_700Bold', fontSize: 28, color: c.text, marginTop: 8 }}>
             Create your account
           </Text>
         </View>
@@ -224,10 +226,10 @@ export default function SignupScreen() {
           <Button title="Next — Pick Interests" onPress={handleNext} />
 
           <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 24 }}>
-            <Text style={{ color: '#5a5f7a' }}>Already have an account? </Text>
+            <Text style={{ color: c.textMuted }}>Already have an account? </Text>
             <Link href="/(auth)/login" asChild>
               <TouchableOpacity>
-                <Text style={{ color: '#8875ff', fontWeight: '600' }}>Sign In</Text>
+                <Text style={{ color: c.accent, fontWeight: '600' }}>Sign In</Text>
               </TouchableOpacity>
             </Link>
           </View>

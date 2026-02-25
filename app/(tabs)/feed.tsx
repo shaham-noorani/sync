@@ -6,6 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useFeed, useToggleReaction, getPhotoUrl } from '../../hooks/useHangouts';
 import { Avatar } from '../../components/Avatar';
 import { SkeletonLoader } from '../../components/SkeletonLoader';
+import { useColors } from '../../providers/ThemeProvider';
 
 const ACTIVITY_EMOJIS: Record<string, string> = {
   tennis: '🎾', 'board games': '🎲', dinner: '🍽️', climbing: '🧗',
@@ -28,6 +29,7 @@ function formatRelativeDate(dateStr: string): string {
 
 export default function FeedScreen() {
   const router = useRouter();
+  const c = useColors();
   const { data: hangouts, isLoading, refetch } = useFeed();
   const toggleReaction = useToggleReaction();
   const [expandedReactions, setExpandedReactions] = useState<string | null>(null);
@@ -53,12 +55,12 @@ export default function FeedScreen() {
   }, [hangouts, activeFilter]);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#09090f' }} edges={['top']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: c.bg }} edges={['top']}>
       {/* Header */}
       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 24, paddingTop: 8, paddingBottom: 12 }}>
-        <Text style={{ fontFamily: 'SpaceGrotesk_700Bold', color: '#f0f0ff', fontSize: 22 }}>Feed</Text>
+        <Text style={{ fontFamily: 'SpaceGrotesk_700Bold', color: c.text, fontSize: 22 }}>Feed</Text>
         <TouchableOpacity onPress={() => router.push('/hangout/log')}>
-          <Ionicons name="add-circle" size={28} color="#8875ff" />
+          <Ionicons name="add-circle" size={28} color={c.accent} />
         </TouchableOpacity>
       </View>
 
@@ -75,14 +77,14 @@ export default function FeedScreen() {
             style={[
               { marginRight: 8, borderRadius: 999, paddingHorizontal: 12, paddingVertical: 6 },
               !activeFilter
-                ? { backgroundColor: '#8875ff' }
-                : { backgroundColor: 'rgba(255,255,255,0.07)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' },
+                ? { backgroundColor: c.accent }
+                : { backgroundColor: c.bgCardHover, borderWidth: 1, borderColor: c.border },
             ]}
           >
             <Text
               style={[
                 { fontSize: 12, fontWeight: '600' },
-                !activeFilter ? { color: '#fff' } : { color: '#8b8fa8' },
+                !activeFilter ? { color: '#fff' } : { color: c.textSecondary },
               ]}
             >
               All
@@ -97,8 +99,8 @@ export default function FeedScreen() {
                 style={[
                   { marginRight: 8, flexDirection: 'row', alignItems: 'center', borderRadius: 999, paddingHorizontal: 12, paddingVertical: 6 },
                   isActive
-                    ? { backgroundColor: '#8875ff' }
-                    : { backgroundColor: 'rgba(255,255,255,0.07)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' },
+                    ? { backgroundColor: c.accent }
+                    : { backgroundColor: c.bgCardHover, borderWidth: 1, borderColor: c.border },
                 ]}
               >
                 <Text style={{ fontSize: 12, marginRight: 4 }}>
@@ -107,7 +109,7 @@ export default function FeedScreen() {
                 <Text
                   style={[
                     { fontSize: 12, fontWeight: '600', textTransform: 'capitalize' },
-                    isActive ? { color: '#fff' } : { color: '#8b8fa8' },
+                    isActive ? { color: '#fff' } : { color: c.textSecondary },
                   ]}
                 >
                   {tag}
@@ -134,15 +136,15 @@ export default function FeedScreen() {
         ) : filteredHangouts.length === 0 ? (
           <View style={{ alignItems: 'center', justifyContent: 'center', paddingHorizontal: 32, marginTop: 80 }}>
             <Text style={{ fontSize: 56 }}>📸</Text>
-            <Text style={{ fontFamily: 'SpaceGrotesk_700Bold', color: '#f0f0ff', fontSize: 20, textAlign: 'center', marginTop: 16 }}>
+            <Text style={{ fontFamily: 'SpaceGrotesk_700Bold', color: c.text, fontSize: 20, textAlign: 'center', marginTop: 16 }}>
               Nothing here yet
             </Text>
-            <Text style={{ color: '#5a5f7a', fontSize: 14, textAlign: 'center', marginTop: 8, lineHeight: 20 }}>
+            <Text style={{ color: c.textMuted, fontSize: 14, textAlign: 'center', marginTop: 8, lineHeight: 20 }}>
               Log a hangout to capture the moment and share it with your crew.
             </Text>
             <TouchableOpacity
               onPress={() => router.push('/hangout/log')}
-              style={{ backgroundColor: '#8875ff', borderRadius: 20, paddingHorizontal: 32, paddingVertical: 14, marginTop: 32 }}
+              style={{ backgroundColor: c.accent, borderRadius: 20, paddingHorizontal: 32, paddingVertical: 14, marginTop: 32 }}
               activeOpacity={0.8}
             >
               <Text style={{ color: '#fff', fontWeight: '700', fontSize: 16 }}>Log a Hangout</Text>
@@ -159,7 +161,7 @@ export default function FeedScreen() {
             return (
               <TouchableOpacity
                 key={hangout.id}
-                style={{ marginHorizontal: 16, marginBottom: 16, backgroundColor: 'rgba(255,255,255,0.05)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)', borderRadius: 20, overflow: 'hidden' }}
+                style={{ marginHorizontal: 16, marginBottom: 16, backgroundColor: c.bgCard, borderWidth: 1, borderColor: c.border, borderRadius: 20, overflow: 'hidden' }}
                 onPress={() => router.push(`/hangout/${hangout.id}`)}
                 activeOpacity={0.9}
               >
@@ -181,10 +183,10 @@ export default function FeedScreen() {
                       size={32}
                     />
                     <View style={{ flex: 1, marginLeft: 8 }}>
-                      <Text style={{ fontFamily: 'SpaceGrotesk_700Bold', color: '#f0f0ff', fontSize: 14 }}>
+                      <Text style={{ fontFamily: 'SpaceGrotesk_700Bold', color: c.text, fontSize: 14 }}>
                         {hangout.creator?.display_name}
                       </Text>
-                      <Text style={{ color: '#8b8fa8', fontSize: 12 }}>
+                      <Text style={{ color: c.textSecondary, fontSize: 12 }}>
                         {formatRelativeDate(hangout.date || hangout.created_at)}
                       </Text>
                     </View>
@@ -194,12 +196,12 @@ export default function FeedScreen() {
                   </View>
 
                   {/* Title */}
-                  <Text style={{ fontFamily: 'SpaceGrotesk_700Bold', color: '#f0f0ff', fontSize: 16, marginBottom: 4 }}>
+                  <Text style={{ fontFamily: 'SpaceGrotesk_700Bold', color: c.text, fontSize: 16, marginBottom: 4 }}>
                     {hangout.title}
                   </Text>
 
                   {hangout.location_name && (
-                    <Text style={{ color: '#8b8fa8', fontSize: 12, marginBottom: 8 }}>
+                    <Text style={{ color: c.textSecondary, fontSize: 12, marginBottom: 8 }}>
                       📍 {hangout.location_name}
                     </Text>
                   )}
@@ -217,7 +219,7 @@ export default function FeedScreen() {
                         </View>
                       ))}
                       {hangout.attendees.length > 4 && (
-                        <Text style={{ color: '#8b8fa8', fontSize: 12, marginLeft: 8 }}>
+                        <Text style={{ color: c.textSecondary, fontSize: 12, marginLeft: 8 }}>
                           +{hangout.attendees.length - 4} more
                         </Text>
                       )}
@@ -235,12 +237,12 @@ export default function FeedScreen() {
                           style={[
                             { flexDirection: 'row', alignItems: 'center', borderRadius: 999, paddingHorizontal: 8, paddingVertical: 4, marginRight: 4 },
                             hangout.my_reaction === emoji
-                              ? { backgroundColor: 'rgba(136,117,255,0.2)', borderWidth: 1, borderColor: '#8875ff' }
-                              : { backgroundColor: 'rgba(255,255,255,0.07)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' },
+                              ? { backgroundColor: 'rgba(136,117,255,0.2)', borderWidth: 1, borderColor: c.accent }
+                              : { backgroundColor: c.bgCardHover, borderWidth: 1, borderColor: c.border },
                           ]}
                         >
                           <Text style={{ fontSize: 14 }}>{emoji}</Text>
-                          <Text style={{ color: '#8b8fa8', fontSize: 12, marginLeft: 4 }}>{count}</Text>
+                          <Text style={{ color: c.textSecondary, fontSize: 12, marginLeft: 4 }}>{count}</Text>
                         </TouchableOpacity>
                       ))}
                     </View>
@@ -253,14 +255,14 @@ export default function FeedScreen() {
                       <Ionicons
                         name="add-circle-outline"
                         size={20}
-                        color="#5a5f7a"
+                        color={c.textMuted}
                       />
                     </TouchableOpacity>
                   </View>
 
                   {/* Emoji picker */}
                   {isReactionOpen && (
-                    <View style={{ flexDirection: 'row', marginTop: 8, backgroundColor: 'rgba(255,255,255,0.07)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)', borderRadius: 999, paddingHorizontal: 12, paddingVertical: 8, alignSelf: 'flex-start' }}>
+                    <View style={{ flexDirection: 'row', marginTop: 8, backgroundColor: c.bgCardHover, borderWidth: 1, borderColor: c.border, borderRadius: 999, paddingHorizontal: 12, paddingVertical: 8, alignSelf: 'flex-start' }}>
                       {REACTION_EMOJIS.map((emoji) => (
                         <TouchableOpacity
                           key={emoji}

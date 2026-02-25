@@ -6,8 +6,10 @@ import { Ionicons } from '@expo/vector-icons';
 import { useSearchUsers, useSendFriendRequest } from '../../hooks/useFriends';
 import { Input } from '../../components/ui/Input';
 import { FriendCard } from '../../components/FriendCard';
+import { useColors } from '../../providers/ThemeProvider';
 
 export default function AddFriendScreen() {
+  const c = useColors();
   const router = useRouter();
   const [search, setSearch] = useState('');
   const { data: results, isLoading } = useSearchUsers(search);
@@ -20,12 +22,12 @@ export default function AddFriendScreen() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#09090f' }} edges={['top']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: c.bg }} edges={['top']}>
       <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 24, paddingTop: 8, paddingBottom: 16 }}>
         <TouchableOpacity onPress={() => router.back()}>
-          <Ionicons name="arrow-back" size={24} color="#8875ff" />
+          <Ionicons name="arrow-back" size={24} color={c.accent} />
         </TouchableOpacity>
-        <Text style={{ fontFamily: 'SpaceGrotesk_700Bold', color: '#f0f0ff', fontSize: 22, marginLeft: 16 }}>
+        <Text style={{ fontFamily: 'SpaceGrotesk_700Bold', color: c.text, fontSize: 22, marginLeft: 16 }}>
           Add Friend
         </Text>
       </View>
@@ -41,13 +43,13 @@ export default function AddFriendScreen() {
 
       <ScrollView style={{ flex: 1, paddingHorizontal: 24 }}>
         {search.length < 2 ? (
-          <Text style={{ color: '#5a5f7a', textAlign: 'center', marginTop: 32 }}>
+          <Text style={{ color: c.textMuted, textAlign: 'center', marginTop: 32 }}>
             Type at least 2 characters to search
           </Text>
         ) : isLoading ? (
-          <Text style={{ color: '#5a5f7a', textAlign: 'center', marginTop: 32 }}>Searching...</Text>
+          <Text style={{ color: c.textMuted, textAlign: 'center', marginTop: 32 }}>Searching...</Text>
         ) : results?.length === 0 ? (
-          <Text style={{ color: '#5a5f7a', textAlign: 'center', marginTop: 32 }}>
+          <Text style={{ color: c.textMuted, textAlign: 'center', marginTop: 32 }}>
             No users found
           </Text>
         ) : (

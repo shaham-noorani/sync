@@ -1,5 +1,6 @@
 import { TouchableOpacity, Text } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useColors } from '../../providers/ThemeProvider';
 
 type InterestChipProps = {
   label: string;
@@ -8,10 +9,11 @@ type InterestChipProps = {
 };
 
 export function InterestChip({ label, selected = false, onPress }: InterestChipProps) {
+  const c = useColors();
   const chipStyle = { marginRight: 8, marginBottom: 8, borderRadius: 999, overflow: 'hidden' as const };
   const gradientStyle = { paddingHorizontal: 14, paddingVertical: 7 };
   const selectedTextStyle = { color: '#ffffff', fontWeight: '600' as const, fontSize: 13 };
-  const unselectedTextStyle = { color: '#8b8fa8', fontWeight: '600' as const, fontSize: 13 };
+  const unselectedTextStyle = { color: c.textSecondary, fontWeight: '600' as const, fontSize: 13 };
 
   if (selected) {
     const content = (
@@ -36,9 +38,9 @@ export function InterestChip({ label, selected = false, onPress }: InterestChipP
       style={[chipStyle, {
         paddingHorizontal: 14,
         paddingVertical: 7,
-        backgroundColor: 'rgba(255,255,255,0.07)',
+        backgroundColor: c.bgCardHover,
         borderWidth: 1,
-        borderColor: 'rgba(255,255,255,0.1)',
+        borderColor: c.border,
       }]}
     >
       <Text style={unselectedTextStyle}>{label}</Text>

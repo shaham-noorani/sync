@@ -8,6 +8,7 @@ import { useLogHangout } from '../../hooks/useHangouts';
 import { useAuth } from '../../providers/AuthProvider';
 import { Avatar } from '../../components/Avatar';
 import { SkeletonLoader } from '../../components/SkeletonLoader';
+import { useColors } from '../../providers/ThemeProvider';
 
 const ACTIVITY_EMOJIS: Record<string, string> = {
   tennis: '🎾', 'board games': '🎲', dinner: '🍽️', climbing: '🧗',
@@ -15,12 +16,7 @@ const ACTIVITY_EMOJIS: Record<string, string> = {
   coffee: '☕',
 };
 
-const RESPONSE_STYLES: Record<string, { label: string; bgColor: string; textColor: string }> = {
-  accepted: { label: 'Going', bgColor: 'rgba(34,197,94,0.15)', textColor: '#22c55e' },
-  declined: { label: "Can't go", bgColor: 'rgba(239,68,68,0.15)', textColor: '#f87171' },
-  maybe: { label: 'Maybe', bgColor: 'rgba(234,179,8,0.15)', textColor: '#eab308' },
-  pending: { label: 'Pending', bgColor: 'rgba(255,255,255,0.07)', textColor: '#5a5f7a' },
-};
+
 
 export default function ProposalDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -31,6 +27,14 @@ export default function ProposalDetailScreen() {
   const completeProposal = useCompleteProposal();
   const logHangout = useLogHangout();
   const [responding, setResponding] = useState(false);
+  const c = useColors();
+
+  const RESPONSE_STYLES: Record<string, { label: string; bgColor: string; textColor: string }> = {
+    accepted: { label: 'Going', bgColor: 'rgba(34,197,94,0.15)', textColor: '#22c55e' },
+    declined: { label: "Can't go", bgColor: 'rgba(239,68,68,0.15)', textColor: '#f87171' },
+    maybe: { label: 'Maybe', bgColor: 'rgba(234,179,8,0.15)', textColor: '#eab308' },
+    pending: { label: 'Pending', bgColor: c.bgCardHover, textColor: c.textMuted },
+  };
 
   async function handleRespond(response: 'accepted' | 'maybe' | 'declined') {
     setResponding(true);
@@ -79,7 +83,7 @@ export default function ProposalDetailScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView style={styles.safeArea} edges={['top']}>
+      <SafeAreaView style={[styles.safeArea, { backgroundColor: c.bg }]} edges={['top']}>
         <View style={{ paddingHorizontal: 24, paddingTop: 16 }}>
           <SkeletonLoader height={24} borderRadius={8} className="mb-3 w-3/4" />
           <SkeletonLoader height={16} borderRadius={8} className="mb-6 w-1/2" />
@@ -101,31 +105,38 @@ export default function ProposalDetailScreen() {
       })
     : null;
 
+  const glassCard = {
+    backgroundColor: c.bgCard,
+    borderWidth: 1,
+    borderColor: c.border,
+    borderRadius: 20,
+  };
+
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top']}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: c.bg }]} edges={['top']}>
       {/* Header — sticky, outside ScrollView */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={{ marginRight: 12 }}>
-          <Ionicons name="chevron-back" size={24} color="#8875ff" />
+          <Ionicons name="chevron-back" size={24} color={c.accent} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle} numberOfLines={1}>
+        <Text style={[styles.headerTitle, { color: c.text }]} numberOfLines={1}>
           {proposal.title}
         </Text>
       </View>
 
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 48 }}>
         {/* Card */}
-        <View style={[styles.glassCard, { marginHorizontal: 24, marginBottom: 16, padding: 20 }]}>
+        <View style={[glassCard, { marginHorizontal: 24, marginBottom: 16, padding: 20 }]}>
           <View style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: 12 }}>
             <Text style={{ fontSize: 36, marginRight: 12 }}>
               {ACTIVITY_EMOJIS[proposal.activity_tag?.toLowerCase() ?? ''] ?? '📅'}
             </Text>
             <View style={{ flex: 1 }}>
-              <Text style={styles.cardTitle} numberOfLines={2}>
+              <Text style={[styles.cardTitle, { color: c.text }]} numberOfLines={2}>
                 {proposal.title}
               </Text>
               {proposal.description && (
-                <Text style={[styles.secondaryText, { marginTop: 4 }]}>
+                <Text style={[styles.secondaryText, { color: c.textSecondary, marginTop: 4 }]}>
                   {proposal.description}
                 </Text>
               )}
@@ -135,8 +146,8 @@ export default function ProposalDetailScreen() {
           <View style={{ gap: 8 }}>
             {dateStr && (
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Ionicons name="calendar" size={15} color="#5a5f7a" />
-                <Text style={[styles.metaText, { marginLeft: 8 }]}>
+                <Ionicons name="calendar" size={15} color={c.textMuted} />
+                <Text style={[styles.metaText, { color: c.textSecondary, marginLeft: 8 }]}>
                   {dateStr}
                   {proposal.proposed_time_block ? ` · ${proposal.proposed_time_block}` : ''}
                 </Text>
@@ -144,8 +155,8 @@ export default function ProposalDetailScreen() {
             )}
             {proposal.location_name && (
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Ionicons name="location" size={15} color="#5a5f7a" />
-                <Text style={[styles.metaText, { marginLeft: 8 }]}>
+                <Ionicons name="location" size={15} color={c.textMuted} />
+                <Text style={[styles.metaText, { color: c.textSecondary, marginLeft: 8 }]}>
                   {proposal.location_name}
                 </Text>
               </View>
@@ -156,7 +167,7 @@ export default function ProposalDetailScreen() {
                 name={proposal.creator.display_name}
                 size={16}
               />
-              <Text style={[styles.metaText, { marginLeft: 8 }]}>
+              <Text style={[styles.metaText, { color: c.textSecondary, marginLeft: 8 }]}>
                 Proposed by {proposal.creator.display_name}
               </Text>
             </View>
@@ -166,7 +177,7 @@ export default function ProposalDetailScreen() {
         {/* My Response */}
         {!isCreator && (
           <View style={{ marginHorizontal: 24, marginBottom: 16 }}>
-            <Text style={styles.areYouInLabel}>
+            <Text style={[styles.areYouInLabel, { color: c.textSecondary }]}>
               Are you in?
             </Text>
             <View style={{ flexDirection: 'row', gap: 8 }}>
@@ -180,7 +191,7 @@ export default function ProposalDetailScreen() {
                     disabled={responding}
                     style={[
                       styles.responseButton,
-                      isActive ? styles.responseButtonActive : styles.glassCard,
+                      isActive ? { backgroundColor: c.accent, borderRadius: 12 } : glassCard,
                     ]}
                     activeOpacity={0.7}
                   >
@@ -188,7 +199,7 @@ export default function ProposalDetailScreen() {
                       style={
                         isActive
                           ? { color: '#ffffff', fontWeight: '700', fontSize: 14 }
-                          : { color: '#8b8fa8', fontSize: 14 }
+                          : { color: c.textSecondary, fontSize: 14 }
                       }
                     >
                       {labels[r]}
@@ -202,7 +213,7 @@ export default function ProposalDetailScreen() {
 
         {/* Responses */}
         <View style={{ marginHorizontal: 24, marginBottom: 16 }}>
-          <Text style={styles.sectionLabel}>
+          <Text style={[styles.sectionLabel, { color: c.textMuted }]}>
             RESPONSES · {acceptedCount} GOING
           </Text>
           {proposal.responses.map((res) => {
@@ -211,7 +222,7 @@ export default function ProposalDetailScreen() {
               <View
                 key={res.user_id}
                 style={[
-                  styles.glassCard,
+                  glassCard,
                   { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, marginBottom: 8 },
                 ]}
               >
@@ -220,7 +231,7 @@ export default function ProposalDetailScreen() {
                   name={res.profile.display_name}
                   size={32}
                 />
-                <Text style={[styles.personName, { flex: 1, marginLeft: 12 }]}>
+                <Text style={[styles.personName, { color: c.text, flex: 1, marginLeft: 12 }]}>
                   {res.profile.display_name}
                 </Text>
                 <View style={{ borderRadius: 999, paddingHorizontal: 8, paddingVertical: 2, backgroundColor: config.bgColor }}>
@@ -237,10 +248,10 @@ export default function ProposalDetailScreen() {
             <TouchableOpacity
               onPress={handleItHappened}
               disabled={logHangout.isPending}
-              style={styles.itHappenedButton}
+              style={[styles.itHappenedButton, { backgroundColor: c.accentBg, borderColor: c.accentBorder }]}
               activeOpacity={0.8}
             >
-              <Text style={styles.itHappenedText}>
+              <Text style={[styles.itHappenedText, { color: c.accent }]}>
                 {logHangout.isPending ? 'Logging…' : '🎉 It Happened! Log the hangout'}
               </Text>
             </TouchableOpacity>
@@ -254,7 +265,6 @@ export default function ProposalDetailScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#09090f',
   },
   header: {
     flexDirection: 'row',
@@ -265,31 +275,20 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     flex: 1,
-    color: '#f0f0ff',
     fontWeight: '700',
     fontSize: 18,
   },
-  glassCard: {
-    backgroundColor: 'rgba(255,255,255,0.05)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.08)',
-    borderRadius: 20,
-  },
   cardTitle: {
-    color: '#f0f0ff',
     fontWeight: '700',
     fontSize: 18,
   },
   secondaryText: {
-    color: '#8b8fa8',
     fontSize: 14,
   },
   metaText: {
-    color: '#8b8fa8',
     fontSize: 13,
   },
   areYouInLabel: {
-    color: '#8b8fa8',
     fontSize: 13,
     fontWeight: '600',
     marginBottom: 8,
@@ -300,32 +299,24 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: 'center',
   },
-  responseButtonActive: {
-    backgroundColor: '#8875ff',
-    borderRadius: 12,
-  },
+
   sectionLabel: {
-    color: '#5a5f7a',
     fontSize: 10,
     fontWeight: '700',
     letterSpacing: 1.5,
     marginBottom: 8,
   },
   personName: {
-    color: '#f0f0ff',
     fontWeight: '600',
     fontSize: 14,
   },
   itHappenedButton: {
-    backgroundColor: 'rgba(136,117,255,0.12)',
     borderWidth: 1,
-    borderColor: 'rgba(136,117,255,0.3)',
     borderRadius: 20,
     paddingVertical: 16,
     alignItems: 'center',
   },
   itHappenedText: {
-    color: '#8875ff',
     fontWeight: '700',
     fontSize: 16,
   },

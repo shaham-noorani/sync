@@ -5,8 +5,10 @@ import { Ionicons } from '@expo/vector-icons';
 import { useGroupByCode, useJoinGroup } from '../../../hooks/useGroups';
 import { Button } from '../../../components/ui/Button';
 import { SkeletonLoader } from '../../../components/SkeletonLoader';
+import { useColors } from '../../../providers/ThemeProvider';
 
 export default function JoinGroupScreen() {
+  const c = useColors();
   const { code } = useLocalSearchParams<{ code: string }>();
   const router = useRouter();
   const { data: group, isLoading, error } = useGroupByCode(code);

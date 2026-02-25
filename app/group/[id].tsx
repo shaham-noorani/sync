@@ -12,6 +12,7 @@ import { Button } from '../../components/ui/Button';
 import { SkeletonLoader } from '../../components/SkeletonLoader';
 import { HeatmapGrid } from '../../components/HeatmapGrid';
 import { WeekNavigator } from '../../components/WeekNavigator';
+import { useColors } from '../../providers/ThemeProvider';
 
 function getWeekDates(weekOffset: number): string[] {
   const now = new Date();
@@ -35,6 +36,7 @@ function formatWeekLabel(dates: string[]): string {
 }
 
 export default function GroupDetailScreen() {
+  const c = useColors();
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const { user } = useAuth();
@@ -77,7 +79,7 @@ export default function GroupDetailScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView style={styles.safeArea} edges={['top']}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: c.bg }} edges={['top']}>
         <View style={{ paddingHorizontal: 24, paddingTop: 16 }}>
           <SkeletonLoader height={32} borderRadius={8} className="mb-4" />
           <SkeletonLoader height={20} borderRadius={8} className="mb-8" />
@@ -91,20 +93,36 @@ export default function GroupDetailScreen() {
   if (!group) return null;
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: c.bg }} edges={['top']}>
       {/* Header — sticky, outside ScrollView */}
-      <View style={styles.header}>
+      <View style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 24,
+        paddingTop: 16,
+        paddingBottom: 8,
+      }}>
         <TouchableOpacity onPress={() => router.back()} style={{ padding: 4, marginRight: 8 }}>
-          <Ionicons name="chevron-back" size={24} color="#8875ff" />
+          <Ionicons name="chevron-back" size={24} color={c.accent} />
         </TouchableOpacity>
-        <Text style={styles.groupName} numberOfLines={1}>
+        <Text style={{
+          flex: 1,
+          color: c.text,
+          fontWeight: '700',
+          fontSize: 22,
+        }} numberOfLines={1}>
           {group.name}
         </Text>
       </View>
 
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 48 }}>
         {group.description && (
-          <Text style={styles.descriptionText}>
+          <Text style={{
+            color: c.textSecondary,
+            fontSize: 14,
+            paddingHorizontal: 24,
+            paddingBottom: 16,
+          }}>
             {group.description}
           </Text>
         )}
@@ -112,27 +130,59 @@ export default function GroupDetailScreen() {
         {/* Invite Code */}
         <View style={{ paddingHorizontal: 24, marginBottom: 24 }}>
           <TouchableOpacity
-            style={[styles.glassCard, { paddingHorizontal: 16, paddingVertical: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }]}
+            style={{
+              backgroundColor: c.bgCard,
+              borderWidth: 1,
+              borderColor: c.border,
+              borderRadius: 20,
+              paddingHorizontal: 16,
+              paddingVertical: 16,
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}
             onPress={copyInviteCode}
             activeOpacity={0.8}
           >
             <View>
-              <Text style={styles.inviteCodeLabel}>
+              <Text style={{
+                color: c.textMuted,
+                fontSize: 10,
+                fontWeight: '700',
+                letterSpacing: 1.5,
+                textTransform: 'uppercase',
+              }}>
                 INVITE CODE
               </Text>
-              <Text style={styles.inviteCodeValue}>
+              <Text style={{
+                color: c.accent,
+                fontSize: 24,
+                fontWeight: '700',
+                letterSpacing: 4,
+                marginTop: 4,
+              }}>
                 {group.invite_code}
               </Text>
             </View>
-            <View style={styles.copyIconContainer}>
-              <Ionicons name="copy-outline" size={20} color="#8875ff" />
+            <View style={{
+              backgroundColor: c.accentBg,
+              borderRadius: 999,
+              padding: 8,
+            }}>
+              <Ionicons name="copy-outline" size={20} color={c.accent} />
             </View>
           </TouchableOpacity>
         </View>
 
         {/* Group Availability Heatmap */}
         <View style={{ paddingHorizontal: 24, marginBottom: 24 }}>
-          <Text style={styles.sectionLabel}>
+          <Text style={{
+            color: c.textMuted,
+            fontSize: 10,
+            fontWeight: '700',
+            letterSpacing: 1.5,
+            marginBottom: 12,
+          }}>
             GROUP AVAILABILITY
           </Text>
           <WeekNavigator
@@ -143,7 +193,12 @@ export default function GroupDetailScreen() {
           />
           <View style={{ marginTop: 4 }}>
             {overlapsLoading ? (
-              <View style={styles.heatmapPlaceholder} />
+              <View style={{
+                height: 128,
+                backgroundColor: c.bgCard,
+                borderRadius: 14,
+                opacity: 0.6,
+              }} />
             ) : (
               <HeatmapGrid
                 dates={dates}
@@ -152,21 +207,42 @@ export default function GroupDetailScreen() {
               />
             )}
           </View>
-          <Text style={styles.heatmapHint}>
+          <Text style={{
+            color: c.textMuted,
+            fontSize: 12,
+            textAlign: 'center',
+            marginTop: 8,
+          }}>
             Numbers show how many members are free
           </Text>
         </View>
 
         {/* Members */}
         <View style={{ paddingHorizontal: 24 }}>
-          <Text style={styles.sectionLabel}>
+          <Text style={{
+            color: c.textMuted,
+            fontSize: 10,
+            fontWeight: '700',
+            letterSpacing: 1.5,
+            marginBottom: 12,
+          }}>
             MEMBERS · {group.members.length}
           </Text>
 
           {group.members.map((member: any) => (
             <TouchableOpacity
               key={member.id}
-              style={[styles.glassCard, { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, marginBottom: 8 }]}
+              style={{
+                backgroundColor: c.bgCard,
+                borderWidth: 1,
+                borderColor: c.border,
+                borderRadius: 20,
+                flexDirection: 'row',
+                alignItems: 'center',
+                paddingHorizontal: 16,
+                paddingVertical: 12,
+                marginBottom: 8,
+              }}
               onPress={() => router.push(`/profile/${member.user_id}`)}
               activeOpacity={0.8}
             >
@@ -176,16 +252,33 @@ export default function GroupDetailScreen() {
                 size={40}
               />
               <View style={{ flex: 1, marginLeft: 12 }}>
-                <Text style={styles.memberName}>
+                <Text style={{
+                  color: c.text,
+                  fontWeight: '600',
+                  fontSize: 14,
+                }}>
                   {member.profile.display_name}
                 </Text>
-                <Text style={styles.memberUsername}>
+                <Text style={{
+                  color: c.textSecondary,
+                  fontSize: 12,
+                }}>
                   @{member.profile.username}
                 </Text>
               </View>
               {member.role !== 'member' && (
-                <View style={styles.roleBadge}>
-                  <Text style={styles.roleBadgeText}>
+                <View style={{
+                  backgroundColor: c.accentBg,
+                  borderRadius: 999,
+                  paddingHorizontal: 8,
+                  paddingVertical: 3,
+                }}>
+                  <Text style={{
+                    color: c.accent,
+                    fontSize: 11,
+                    fontWeight: '700',
+                    textTransform: 'uppercase',
+                  }}>
                     {member.role.toUpperCase()}
                   </Text>
                 </View>
@@ -193,7 +286,7 @@ export default function GroupDetailScreen() {
               <Ionicons
                 name="chevron-forward"
                 size={16}
-                color="#5a5f7a"
+                color={c.textMuted}
                 style={{ marginLeft: 8 }}
               />
             </TouchableOpacity>
@@ -213,94 +306,3 @@ export default function GroupDetailScreen() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: '#09090f',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 24,
-    paddingTop: 16,
-    paddingBottom: 8,
-  },
-  groupName: {
-    flex: 1,
-    color: '#f0f0ff',
-    fontWeight: '700',
-    fontSize: 22,
-  },
-  descriptionText: {
-    color: '#8b8fa8',
-    fontSize: 14,
-    paddingHorizontal: 24,
-    paddingBottom: 16,
-  },
-  glassCard: {
-    backgroundColor: 'rgba(255,255,255,0.05)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.08)',
-    borderRadius: 20,
-  },
-  inviteCodeLabel: {
-    color: '#5a5f7a',
-    fontSize: 10,
-    fontWeight: '700',
-    letterSpacing: 1.5,
-    textTransform: 'uppercase',
-  },
-  inviteCodeValue: {
-    color: '#8875ff',
-    fontSize: 24,
-    fontWeight: '700',
-    letterSpacing: 4,
-    marginTop: 4,
-  },
-  copyIconContainer: {
-    backgroundColor: 'rgba(136,117,255,0.15)',
-    borderRadius: 999,
-    padding: 8,
-  },
-  sectionLabel: {
-    color: '#5a5f7a',
-    fontSize: 10,
-    fontWeight: '700',
-    letterSpacing: 1.5,
-    marginBottom: 12,
-  },
-  heatmapPlaceholder: {
-    height: 128,
-    backgroundColor: 'rgba(255,255,255,0.05)',
-    borderRadius: 14,
-    opacity: 0.6,
-  },
-  heatmapHint: {
-    color: '#5a5f7a',
-    fontSize: 12,
-    textAlign: 'center',
-    marginTop: 8,
-  },
-  memberName: {
-    color: '#f0f0ff',
-    fontWeight: '600',
-    fontSize: 14,
-  },
-  memberUsername: {
-    color: '#8b8fa8',
-    fontSize: 12,
-  },
-  roleBadge: {
-    backgroundColor: 'rgba(136,117,255,0.15)',
-    borderRadius: 999,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-  },
-  roleBadgeText: {
-    color: '#8875ff',
-    fontSize: 11,
-    fontWeight: '700',
-    textTransform: 'uppercase',
-  },
-});

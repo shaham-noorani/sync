@@ -12,6 +12,7 @@ import {
 } from '../../hooks/useFriends';
 import { FriendCard } from '../../components/FriendCard';
 import { SkeletonLoader } from '../../components/SkeletonLoader';
+import { useColors } from '../../providers/ThemeProvider';
 
 type Tab = 'friends' | 'requests' | 'sent';
 
@@ -22,6 +23,7 @@ export default function FriendsTabScreen() {
   const { data: requests, isLoading: requestsLoading } = usePendingRequests();
   const respondToRequest = useRespondToRequest();
   const removeFriend = useRemoveFriend();
+  const c = useColors();
 
   useFriendshipsRealtime();
 
@@ -32,12 +34,12 @@ export default function FriendsTabScreen() {
   ];
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#09090f' }} edges={['top']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: c.bg }} edges={['top']}>
       {/* Header */}
       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 24, paddingTop: 8, paddingBottom: 16 }}>
-        <Text style={{ fontFamily: 'SpaceGrotesk_700Bold', color: '#f0f0ff', fontSize: 22 }}>Friends</Text>
+        <Text style={{ fontFamily: 'SpaceGrotesk_700Bold', color: c.text, fontSize: 22 }}>Friends</Text>
         <TouchableOpacity onPress={() => router.push('/friends/add')}>
-          <Ionicons name="person-add" size={24} color="#8875ff" />
+          <Ionicons name="person-add" size={24} color={c.accent} />
         </TouchableOpacity>
       </View>
 
@@ -49,7 +51,7 @@ export default function FriendsTabScreen() {
             style={[
               { marginRight: 16 },
               activeTab === tab.key
-                ? { borderBottomWidth: 2, borderBottomColor: '#8875ff', paddingBottom: 8 }
+                ? { borderBottomWidth: 2, borderBottomColor: c.accent, paddingBottom: 8 }
                 : { paddingBottom: 8 },
             ]}
             onPress={() => setActiveTab(tab.key)}
@@ -57,8 +59,8 @@ export default function FriendsTabScreen() {
             <Text
               style={
                 activeTab === tab.key
-                  ? { color: '#8875ff', fontWeight: '700', fontSize: 14 }
-                  : { color: '#5a5f7a', fontWeight: '600', fontSize: 14 }
+                  ? { color: c.accent, fontWeight: '700', fontSize: 14 }
+                  : { color: c.textMuted, fontWeight: '600', fontSize: 14 }
               }
             >
               {tab.label}
@@ -78,7 +80,7 @@ export default function FriendsTabScreen() {
                 <SkeletonLoader key={i} height={60} borderRadius={12} className="mb-3" />
               ))
             ) : friends?.length === 0 ? (
-              <Text style={{ color: '#5a5f7a', textAlign: 'center', marginTop: 32 }}>
+              <Text style={{ color: c.textMuted, textAlign: 'center', marginTop: 32 }}>
                 No friends yet. Tap + to add some!
               </Text>
             ) : (
@@ -102,7 +104,7 @@ export default function FriendsTabScreen() {
                 <SkeletonLoader key={i} height={60} borderRadius={12} className="mb-3" />
               ))
             ) : requests?.incoming.length === 0 ? (
-              <Text style={{ color: '#5a5f7a', textAlign: 'center', marginTop: 32 }}>
+              <Text style={{ color: c.textMuted, textAlign: 'center', marginTop: 32 }}>
                 No pending requests
               </Text>
             ) : (
@@ -139,7 +141,7 @@ export default function FriendsTabScreen() {
                 <SkeletonLoader key={i} height={60} borderRadius={12} className="mb-3" />
               ))
             ) : requests?.outgoing.length === 0 ? (
-              <Text style={{ color: '#5a5f7a', textAlign: 'center', marginTop: 32 }}>
+              <Text style={{ color: c.textMuted, textAlign: 'center', marginTop: 32 }}>
                 No sent requests
               </Text>
             ) : (

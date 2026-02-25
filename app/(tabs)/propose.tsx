@@ -8,6 +8,7 @@ import { Avatar } from '../../components/Avatar';
 import { SkeletonLoader } from '../../components/SkeletonLoader';
 import { useAuth } from '../../providers/AuthProvider';
 import { useTheme } from '../../providers/ThemeProvider';
+import { useColors } from '../../providers/ThemeProvider';
 import { useProposals, useProposalsRealtime, type Proposal } from '../../hooks/useProposals';
 
 const ACTIVITY_EMOJIS: Record<string, string> = {
@@ -18,6 +19,7 @@ const ACTIVITY_EMOJIS: Record<string, string> = {
 
 function ProposalCard({ proposal, isMe }: { proposal: Proposal; isMe: boolean }) {
   const router = useRouter();
+  const c = useColors();
   const acceptedCount = proposal.responses.filter((r) => r.response === 'accepted').length;
   const pendingResponse = !isMe && (proposal.my_response === 'pending' || proposal.my_response === null);
 
@@ -55,20 +57,20 @@ function ProposalCard({ proposal, isMe }: { proposal: Proposal; isMe: boolean })
   return (
     <TouchableOpacity
       onPress={() => router.push(`/proposal/${proposal.id}`)}
-      style={{ backgroundColor: 'rgba(255,255,255,0.05)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)', borderRadius: 20, paddingHorizontal: 16, paddingVertical: 16, marginBottom: 12 }}
+      style={{ backgroundColor: c.bgCard, borderWidth: 1, borderColor: c.border, borderRadius: 20, paddingHorizontal: 16, paddingVertical: 16, marginBottom: 12 }}
       activeOpacity={0.8}
     >
       <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
-        <View style={{ width: 40, height: 40, borderRadius: 12, backgroundColor: 'rgba(136,117,255,0.15)', alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
+        <View style={{ width: 40, height: 40, borderRadius: 12, backgroundColor: c.accentBg, alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
           <Text style={{ fontSize: 18 }}>
             {ACTIVITY_EMOJIS[proposal.activity_tag?.toLowerCase() ?? ''] ?? '📅'}
           </Text>
         </View>
         <View style={{ flex: 1 }}>
-          <Text style={{ color: '#f0f0ff', fontWeight: '700', fontSize: 15 }} numberOfLines={1}>
+          <Text style={{ color: c.text, fontWeight: '700', fontSize: 15 }} numberOfLines={1}>
             {proposal.title}
           </Text>
-          <Text style={{ color: '#8b8fa8', fontSize: 13, marginTop: 2 }}>{dateStr}</Text>
+          <Text style={{ color: c.textSecondary, fontSize: 13, marginTop: 2 }}>{dateStr}</Text>
         </View>
         {pendingResponse ? (
           <LinearGradient colors={['#8875ff', '#c084fc']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ borderRadius: 999, paddingHorizontal: 12, paddingVertical: 5, marginLeft: 8 }}>
@@ -78,7 +80,7 @@ function ProposalCard({ proposal, isMe }: { proposal: Proposal; isMe: boolean })
       </View>
 
       {/* Footer row */}
-      <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 12, paddingTop: 12, borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.06)' }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 12, paddingTop: 12, borderTopWidth: 1, borderTopColor: c.border }}>
         {/* Avatar stack */}
         <View style={{ flexDirection: 'row', flex: 1, alignItems: 'center' }}>
           {proposal.responses.slice(0, 4).map((r, i) => (
@@ -86,11 +88,11 @@ function ProposalCard({ proposal, isMe }: { proposal: Proposal; isMe: boolean })
               <Avatar url={r.profile.avatar_url} name={r.profile.display_name} size={22} />
             </View>
           ))}
-          <Text style={{ color: '#8b8fa8', fontSize: 12, marginLeft: 8 }}>
+          <Text style={{ color: c.textSecondary, fontSize: 12, marginLeft: 8 }}>
             {acceptedCount} going
           </Text>
         </View>
-        <Text style={{ color: '#8b8fa8', fontSize: 12 }}>
+        <Text style={{ color: c.textSecondary, fontSize: 12 }}>
           {isMe ? 'by you' : `by ${proposal.creator.display_name.split(' ')[0]}`}
         </Text>
       </View>
@@ -100,6 +102,7 @@ function ProposalCard({ proposal, isMe }: { proposal: Proposal; isMe: boolean })
 
 export default function ProposalsScreen() {
   const router = useRouter();
+  const c = useColors();
   const { user } = useAuth();
   const { data: proposals, isLoading, refetch } = useProposals();
   const [refreshing, setRefreshing] = useState(false);
@@ -116,12 +119,12 @@ export default function ProposalsScreen() {
   const incoming = proposals?.filter((p) => p.created_by !== user?.id) ?? [];
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#09090f' }} edges={['top']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: c.bg }} edges={['top']}>
       {/* Header */}
       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 24, paddingTop: 8, paddingBottom: 16 }}>
-        <Text style={{ fontFamily: 'SpaceGrotesk_700Bold', color: '#f0f0ff', fontSize: 22 }}>Proposals</Text>
+        <Text style={{ fontFamily: 'SpaceGrotesk_700Bold', color: c.text, fontSize: 22 }}>Proposals</Text>
         <TouchableOpacity onPress={() => router.push('/proposal/create')}>
-          <Ionicons name="add-circle" size={28} color="#8875ff" />
+          <Ionicons name="add-circle" size={28} color={c.accent} />
         </TouchableOpacity>
       </View>
 
@@ -139,10 +142,10 @@ export default function ProposalsScreen() {
         ) : proposals?.length === 0 ? (
           <View style={{ alignItems: 'center', justifyContent: 'center', marginTop: 80 }}>
             <Text style={{ fontSize: 48 }}>🤙</Text>
-            <Text style={{ color: '#f0f0ff', fontWeight: '700', fontSize: 18, textAlign: 'center', marginTop: 16 }}>
+            <Text style={{ color: c.text, fontWeight: '700', fontSize: 18, textAlign: 'center', marginTop: 16 }}>
               No proposals yet
             </Text>
-            <Text style={{ color: '#5a5f7a', fontSize: 14, textAlign: 'center', marginTop: 8, lineHeight: 20 }}>
+            <Text style={{ color: c.textMuted, fontSize: 14, textAlign: 'center', marginTop: 8, lineHeight: 20 }}>
               Tap + to propose a hangout to your friends or a group.
             </Text>
             <TouchableOpacity
@@ -159,7 +162,7 @@ export default function ProposalsScreen() {
           <>
             {incoming.length > 0 && (
               <View style={{ marginBottom: 24 }}>
-                <Text style={{ color: '#5a5f7a', fontSize: 10, fontWeight: '700', letterSpacing: 1.5, marginBottom: 12 }}>
+                <Text style={{ color: c.textMuted, fontSize: 10, fontWeight: '700', letterSpacing: 1.5, marginBottom: 12 }}>
                   INVITED · {incoming.length}
                 </Text>
                 {incoming.map((p) => (
@@ -170,7 +173,7 @@ export default function ProposalsScreen() {
 
             {mine.length > 0 && (
               <View>
-                <Text style={{ color: '#5a5f7a', fontSize: 10, fontWeight: '700', letterSpacing: 1.5, marginBottom: 12 }}>
+                <Text style={{ color: c.textMuted, fontSize: 10, fontWeight: '700', letterSpacing: 1.5, marginBottom: 12 }}>
                   SENT BY YOU · {mine.length}
                 </Text>
                 {mine.map((p) => (

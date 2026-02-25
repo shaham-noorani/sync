@@ -1,5 +1,6 @@
 import { TextInput, View, Text } from 'react-native';
 import { useState } from 'react';
+import { useColors } from '../../providers/ThemeProvider';
 
 type InputProps = {
   label: string;
@@ -15,26 +16,27 @@ type InputProps = {
 
 export function Input({ label, value, onChangeText, placeholder, secureTextEntry = false, autoCapitalize = 'none', keyboardType = 'default', error, testID }: InputProps) {
   const [focused, setFocused] = useState(false);
+  const c = useColors();
 
   return (
     <View style={{ width: '100%', marginBottom: 16 }}>
-      <Text style={{ color: '#8b8fa8', fontSize: 13, fontWeight: '600', marginBottom: 6, marginLeft: 2, letterSpacing: 0.3 }}>{label}</Text>
+      <Text style={{ color: c.textSecondary, fontSize: 13, fontWeight: '600', marginBottom: 6, marginLeft: 2, letterSpacing: 0.3 }}>{label}</Text>
       <TextInput
         style={{
           width: '100%',
-          backgroundColor: focused ? 'rgba(136,117,255,0.08)' : 'rgba(255,255,255,0.06)',
+          backgroundColor: focused ? c.accentBg : c.bgCard,
           borderRadius: 14,
           paddingHorizontal: 16,
           paddingVertical: 14,
-          color: '#f0f0ff',
+          color: c.text,
           fontSize: 15,
           borderWidth: 1,
-          borderColor: error ? '#ef4444' : focused ? '#8875ff' : 'rgba(255,255,255,0.1)',
+          borderColor: error ? '#ef4444' : focused ? c.accent : c.border,
         }}
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
-        placeholderTextColor="#5a5f7a"
+        placeholderTextColor={c.textMuted}
         secureTextEntry={secureTextEntry}
         autoCapitalize={autoCapitalize}
         keyboardType={keyboardType}

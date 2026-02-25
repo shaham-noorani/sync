@@ -2,7 +2,7 @@ import '../global.css';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useFonts } from 'expo-font';
 import { SpaceGrotesk_700Bold } from '@expo-google-fonts/space-grotesk';
-import { Slot, useRouter, useSegments } from 'expo-router';
+import { Stack, useRouter, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { AuthProvider, useAuth } from '../providers/AuthProvider';
@@ -61,7 +61,7 @@ export default function RootLayout() {
       <AuthProvider>
         <ThemeProvider>
           <AuthGate>
-            <Slot />
+            <Stack screenOptions={{ headerShown: false }} />
           </AuthGate>
         </ThemeProvider>
       </AuthProvider>

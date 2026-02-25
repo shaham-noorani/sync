@@ -1,5 +1,6 @@
 import { View, Text, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useColors } from '../providers/ThemeProvider';
 
 type AvatarProps = {
   url?: string | null;
@@ -9,6 +10,8 @@ type AvatarProps = {
 };
 
 export function Avatar({ url, name, size = 48, ring = false }: AvatarProps) {
+  const c = useColors();
+
   const initials = name
     .split(' ')
     .map((n) => n[0])
@@ -42,7 +45,7 @@ export function Avatar({ url, name, size = 48, ring = false }: AvatarProps) {
         end={{ x: 1, y: 1 }}
         style={{ width: outerSize, height: outerSize, borderRadius: outerSize / 2, alignItems: 'center', justifyContent: 'center' }}
       >
-        <View style={{ width: size + 4, height: size + 4, borderRadius: (size + 4) / 2, backgroundColor: '#09090f', alignItems: 'center', justifyContent: 'center' }}>
+        <View style={{ width: size + 4, height: size + 4, borderRadius: (size + 4) / 2, backgroundColor: c.bg, alignItems: 'center', justifyContent: 'center' }}>
           {inner}
         </View>
       </LinearGradient>

@@ -1,11 +1,12 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
-import { useTheme } from '../../providers/ThemeProvider';
+import { useTheme, useColors } from '../../providers/ThemeProvider';
 import { useProposals } from '../../hooks/useProposals';
 import { useAuth } from '../../providers/AuthProvider';
 
 export default function TabLayout() {
   const { isDark } = useTheme();
+  const c = useColors();
   const { user } = useAuth();
   const { data: proposals } = useProposals();
 
@@ -17,11 +18,11 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: '#8875ff',
-        tabBarInactiveTintColor: '#5a5f7a',
+        tabBarActiveTintColor: c.accent,
+        tabBarInactiveTintColor: c.textMuted,
         tabBarStyle: {
-          backgroundColor: '#0e0e1a',
-          borderTopColor: 'rgba(255,255,255,0.07)',
+          backgroundColor: c.tabBar,
+          borderTopColor: c.tabBarBorder,
           borderTopWidth: 1,
           height: 60,
           paddingBottom: 8,

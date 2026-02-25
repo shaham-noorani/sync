@@ -10,6 +10,7 @@ import { InterestChip } from '../../components/ui/InterestChip';
 import { SkeletonLoader } from '../../components/SkeletonLoader';
 import { HeatmapGrid } from '../../components/HeatmapGrid';
 import { WeekNavigator } from '../../components/WeekNavigator';
+import { useColors } from '../../providers/ThemeProvider';
 
 function getWeekDates(weekOffset: number): string[] {
   const now = new Date();
@@ -37,6 +38,7 @@ export default function UserProfileScreen() {
   const router = useRouter();
   const { data: profile, isLoading } = useProfile(id);
   const [weekOffset, setWeekOffset] = useState(0);
+  const c = useColors();
 
   const dates = useMemo(() => getWeekDates(weekOffset), [weekOffset]);
   const { data: availability, isLoading: availLoading } = useFriendEffectiveAvailability(
@@ -47,11 +49,11 @@ export default function UserProfileScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView style={styles.safeArea} edges={['top']}>
+      <SafeAreaView style={[styles.safeArea, { backgroundColor: c.bg }]} edges={['top']}>
         <View style={{ paddingHorizontal: 24, paddingTop: 16 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 32 }}>
             <TouchableOpacity onPress={() => router.back()} style={{ padding: 4 }}>
-              <Ionicons name="chevron-back" size={24} color="#8875ff" />
+              <Ionicons name="chevron-back" size={24} color={c.accent} />
             </TouchableOpacity>
           </View>
           <View style={{ alignItems: 'center' }}>
@@ -67,27 +69,27 @@ export default function UserProfileScreen() {
   if (!profile) return null;
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top']}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: c.bg }]} edges={['top']}>
       {/* Header — sticky, outside ScrollView */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={{ padding: 4, marginRight: 8 }}>
-          <Ionicons name="chevron-back" size={24} color="#8875ff" />
+          <Ionicons name="chevron-back" size={24} color={c.accent} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Profile</Text>
+        <Text style={[styles.headerTitle, { color: c.text }]}>Profile</Text>
       </View>
 
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 48 }}>
         {/* Profile Info */}
         <View style={{ alignItems: 'center', paddingVertical: 24 }}>
           <Avatar url={profile.avatar_url} name={profile.display_name} size={80} />
-          <Text style={styles.displayName}>
+          <Text style={[styles.displayName, { color: c.text }]}>
             {profile.display_name}
           </Text>
-          <Text style={styles.username}>@{profile.username}</Text>
+          <Text style={[styles.username, { color: c.textSecondary }]}>@{profile.username}</Text>
           {profile.city && (
             <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4 }}>
-              <Ionicons name="location" size={12} color="#5a5f7a" />
-              <Text style={styles.cityText}>{profile.city}</Text>
+              <Ionicons name="location" size={12} color={c.textMuted} />
+              <Text style={[styles.cityText, { color: c.textSecondary }]}>{profile.city}</Text>
             </View>
           )}
         </View>
@@ -95,7 +97,7 @@ export default function UserProfileScreen() {
         {/* Interests */}
         {profile.interests.length > 0 && (
           <View style={{ paddingHorizontal: 24, marginBottom: 24 }}>
-            <Text style={styles.sectionLabel}>
+            <Text style={[styles.sectionLabel, { color: c.textMuted }]}>
               INTERESTS
             </Text>
             <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
@@ -108,7 +110,7 @@ export default function UserProfileScreen() {
 
         {/* Availability Heatmap */}
         <View style={{ paddingHorizontal: 24 }}>
-          <Text style={styles.sectionLabel}>
+          <Text style={[styles.sectionLabel, { color: c.textMuted }]}>
             WHEN {profile.display_name.split(' ')[0].toUpperCase()} IS FREE
           </Text>
           <WeekNavigator
@@ -119,7 +121,7 @@ export default function UserProfileScreen() {
           />
           <View style={{ marginTop: 4 }}>
             {availLoading ? (
-              <View style={styles.availabilityPlaceholder} />
+              <View style={[styles.availabilityPlaceholder, { backgroundColor: c.bgCard }]} />
             ) : (
               <HeatmapGrid
                 dates={dates}
@@ -136,7 +138,6 @@ export default function UserProfileScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#09090f',
   },
   header: {
     flexDirection: 'row',
@@ -146,27 +147,22 @@ const styles = StyleSheet.create({
     paddingBottom: 8,
   },
   headerTitle: {
-    color: '#f0f0ff',
     fontWeight: '700',
     fontSize: 18,
   },
   displayName: {
     fontFamily: 'SpaceGrotesk_700Bold',
-    color: '#f0f0ff',
     fontSize: 24,
     marginTop: 16,
   },
   username: {
-    color: '#8b8fa8',
     marginTop: 4,
   },
   cityText: {
-    color: '#8b8fa8',
     fontSize: 14,
     marginLeft: 4,
   },
   sectionLabel: {
-    color: '#5a5f7a',
     fontSize: 10,
     fontWeight: '700',
     letterSpacing: 1.5,
@@ -174,7 +170,6 @@ const styles = StyleSheet.create({
   },
   availabilityPlaceholder: {
     height: 128,
-    backgroundColor: 'rgba(255,255,255,0.05)',
     borderRadius: 12,
     opacity: 0.6,
   },

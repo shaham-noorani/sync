@@ -15,6 +15,7 @@ import { Avatar } from '../../components/Avatar';
 import { useFriendsList } from '../../hooks/useFriends';
 import { useMyGroups } from '../../hooks/useGroups';
 import { useCreateProposal } from '../../hooks/useProposals';
+import { useColors } from '../../providers/ThemeProvider';
 
 const ACTIVITIES: { tag: string; emoji: string; label: string }[] = [
   { tag: 'dinner', emoji: '🍽️', label: 'Dinner' },
@@ -52,41 +53,42 @@ function getUpcomingDates(count = 14): { value: string; label: string }[] {
   return dates;
 }
 
-const glassCard = {
-  backgroundColor: 'rgba(255,255,255,0.05)',
-  borderWidth: 1,
-  borderColor: 'rgba(255,255,255,0.08)',
-  borderRadius: 16,
-} as const;
-
-const pillUnselected = {
-  backgroundColor: 'rgba(255,255,255,0.07)',
-  borderWidth: 1,
-  borderColor: 'rgba(255,255,255,0.1)',
-  borderRadius: 12,
-} as const;
-
-const pillSelected = {
-  backgroundColor: '#8875ff',
-  borderRadius: 12,
-} as const;
-
-const textInput = {
-  backgroundColor: 'rgba(255,255,255,0.06)',
-  borderRadius: 14,
-  borderWidth: 1,
-  borderColor: 'rgba(255,255,255,0.1)',
-  paddingHorizontal: 16,
-  paddingVertical: 14,
-  color: '#f0f0ff',
-  fontSize: 15,
-} as const;
-
 export default function CreateProposalScreen() {
   const router = useRouter();
   const createProposal = useCreateProposal();
   const { data: friends } = useFriendsList();
   const { data: groups } = useMyGroups();
+  const c = useColors();
+
+  const glassCard = {
+    backgroundColor: c.bgCard,
+    borderWidth: 1,
+    borderColor: c.border,
+    borderRadius: 16,
+  } as const;
+
+  const pillUnselected = {
+    backgroundColor: c.bgCardHover,
+    borderWidth: 1,
+    borderColor: c.border,
+    borderRadius: 12,
+  } as const;
+
+  const pillSelected = {
+    backgroundColor: c.accent,
+    borderRadius: 12,
+  } as const;
+
+  const textInput = {
+    backgroundColor: c.bgCard,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: c.border,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    color: c.text,
+    fontSize: 15,
+  } as const;
 
   const [title, setTitle] = useState('');
   const [activityTag, setActivityTag] = useState('');
@@ -133,28 +135,28 @@ export default function CreateProposalScreen() {
   const isPending = createProposal.isPending;
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#09090f' }} edges={['top']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: c.bg }} edges={['top']}>
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 8, paddingBottom: 48 }}>
         {/* Header */}
         <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 24 }}>
           <TouchableOpacity onPress={() => router.back()} style={{ marginRight: 12 }}>
-            <Ionicons name="chevron-back" size={24} color="#8875ff" />
+            <Ionicons name="chevron-back" size={24} color={c.accent} />
           </TouchableOpacity>
-          <Text style={{ fontFamily: 'SpaceGrotesk_700Bold', color: '#f0f0ff', fontSize: 22 }}>
+          <Text style={{ fontFamily: 'SpaceGrotesk_700Bold', color: c.text, fontSize: 22 }}>
             Propose a Hangout
           </Text>
         </View>
 
         {/* Title */}
         <View style={{ marginBottom: 24 }}>
-          <Text style={{ color: '#8b8fa8', fontSize: 13, fontWeight: '600', marginBottom: 8 }}>
+          <Text style={{ color: c.textSecondary, fontSize: 13, fontWeight: '600', marginBottom: 8 }}>
             What's the plan?
           </Text>
           <TextInput
             value={title}
             onChangeText={setTitle}
             placeholder="e.g. Saturday tennis match"
-            placeholderTextColor="#5a5f7a"
+            placeholderTextColor={c.textMuted}
             style={textInput}
             maxLength={80}
           />
@@ -162,7 +164,7 @@ export default function CreateProposalScreen() {
 
         {/* Activity */}
         <View style={{ marginBottom: 24 }}>
-          <Text style={{ color: '#8b8fa8', fontSize: 13, fontWeight: '600', marginBottom: 8 }}>
+          <Text style={{ color: c.textSecondary, fontSize: 13, fontWeight: '600', marginBottom: 8 }}>
             Activity
           </Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
@@ -182,7 +184,7 @@ export default function CreateProposalScreen() {
                     style={{
                       fontSize: 12,
                       marginTop: 2,
-                      color: selected ? '#ffffff' : '#8b8fa8',
+                      color: selected ? '#ffffff' : c.textSecondary,
                       fontWeight: selected ? '700' : '400',
                     }}
                   >
@@ -196,7 +198,7 @@ export default function CreateProposalScreen() {
 
         {/* When */}
         <View style={{ marginBottom: 24 }}>
-          <Text style={{ color: '#8b8fa8', fontSize: 13, fontWeight: '600', marginBottom: 8 }}>
+          <Text style={{ color: c.textSecondary, fontSize: 13, fontWeight: '600', marginBottom: 8 }}>
             When <Text style={{ fontWeight: '400' }}>(optional)</Text>
           </Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 8 }}>
@@ -210,7 +212,7 @@ export default function CreateProposalScreen() {
               <Text
                 style={{
                   fontSize: 14,
-                  color: !selectedDate ? '#ffffff' : '#8b8fa8',
+                  color: !selectedDate ? '#ffffff' : c.textSecondary,
                   fontWeight: !selectedDate ? '700' : '400',
                 }}
               >
@@ -231,7 +233,7 @@ export default function CreateProposalScreen() {
                   <Text
                     style={{
                       fontSize: 14,
-                      color: selected ? '#ffffff' : '#8b8fa8',
+                      color: selected ? '#ffffff' : c.textSecondary,
                       fontWeight: selected ? '700' : '400',
                     }}
                   >
@@ -258,7 +260,7 @@ export default function CreateProposalScreen() {
                     <Text
                       style={{
                         fontSize: 14,
-                        color: selected ? '#ffffff' : '#8b8fa8',
+                        color: selected ? '#ffffff' : c.textSecondary,
                         fontWeight: selected ? '700' : '400',
                       }}
                     >
@@ -273,14 +275,14 @@ export default function CreateProposalScreen() {
 
         {/* Location */}
         <View style={{ marginBottom: 24 }}>
-          <Text style={{ color: '#8b8fa8', fontSize: 13, fontWeight: '600', marginBottom: 8 }}>
+          <Text style={{ color: c.textSecondary, fontSize: 13, fontWeight: '600', marginBottom: 8 }}>
             Location <Text style={{ fontWeight: '400' }}>(optional)</Text>
           </Text>
           <TextInput
             value={location}
             onChangeText={setLocation}
             placeholder="e.g. Dolores Park"
-            placeholderTextColor="#5a5f7a"
+            placeholderTextColor={c.textMuted}
             style={textInput}
           />
         </View>
@@ -288,7 +290,7 @@ export default function CreateProposalScreen() {
         {/* Invite Friends */}
         {friends && friends.length > 0 && (
           <View style={{ marginBottom: 24 }}>
-            <Text style={{ color: '#8b8fa8', fontSize: 13, fontWeight: '600', marginBottom: 8 }}>
+            <Text style={{ color: c.textSecondary, fontSize: 13, fontWeight: '600', marginBottom: 8 }}>
               Invite Friends
             </Text>
             {(friends as any[]).map((friend) => {
@@ -300,21 +302,21 @@ export default function CreateProposalScreen() {
                   style={[
                     glassCard,
                     { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, marginBottom: 8 },
-                    isSelected ? { borderColor: '#8875ff', borderWidth: 1 } : {},
+                    isSelected ? { borderColor: c.accent, borderWidth: 1 } : {},
                   ]}
                   activeOpacity={0.7}
                 >
                   <Avatar url={friend.avatar_url} name={friend.display_name} size={36} />
                   <View style={{ flex: 1, marginLeft: 12 }}>
-                    <Text style={{ color: '#f0f0ff', fontWeight: '600', fontSize: 14 }}>
+                    <Text style={{ color: c.text, fontWeight: '600', fontSize: 14 }}>
                       {friend.display_name}
                     </Text>
-                    <Text style={{ color: '#5a5f7a', fontSize: 12 }}>
+                    <Text style={{ color: c.textMuted, fontSize: 12 }}>
                       @{friend.username}
                     </Text>
                   </View>
                   {isSelected && (
-                    <Ionicons name="checkmark-circle" size={20} color="#8875ff" />
+                    <Ionicons name="checkmark-circle" size={20} color={c.accent} />
                   )}
                 </TouchableOpacity>
               );
@@ -325,7 +327,7 @@ export default function CreateProposalScreen() {
         {/* Or invite a Group */}
         {groups && groups.length > 0 && (
           <View style={{ marginBottom: 24 }}>
-            <Text style={{ color: '#8b8fa8', fontSize: 13, fontWeight: '600', marginBottom: 8 }}>
+            <Text style={{ color: c.textSecondary, fontSize: 13, fontWeight: '600', marginBottom: 8 }}>
               Or invite a Group
             </Text>
             {(groups as any[]).map((group) => {
@@ -337,18 +339,18 @@ export default function CreateProposalScreen() {
                   style={[
                     glassCard,
                     { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, marginBottom: 8 },
-                    isSelected ? { borderColor: '#8875ff', borderWidth: 1 } : {},
+                    isSelected ? { borderColor: c.accent, borderWidth: 1 } : {},
                   ]}
                   activeOpacity={0.7}
                 >
-                  <View style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(136,117,255,0.2)', alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
+                  <View style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: c.accentBg, alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
                     <Text style={{ fontSize: 16 }}>👥</Text>
                   </View>
-                  <Text style={{ flex: 1, color: '#f0f0ff', fontWeight: '600', fontSize: 14 }}>
+                  <Text style={{ flex: 1, color: c.text, fontWeight: '600', fontSize: 14 }}>
                     {group.name}
                   </Text>
                   {isSelected && (
-                    <Ionicons name="checkmark-circle" size={20} color="#8875ff" />
+                    <Ionicons name="checkmark-circle" size={20} color={c.accent} />
                   )}
                 </TouchableOpacity>
               );

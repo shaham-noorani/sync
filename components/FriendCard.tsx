@@ -2,6 +2,7 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Avatar } from './Avatar';
+import { useColors } from '../providers/ThemeProvider';
 
 type FriendCardProps = {
   displayName: string;
@@ -28,26 +29,27 @@ export function FriendCard({
   onSecondaryAction,
   loading,
 }: FriendCardProps) {
+  const c = useColors();
   const hasButtons = !!(actionLabel || secondaryActionLabel);
 
   const inner = (
     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
       <Avatar url={avatarUrl} name={displayName} size={44} />
       <View style={{ flex: 1, marginLeft: 12 }}>
-        <Text style={{ color: '#f0f0ff', fontWeight: '700', fontSize: 15 }}>
+        <Text style={{ color: c.text, fontWeight: '700', fontSize: 15 }}>
           {displayName}
         </Text>
-        <Text style={{ color: '#8b8fa8', fontSize: 13, marginTop: 2 }}>@{username}</Text>
+        <Text style={{ color: c.textSecondary, fontSize: 13, marginTop: 2 }}>@{username}</Text>
       </View>
       {hasButtons ? (
         <View style={{ flexDirection: 'row', gap: 8 }}>
           {secondaryActionLabel && onSecondaryAction && (
             <TouchableOpacity
-              style={{ backgroundColor: 'rgba(255,255,255,0.07)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)', borderRadius: 12, paddingHorizontal: 16, paddingVertical: 8 }}
+              style={{ backgroundColor: c.bgCardHover, borderWidth: 1, borderColor: c.border, borderRadius: 12, paddingHorizontal: 16, paddingVertical: 8 }}
               onPress={onSecondaryAction}
               disabled={loading}
             >
-              <Text style={{ color: '#8b8fa8', fontWeight: '600', fontSize: 13 }}>
+              <Text style={{ color: c.textSecondary, fontWeight: '600', fontSize: 13 }}>
                 {secondaryActionLabel}
               </Text>
             </TouchableOpacity>
@@ -61,7 +63,7 @@ export function FriendCard({
           )}
         </View>
       ) : (
-        <Ionicons name="chevron-forward" size={16} color="#5a5f7a" />
+        <Ionicons name="chevron-forward" size={16} color={c.textMuted} />
       )}
     </View>
   );
@@ -69,7 +71,7 @@ export function FriendCard({
   if (onPress || (!hasButtons)) {
     return (
       <TouchableOpacity
-        style={{ backgroundColor: 'rgba(255,255,255,0.05)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)', borderRadius: 20, padding: 16, marginBottom: 12 }}
+        style={{ backgroundColor: c.bgCard, borderWidth: 1, borderColor: c.border, borderRadius: 20, padding: 16, marginBottom: 12 }}
         onPress={onPress}
         activeOpacity={0.7}
       >
@@ -79,7 +81,7 @@ export function FriendCard({
   }
 
   return (
-    <View style={{ backgroundColor: 'rgba(255,255,255,0.05)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)', borderRadius: 20, padding: 16, marginBottom: 12 }}>
+    <View style={{ backgroundColor: c.bgCard, borderWidth: 1, borderColor: c.border, borderRadius: 20, padding: 16, marginBottom: 12 }}>
       {inner}
     </View>
   );
