@@ -1,11 +1,11 @@
 import { useState, useMemo } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Alert, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import * as Clipboard from 'expo-clipboard';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useGroup, useLeaveGroup } from '../../hooks/useGroups';
-import { GroupIcon } from '../../components/GroupCard';
 import { useGroupAvailability } from '../../hooks/useAvailability';
 import { useAuth } from '../../providers/AuthProvider';
 import { Avatar } from '../../components/Avatar';
@@ -99,94 +99,66 @@ export default function GroupDetailScreen() {
 
   if (!group) return null;
 
+  const BANNER_HEIGHT = 200;
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: c.bg }} edges={['top']}>
-      {/* Header — sticky, outside ScrollView */}
-      <View style={{
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: 24,
-        paddingTop: 16,
-        paddingBottom: 8,
-      }}>
-        <TouchableOpacity onPress={() => router.back()} style={{ padding: 4, marginRight: 8 }}>
-          <Ionicons name="chevron-back" size={24} color={c.accent} />
-        </TouchableOpacity>
-        <View style={{ marginRight: 12 }}>
-          <GroupIcon iconUrl={group.icon_url} iconName={group.icon_name} size={36} />
-        </View>
-        <Text style={{ flex: 1, color: c.text, fontWeight: '700', fontSize: 22 }} numberOfLines={1}>
-          {group.name}
-        </Text>
-        {isManager && (
-          <TouchableOpacity
-            onPress={() => router.push(`/group/edit/${id}`)}
-            style={{ backgroundColor: c.bgCard, borderWidth: 1, borderColor: c.border, borderRadius: 999, padding: 8 }}
-            activeOpacity={0.7}
-          >
-            <Ionicons name="settings-outline" size={18} color={c.textSecondary} />
-          </TouchableOpacity>
-        )}
-      </View>
-
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 48 }}>
+
+        {/* Banner */}
+        <View style={{ position: 'relative', height: BANNER_HEIGHT, marginBottom: 0 }}>
+          {group.icon_url ? (
+            <View style={{ width: '100%', height: BANNER_HEIGHT }}>
+              <Image
+                source={{ uri: group.icon_url }}
+                style={{ width: '100%', height: BANNER_HEIGHT, resizeMode: 'cover' }}
+              />
+              <View style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(0,0,0,0.35)' }} />
+            </View>
+          ) : (
+            <LinearGradient
+              colors={['#8875ff', '#c084fc']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={{ width: '100%', height: BANNER_HEIGHT, alignItems: 'center', justifyContent: 'center' }}
+            >
+              {group.icon_name ? (
+                <Text style={{ fontSize: 72 }}>{group.icon_name}</Text>
+              ) : (
+                <Ionicons name="grid" size={72} color="rgba(255,255,255,0.6)" />
+              )}
+            </LinearGradient>
+          )}
+
+          {/* Back button overlay */}
+          <TouchableOpacity
+            onPress={() => router.back()}
+            style={{ position: 'absolute', top: 12, left: 16, backgroundColor: 'rgba(0,0,0,0.4)', borderRadius: 999, padding: 6 }}
+          >
+            <Ionicons name="chevron-back" size={22} color="#fff" />
+          </TouchableOpacity>
+
+          {/* Settings button overlay */}
+          {isManager && (
+            <TouchableOpacity
+              onPress={() => router.push(`/group/edit/${id}`)}
+              style={{ position: 'absolute', top: 12, right: 16, backgroundColor: 'rgba(0,0,0,0.4)', borderRadius: 999, padding: 6 }}
+              activeOpacity={0.7}
+            >
+              <Ionicons name="settings-outline" size={18} color="#fff" />
+            </TouchableOpacity>
+          )}
+        </View>
+
+        {/* Title + Description */}
+        <View style={{ paddingHorizontal: 24, paddingTop: 16, paddingBottom: group.description ? 4 : 16 }}>
+          <Text style={{ color: c.text, fontWeight: '700', fontSize: 26 }}>{group.name}</Text>
+        </View>
         {group.description && (
-          <Text style={{
-            color: c.textSecondary,
-            fontSize: 14,
-            paddingHorizontal: 24,
-            paddingBottom: 16,
-          }}>
+          <Text style={{ color: c.textSecondary, fontSize: 14, paddingHorizontal: 24, paddingBottom: 20 }}>
             {group.description}
           </Text>
         )}
-
-        {/* Invite Code */}
-        <View style={{ paddingHorizontal: 24, marginBottom: 24 }}>
-          <TouchableOpacity
-            style={{
-              backgroundColor: c.bgCard,
-              borderWidth: 1,
-              borderColor: c.border,
-              borderRadius: 20,
-              paddingHorizontal: 16,
-              paddingVertical: 16,
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-            }}
-            onPress={copyInviteCode}
-            activeOpacity={0.8}
-          >
-            <View>
-              <Text style={{
-                color: c.textMuted,
-                fontSize: 10,
-                fontWeight: '700',
-                letterSpacing: 1.5,
-                textTransform: 'uppercase',
-              }}>
-                INVITE CODE
-              </Text>
-              <Text style={{
-                color: c.accent,
-                fontSize: 24,
-                fontWeight: '700',
-                letterSpacing: 4,
-                marginTop: 4,
-              }}>
-                {group.invite_code}
-              </Text>
-            </View>
-            <View style={{
-              backgroundColor: c.accentBg,
-              borderRadius: 999,
-              padding: 8,
-            }}>
-              <Ionicons name="copy-outline" size={20} color={c.accent} />
-            </View>
-          </TouchableOpacity>
-        </View>
 
         {/* Group Availability Heatmap */}
         <View style={{ paddingHorizontal: 24, marginBottom: 24 }}>
@@ -201,9 +173,10 @@ export default function GroupDetailScreen() {
           </Text>
           <WeekNavigator
             label={formatWeekLabel(dates)}
-            onPrev={() => setWeekOffset((o) => o - 1)}
+            onPrev={() => setWeekOffset((o) => Math.max(0, o - 1))}
             onNext={() => setWeekOffset((o) => o + 1)}
             canGoPrev={weekOffset > 0}
+            onToday={() => setWeekOffset(0)}
           />
           <View style={{ marginTop: 4 }}>
             {overlapsLoading ? (
@@ -218,6 +191,7 @@ export default function GroupDetailScreen() {
                 dates={dates}
                 availability={[]}
                 friendOverlapCounts={groupOverlaps ?? {}}
+                totalMembers={group.members.length}
               />
             )}
           </View>
@@ -306,8 +280,38 @@ export default function GroupDetailScreen() {
             </TouchableOpacity>
           ))}
 
+          {/* Invite Code */}
+          <TouchableOpacity
+            style={{
+              backgroundColor: c.bgCard,
+              borderWidth: 1,
+              borderColor: c.border,
+              borderRadius: 20,
+              paddingHorizontal: 16,
+              paddingVertical: 16,
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              marginTop: 24,
+            }}
+            onPress={copyInviteCode}
+            activeOpacity={0.8}
+          >
+            <View>
+              <Text style={{ color: c.textMuted, fontSize: 10, fontWeight: '700', letterSpacing: 1.5, textTransform: 'uppercase' }}>
+                INVITE CODE
+              </Text>
+              <Text style={{ color: c.accent, fontSize: 24, fontWeight: '700', letterSpacing: 4, marginTop: 4 }}>
+                {group.invite_code}
+              </Text>
+            </View>
+            <View style={{ backgroundColor: c.accentBg, borderRadius: 999, padding: 8 }}>
+              <Ionicons name="copy-outline" size={20} color={c.accent} />
+            </View>
+          </TouchableOpacity>
+
           {/* Leave */}
-          <View style={{ marginTop: 32 }}>
+          <View style={{ marginTop: 16 }}>
             <Button
               title="Leave Group"
               onPress={handleLeave}
