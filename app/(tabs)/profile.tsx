@@ -166,7 +166,7 @@ export default function ProfileScreen() {
         </View>
 
         {/* Sign Out */}
-        <Button title="Sign Out" onPress={signOut} variant="outline" />
+        <Button title="Sign Out" onPress={signOut} variant="secondary" />
       </ScrollView>
     </SafeAreaView>
   );

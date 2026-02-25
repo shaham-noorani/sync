@@ -21,6 +21,10 @@ export type ColorTokens = {
   // Tab bar
   tabBar: string;
   tabBarBorder: string;
+  // Danger / critical actions
+  danger: string;
+  dangerBg: string;
+  dangerBorder: string;
 };
 
 const dark: ColorTokens = {
@@ -38,6 +42,9 @@ const dark: ColorTokens = {
   skeleton: '#334155',
   tabBar: '#0e0e1a',
   tabBarBorder: 'rgba(255,255,255,0.07)',
+  danger: '#f87171',
+  dangerBg: 'rgba(239,68,68,0.12)',
+  dangerBorder: 'rgba(239,68,68,0.4)',
 };
 
 const light: ColorTokens = {
@@ -55,6 +62,9 @@ const light: ColorTokens = {
   skeleton: '#d1d5db',
   tabBar: '#ffffff',
   tabBarBorder: 'rgba(0,0,0,0.08)',
+  danger: '#dc2626',
+  dangerBg: 'rgba(220,38,38,0.08)',
+  dangerBorder: 'rgba(220,38,38,0.35)',
 };
 
 type ThemeContextType = {

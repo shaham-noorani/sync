@@ -315,7 +315,7 @@ export default function GroupDetailScreen() {
             <Button
               title="Leave Group"
               onPress={handleLeave}
-              variant="outline"
+              variant="critical"
               loading={leaveGroup.isPending}
             />
           </View>

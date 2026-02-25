@@ -7,7 +7,10 @@ type ButtonProps = {
   onPress: () => void;
   loading?: boolean;
   disabled?: boolean;
-  variant?: 'primary' | 'secondary' | 'outline';
+  /** primary — gradient violet, for submit/action
+   *  secondary — muted glass, for navigation/non-destructive
+   *  critical — red, for destructive actions (leave, delete) */
+  variant?: 'primary' | 'secondary' | 'critical';
 };
 
 export function Button({ title, onPress, loading = false, disabled = false, variant = 'primary' }: ButtonProps) {
@@ -38,14 +41,47 @@ export function Button({ title, onPress, loading = false, disabled = false, vari
     );
   }
 
-  const variantStyles: Record<string, object> = {
-    secondary: { backgroundColor: c.bgCardHover, borderWidth: 1, borderColor: c.border },
-    outline:   { borderWidth: 1, borderColor: c.borderStrong },
-  };
+  if (variant === 'critical') {
+    return (
+      <TouchableOpacity
+        style={{
+          width: '100%',
+          borderRadius: 16,
+          paddingVertical: 16,
+          alignItems: 'center',
+          justifyContent: 'center',
+          opacity: isDisabled ? 0.5 : 1,
+          backgroundColor: c.dangerBg,
+          borderWidth: 1,
+          borderColor: c.dangerBorder,
+        }}
+        onPress={onPress}
+        disabled={isDisabled}
+        activeOpacity={0.7}
+      >
+        {loading ? (
+          <ActivityIndicator color={c.danger} />
+        ) : (
+          <Text style={{ color: c.danger, fontWeight: '600', fontSize: 16 }}>{title}</Text>
+        )}
+      </TouchableOpacity>
+    );
+  }
 
+  // secondary — muted glass
   return (
     <TouchableOpacity
-      style={[{ width: '100%', borderRadius: 16, paddingVertical: 16, alignItems: 'center', justifyContent: 'center', opacity: isDisabled ? 0.5 : 1 }, variantStyles[variant]]}
+      style={{
+        width: '100%',
+        borderRadius: 16,
+        paddingVertical: 16,
+        alignItems: 'center',
+        justifyContent: 'center',
+        opacity: isDisabled ? 0.5 : 1,
+        backgroundColor: c.bgCardHover,
+        borderWidth: 1,
+        borderColor: c.border,
+      }}
       onPress={onPress}
       disabled={isDisabled}
       activeOpacity={0.7}
