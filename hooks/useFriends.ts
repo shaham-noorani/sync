@@ -29,11 +29,17 @@ export function useFriendsList() {
 
       if (error) throw error;
 
-      return data.map((f) => {
-        const friend =
-          f.requester_id === user.id ? f.addressee : f.requester;
-        return { friendshipId: f.id, ...friend };
-      });
+      const seen = new Set<string>();
+      return data
+        .map((f) => {
+          const friend = f.requester_id === user.id ? f.addressee : f.requester;
+          return { friendshipId: f.id, ...friend };
+        })
+        .filter((f: any) => {
+          if (seen.has(f.id)) return false;
+          seen.add(f.id);
+          return true;
+        });
     },
     enabled: !!user,
   });

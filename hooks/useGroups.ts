@@ -2,8 +2,6 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../providers/AuthProvider';
 import * as ImagePicker from 'expo-image-picker';
-import * as FileSystem from 'expo-file-system';
-import { decode } from 'base64-arraybuffer';
 
 export function useMyGroups() {
   const { user } = useAuth();
@@ -86,16 +84,15 @@ export function useGroupByCode(code: string) {
 }
 
 async function uploadGroupIcon(groupId: string, localUri: string): Promise<string> {
-  const base64 = await FileSystem.readAsStringAsync(localUri, {
-    encoding: FileSystem.EncodingType.Base64,
-  });
+  const response = await fetch(localUri);
+  const blob = await response.blob();
   const ext = localUri.split('.').pop()?.toLowerCase() ?? 'jpg';
-  const contentType = ext === 'png' ? 'image/png' : 'image/jpeg';
   const storagePath = `groups/${groupId}/icon.${ext}`;
+  const contentType = blob.type || (ext === 'png' ? 'image/png' : 'image/jpeg');
 
   const { error } = await supabase.storage
     .from('avatars')
-    .upload(storagePath, decode(base64), { contentType, upsert: true });
+    .upload(storagePath, blob, { contentType, upsert: true });
 
   if (error) throw error;
 
