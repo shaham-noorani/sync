@@ -35,19 +35,29 @@ export default function SignupScreen() {
     setGoogleLoading(true);
     setError('');
     const redirectTo = makeRedirectUri({ scheme: 'sync' });
-    const { data, error: authError } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: { redirectTo, skipBrowserRedirect: true },
-    });
-    if (authError) {
-      setError(authError.message);
+
+    if (Platform.OS === 'web') {
+      const { error: authError } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: { redirectTo },
+      });
+      if (authError) setError(authError.message);
       setGoogleLoading(false);
-      return;
+    } else {
+      const { data, error: authError } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: { redirectTo, skipBrowserRedirect: true },
+      });
+      if (authError) {
+        setError(authError.message);
+        setGoogleLoading(false);
+        return;
+      }
+      if (data?.url) {
+        await WebBrowser.openAuthSessionAsync(data.url, redirectTo);
+      }
+      setGoogleLoading(false);
     }
-    if (data?.url) {
-      await WebBrowser.openAuthSessionAsync(data.url, redirectTo);
-    }
-    setGoogleLoading(false);
   };
 
   const toggleInterest = (interest: string) => {

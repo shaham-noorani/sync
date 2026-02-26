@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, TouchableOpacity, Switch } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Switch, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../../providers/AuthProvider';
@@ -57,30 +57,44 @@ export default function ProfileScreen() {
       }
     });
 
-    const { data: oauthData, error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo,
-        scopes: 'https://www.googleapis.com/auth/calendar.readonly',
-        queryParams: { access_type: 'offline', prompt: 'consent' },
-        skipBrowserRedirect: true,
-      },
-    });
-
-    if (error) {
-      subscription.unsubscribe();
-      setConnectingCalendar(false);
-      return;
-    }
-
-    if (oauthData?.url) {
-      try {
-        await WebBrowser.openAuthSessionAsync(oauthData.url, redirectTo);
-      } finally {
-        // Unsubscribe if auth state change hasn't fired yet (user cancelled or browser error)
-        // If it already fired and unsubscribed itself, this is a no-op
+    if (Platform.OS === 'web') {
+      // On web, Supabase redirects the page — onAuthStateChange fires on return
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo,
+          scopes: 'https://www.googleapis.com/auth/calendar.readonly',
+          queryParams: { access_type: 'offline', prompt: 'consent' },
+        },
+      });
+      if (error) {
         subscription.unsubscribe();
         setConnectingCalendar(false);
+      }
+    } else {
+      const { data: oauthData, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo,
+          scopes: 'https://www.googleapis.com/auth/calendar.readonly',
+          queryParams: { access_type: 'offline', prompt: 'consent' },
+          skipBrowserRedirect: true,
+        },
+      });
+
+      if (error) {
+        subscription.unsubscribe();
+        setConnectingCalendar(false);
+        return;
+      }
+
+      if (oauthData?.url) {
+        try {
+          await WebBrowser.openAuthSessionAsync(oauthData.url, redirectTo);
+        } finally {
+          subscription.unsubscribe();
+          setConnectingCalendar(false);
+        }
       }
     }
   };
