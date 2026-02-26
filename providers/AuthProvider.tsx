@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 
@@ -22,6 +22,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [hasProfile, setHasProfile] = useState(false);
+  const loadingResolved = useRef(false);
 
   const checkProfile = async (userId: string) => {
     const { data } = await supabase
@@ -33,18 +34,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   useEffect(() => {
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      setSession(session);
-      if (session) await checkProfile(session.user.id);
-      setIsLoading(false);
-    });
-
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setSession(session);
-      if (session) checkProfile(session.user.id);
+      if (session) await checkProfile(session.user.id);
       else setHasProfile(false);
+      if (!loadingResolved.current) {
+        loadingResolved.current = true;
+        setIsLoading(false);
+      }
     });
 
     return () => subscription.unsubscribe();

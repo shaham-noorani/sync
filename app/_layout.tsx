@@ -26,13 +26,14 @@ function AuthGate({ children }: { children: React.ReactNode }) {
     if (isLoading) return;
 
     const inAuthGroup = segments[0] === '(auth)';
+    const inTabsGroup = segments[0] === '(tabs)';
     const onOnboarding = segments[0] === '(auth)' && segments[1] === 'onboarding';
 
     if (!session && !inAuthGroup) {
       router.replace('/(auth)/login');
     } else if (session && !hasProfile && !onOnboarding) {
       router.replace('/(auth)/onboarding');
-    } else if (session && inAuthGroup) {
+    } else if (session && hasProfile && (inAuthGroup || (!inTabsGroup && segments.length === 0))) {
       router.replace('/(tabs)');
     }
   }, [session, isLoading, segments, hasProfile]);
