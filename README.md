@@ -4,13 +4,18 @@ A mobile app that makes it effortless to find time with friends — no more "we 
 
 Set your weekly availability, see when your friend group overlaps, and coordinate hangouts in a few taps.
 
-> **Status:** Phase 1 shipped · Phase 2 (proposals + push notifications) in progress
-
 ---
 
-## Demo
-
-<!-- 🎥 Demo video coming soon -->
+<table>
+  <tr>
+    <td><img src="demo_screenshots/homepage.png" width="160"/></td>
+    <td><img src="demo_screenshots/availability.png" width="160"/></td>
+    <td><img src="demo_screenshots/friends.png" width="160"/></td>
+    <td><img src="demo_screenshots/group.png" width="160"/></td>
+    <td><img src="demo_screenshots/feed.png" width="160"/></td>
+    <td><img src="demo_screenshots/profile.png" width="160"/></td>
+  </tr>
+</table>
 
 ---
 
