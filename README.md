@@ -4,8 +4,6 @@ A mobile app that makes it effortless to find time with friends — no more "we 
 
 Set your weekly availability, see when your friend group overlaps, and coordinate hangouts in a few taps.
 
----
-
 <table>
   <tr>
     <td><img src="demo_screenshots/homepage.png" width="160"/></td>
@@ -16,8 +14,6 @@ Set your weekly availability, see when your friend group overlaps, and coordinat
     <td><img src="demo_screenshots/profile.png" width="160"/></td>
   </tr>
 </table>
-
----
 
 ## What I Built
 
